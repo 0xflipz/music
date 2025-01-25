@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 
@@ -16,45 +16,71 @@ interface Track {
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTrack, setCurrentTrack] = useState<Track>({
     id: '1',
-    title: 'Neural Flow',
+    title: 'young $FLIPZ',
     artist: 'FLIPZ A.I.',
-    duration: '3:45',
+    duration: '0:00',
     cover: '/track-cover.png',
-    audioUrl: '/demo-track.mp3'
+    audioUrl: '/young-flipz.wav'
   });
 
-  const togglePlay = () => {
+  useEffect(() => {
     if (audioRef.current) {
+      audioRef.current.addEventListener('loadedmetadata', () => {
+        setDuration(audioRef.current?.duration || 0);
+        const minutes = Math.floor(audioRef.current!.duration / 60);
+        const seconds = Math.floor(audioRef.current!.duration % 60);
+        setCurrentTrack(prev => ({
+          ...prev,
+          duration: `${minutes}:${seconds.toString().padStart(2, '0')}`
+        }));
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check if file exists
+    fetch(currentTrack.audioUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Audio file not found');
+        }
+        console.log('Audio file exists');
+      })
+      .catch(error => {
+        console.error('Error loading audio file:', error);
+      });
+  }, [currentTrack.audioUrl]);
+
+  const togglePlay = async () => {
+    if (!audioRef.current) return;
+
+    try {
       if (isPlaying) {
-        audioRef.current.pause();
+        await audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          setIsPlaying(true);
+        }
       }
-      setIsPlaying(!isPlaying);
+    } catch (error) {
+      setIsPlaying(false);
     }
   };
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-[#0ff]/20 backdrop-blur-lg">
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center gap-4">
-          {/* Waveform Visualizer */}
-          <motion.div 
-            className="w-1/3 h-12 bg-black/50 rounded-lg overflow-hidden"
-            animate={{
-              boxShadow: isPlaying 
-                ? ['0 0 10px rgba(0,255,255,0.2)', '0 0 20px rgba(0,255,255,0.4)']
-                : '0 0 10px rgba(0,255,255,0.1)'
-            }}
-            transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-          >
-            {/* Add waveform visualization here */}
-          </motion.div>
+  const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
 
-          {/* Controls */}
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-[#0ff]/20 backdrop-blur-lg p-4">
+      <div className="flex items-center gap-6">
+        {/* Controls and Track Info Combined */}
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <button className="text-[#0ff]/70 hover:text-[#0ff]">
               <BackwardIcon className="w-5 h-5" />
@@ -62,7 +88,7 @@ export default function MusicPlayer() {
             <button 
               onClick={togglePlay}
               className="w-10 h-10 rounded-full bg-[#0ff]/10 border border-[#0ff]/30 
-                       flex items-center justify-center hover:bg-[#0ff]/20"
+                        flex items-center justify-center hover:bg-[#0ff]/20"
             >
               {isPlaying ? (
                 <PauseIcon className="w-5 h-5 text-[#0ff]" />
@@ -75,31 +101,44 @@ export default function MusicPlayer() {
             </button>
           </div>
 
-          {/* Track Info */}
-          <div className="flex-1">
+          {/* Track Info - Next to Controls */}
+          <div>
             <div className="text-sm font-mono text-white">{currentTrack.title}</div>
             <div className="text-xs font-mono text-[#0ff]/70">{currentTrack.artist}</div>
           </div>
+        </div>
 
-          {/* Progress Bar */}
-          <div className="w-full max-w-md">
-            <div className="progress-bar h-1 rounded-full">
-              <motion.div 
-                className="progress-fill h-full rounded-full"
-                style={{ width: `${(currentTime / 100) * 100}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-xs font-mono text-white/50 mt-1">
-              <span>0:00</span>
-              <span>{currentTrack.duration}</span>
-            </div>
+        {/* Progress Bar */}
+        <div className="flex-1 max-w-2xl">
+          <div className="progress-bar h-1 rounded-full">
+            <motion.div 
+              className="progress-fill h-full rounded-full"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs font-mono text-white/50 mt-1">
+            <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
+            <span>{currentTrack.duration}</span>
           </div>
         </div>
       </div>
+
       <audio 
         ref={audioRef}
         src={currentTrack.audioUrl}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
+        onLoadedMetadata={() => {
+          if (audioRef.current) {
+            setDuration(audioRef.current.duration);
+            const minutes = Math.floor(audioRef.current.duration / 60);
+            const seconds = Math.floor(audioRef.current.duration % 60);
+            setCurrentTrack(prev => ({
+              ...prev,
+              duration: `${minutes}:${seconds.toString().padStart(2, '0')}`
+            }));
+          }
+        }}
+        preload="auto"
       />
     </div>
   );
