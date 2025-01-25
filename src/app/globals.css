@@ -3,19 +3,91 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background-start: #000000;
+  --background-end: #434343;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(to bottom, var(--background-start), var(--background-end));
+  min-height: 100vh;
+  color: white;
+}
+
+.glitch-container {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glitch-layer {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: brightness(1.2) contrast(1.2);
+  z-index: 2;
+}
+
+.glitch-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 65%,
+    rgba(0, 255, 255, 0.2) 70%,
+    rgba(255, 0, 255, 0.2) 75%,
+    transparent 80%
+  );
+  mix-blend-mode: overlay;
+  animation: glitch-scan 4s linear infinite;
+  z-index: 3;
+}
+
+@keyframes glitch-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.glitch {
+  position: relative;
+  animation: glitch-float 6s ease infinite;
+  z-index: 1;
+}
+
+@keyframes glitch-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.glow-bar {
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.glow-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(0, 255, 255, 0.1),
+    transparent
+  );
+  animation: scan-line 2s linear infinite;
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
