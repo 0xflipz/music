@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,12 +7,15 @@
 :root {
   --background-start: #000000;
   --background-end: #000000;
+  --terminal-glow: rgba(0, 255, 255, 0.15);
+  --terminal-border: rgba(0, 255, 255, 0.2);
 }
 
 body {
   background: #000000;
   min-height: 100vh;
   color: white;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 .glitch-container {
@@ -29,10 +34,10 @@ body {
   background: repeating-linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 0.5%,
+    rgba(255, 255, 255, 0.05) 0.5%,
     transparent 1%
   );
-  animation: scan-lines 10s linear infinite;
+  animation: scan-lines 15s linear infinite;
   pointer-events: none;
   mix-blend-mode: overlay;
   z-index: 75;
@@ -55,20 +60,11 @@ body {
 }
 
 @keyframes glitch-clip {
-  0% {
+  0%, 100% {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-  25% {
-    clip-path: polygon(30% 0, 70% 0, 70% 100%, 30% 100%);
   }
   50% {
-    clip-path: polygon(20% 0, 80% 0, 80% 100%, 20% 100%);
-  }
-  75% {
     clip-path: polygon(10% 0, 90% 0, 90% 100%, 10% 100%);
-  }
-  100% {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   }
 }
 
@@ -151,16 +147,8 @@ body {
 }
 
 /* Add these new RGB split classes */
-.rgb-red {
-  filter: contrast(150%) brightness(150%) sepia(100%) hue-rotate(-50deg) saturate(200%) opacity(0.8);
-}
-
-.rgb-green {
-  filter: contrast(150%) brightness(150%) sepia(100%) hue-rotate(50deg) saturate(200%) opacity(0.8);
-}
-
-.rgb-blue {
-  filter: contrast(150%) brightness(150%) sepia(100%) hue-rotate(140deg) saturate(200%) opacity(0.8);
+.rgb-red, .rgb-green, .rgb-blue {
+  filter: brightness(120%);
 }
 
 /* Matrix scan effect */
@@ -244,4 +232,50 @@ body {
   100% {
     transform: translateX(100%) skewX(-20deg);
   }
+}
+
+/* Terminal container styling */
+.terminal-container {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--terminal-border);
+  box-shadow: 0 0 20px var(--terminal-glow);
+  backdrop-filter: blur(10px);
+}
+
+/* Terminal text effects */
+.terminal-text {
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+}
+
+.terminal-value {
+  color: #ffffff;
+  font-size: 1.2em;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Progress bar styling */
+.progress-bar {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--terminal-border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, 
+    rgba(0, 255, 255, 0.2),
+    rgba(0, 255, 255, 0.4)
+  );
+  box-shadow: 0 0 10px var(--terminal-glow);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
 }

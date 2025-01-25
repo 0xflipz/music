@@ -8,24 +8,25 @@ interface NetworkWaveProps {
   total: number;
   columns?: number;
   rows?: number;
+  className?: string;
 }
 
-const NetworkWave = ({ total = 300, columns = 32, rows = 20 }: NetworkWaveProps) => {
+const NetworkWave = ({ total = 300, columns = 24, rows = 16, className }: NetworkWaveProps) => {
   const [bars, setBars] = useState<number[]>([]);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Memoize wave generation
+  // Optimized wave generation with reduced calculations
   const generateWave = useCallback(() => {
-    const time = Date.now() / 1000;
+    const time = Date.now() / 2000; // Slower animation
     return Array.from({ length: columns }, (_, i) => {
       const wave = Math.sin((i / columns) * Math.PI * 2 + time) * 0.5;
-      const noise = Math.random() * (isHovered ? 0.3 : 0.2);
+      const noise = Math.random() * 0.15; // Reduced noise
       return Math.min(rows, Math.max(2, Math.floor((wave + 1) * rows * 0.5 + noise * rows)));
     });
-  }, [columns, rows, isHovered]);
+  }, [columns, rows]);
 
   useEffect(() => {
-    const interval = setInterval(() => setBars(generateWave()), isHovered ? 50 : 100);
+    const interval = setInterval(() => setBars(generateWave()), isHovered ? 100 : 200); // Reduced update frequency
     return () => clearInterval(interval);
   }, [generateWave, isHovered]);
 
@@ -40,7 +41,7 @@ const NetworkWave = ({ total = 300, columns = 32, rows = 20 }: NetworkWaveProps)
 
   return (
     <div 
-      className="flex justify-between h-32 items-end gap-0.5"
+      className={`flex justify-between h-32 items-end gap-0.5 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -81,6 +82,32 @@ const NetworkWave = ({ total = 300, columns = 32, rows = 20 }: NetworkWaveProps)
           );
         })}
       </AnimatePresence>
+    </div>
+  );
+};
+
+const NeuralBeats = () => {
+  return (
+    <div className="terminal-container p-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="terminal-text">NEURAL BEATS v1.0</div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-white/70">170.2 BPM</span>
+          <button className="px-3 py-1 text-sm border border-[#0ff]/20 text-[#0ff] hover:bg-[#0ff]/10">
+            PAUSE
+          </button>
+        </div>
+      </div>
+      <div className="text-xs text-white/50 mb-2">AUDIO SEQUENCE</div>
+      <NetworkWave 
+        total={300} 
+        columns={24}
+        rows={16}
+        className="h-24"
+      />
+      <div className="text-right text-xs text-white/50 mt-2">
+        FREQ: 237.6 Hz
+      </div>
     </div>
   );
 };

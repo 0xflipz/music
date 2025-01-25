@@ -164,89 +164,183 @@ const NetworkGrid = ({ total, active }: { total: number; active: number }) => {
   );
 };
 
+// Add new system stats component
+const SystemStats = () => {
+  return (
+    <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="terminal-container p-3">
+        <div className="text-xs text-[#0ff]/70">CPU Load</div>
+        <div className="flex items-center gap-2">
+          <span className="terminal-value">34.5%</span>
+          <div className="progress-bar w-full h-2 rounded">
+            <motion.div 
+              className="progress-fill h-full rounded"
+              initial={{ width: "0%" }}
+              animate={{ width: "34.5%" }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="terminal-container p-3">
+        <div className="text-xs text-[#0ff]/70">Memory</div>
+        <div className="flex items-center gap-2">
+          <span className="terminal-value">37.9%</span>
+          <div className="progress-bar w-full h-2 rounded">
+            <motion.div 
+              className="progress-fill h-full rounded"
+              initial={{ width: "0%" }}
+              animate={{ width: "37.9%" }}
+            />
+          </div>
+        </div>
+      </div>
+      {/* Add Network and GPU temp stats similarly */}
+    </div>
+  );
+};
+
+// Add initialization sequence
+const InitializationSequence = () => {
+  return (
+    <div className="terminal-container p-4 mb-6">
+      <div className="flex items-center gap-2 mb-4">
+        <motion.div 
+          className="w-2 h-2 rounded-full bg-[#0ff]"
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        />
+        <span className="terminal-text">INITIALIZING NEURAL AUDIO ENGINE</span>
+      </div>
+      <div className="progress-bar w-full h-3 rounded">
+        <motion.div 
+          className="progress-fill h-full rounded"
+          animate={{ 
+            width: ["0%", "100%"],
+            transition: { duration: 3, repeat: Infinity }
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
 export default function StatsContainer() {
+  // Use memo for expensive calculations
+  const [metrics, setMetrics] = useState(() => ({
+    price: "$1.247",
+    marketCap: "$12.4M",
+    holders: "1,247",
+    volume: "$847.2K"
+  }));
+
+  // Reduce update frequency
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics(prev => ({
+        price: fluctuate(1.247, 2),
+        marketCap: fluctuate(12.4, 1),
+        holders: Math.floor(1247 + Math.random() * 10).toString(),
+        volume: fluctuate(847.2, 3)
+      }));
+    }, 5000); // Slower updates
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Use transform instead of opacity for better performance
   return (
     <motion.div
-      className="fixed top-0 right-0 w-[500px] h-screen z-50"
-      initial={{ x: 100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      className="fixed top-0 right-0 w-[400px] h-screen z-50"
+      initial={{ transform: 'translateX(100%)' }}
+      animate={{ transform: 'translateX(0)' }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="h-full space-y-6 backdrop-blur-lg bg-black/20 p-8 border-l border-[#0ff]/20">
+      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-8 border-l border-[#0ff]/20">
         {/* Terminal header styling */}
-        <div className="text-[#0ff] font-mono text-sm border-b border-[#0ff]/20 pb-4 mb-8 relative">
-          <motion.span
-            className="absolute -left-2 top-0 h-full w-1 bg-[#0ff]/50"
-            animate={{
-              height: ["0%", "100%", "0%"],
-              opacity: [0.3, 1, 0.3]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          <span className="tracking-[0.3em] relative">
-            SYSTEM_STATUS.exe
-            <motion.span 
-              className="absolute -top-1 right-0 text-[8px] text-[#0ff]/70"
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              ▊
-            </motion.span>
-          </span>
-        </div>
-
-        {/* Stats grid with updated styling */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <TokenMetric label="FLIPZ_PRICE" value="$1.247" trend={2.5} />
-          <TokenMetric label="MARKET_CAP" value="$12.4M" trend={-1.2} />
-          <TokenMetric label="HOLDERS" value="1,247" trend={5.8} />
-          <TokenMetric label="24H_VOLUME" value="$847.2K" trend={3.1} />
-        </div>
-
-        {/* Neural Matrix card with enhanced effects */}
-        <Card variant="quantum" className="p-6 relative overflow-hidden border-[#ff4400]/30 bg-black/40 mb-8">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-[#ff4400]/10 to-[#ff0000]/5"
-            animate={{
-              opacity: [0.2, 0.4, 0.2],
-              x: [0, 100, 0],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-sm font-mono text-[#ff4400] tracking-[0.3em]">COOKING_HEAT</span>
-            <motion.div className="flex items-center gap-2">
-              <motion.div
-                className="w-1.5 h-1.5 rounded-full bg-[#ff4400]"
-                animate={{
-                  opacity: [1, 0.3, 1],
-                  scale: [1, 0.8, 1],
-                  boxShadow: [
-                    "0 0 10px #ff4400",
-                    "0 0 5px #ff4400",
-                    "0 0 10px #ff4400"
-                  ]
-                }}
-                transition={{ duration: 1, repeat: Infinity }}
-              />
-              <span className="text-xs font-mono text-[#ff4400] tracking-wider">LIVE</span>
-            </motion.div>
+        <div className="sticky top-0 z-10 bg-black/80 -mx-8 px-8 pt-4 pb-4 mb-8">
+          <div className="text-[#0ff] font-mono text-sm border-b border-[#0ff]/20 pb-4 relative">
+            <motion.span
+              className="absolute -left-2 top-0 h-full w-1 bg-[#0ff]/50"
+              animate={{
+                height: ["0%", "100%", "0%"],
+                opacity: [0.3, 1, 0.3]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className="tracking-[0.3em] relative">
+              SYSTEM_STATUS.exe
+              <motion.span 
+                className="absolute -top-1 right-0 text-[8px] text-[#0ff]/70"
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                ▊
+              </motion.span>
+            </span>
           </div>
-          <NetworkWave 
-            total={300} 
-            columns={32} // Increased for more aggressive look
-            rows={20}    // Increased for higher peaks
-          />
-        </Card>
+        </div>
 
-        {/* Enhanced stat bars with new styling */}
-        <div className="space-y-6">
-          <LiveStatBar value={94} label="NEURAL_HARMONY" className="glow-bar" />
-          <LiveStatBar value={67} label="BEATS_ANALYZED" max={100} className="glow-bar" />
-          <LiveStatBar value={88} label="RHYTHM_SYNC" className="glow-bar" />
-          <LiveStatBar value={96} label="AI_FLOW" className="glow-bar" />
-          <LiveStatBar value={82} label="NEURAL_SYNC" className="glow-bar" />
-          <LiveStatBar value={91} label="SYSTEM_HEALTH" className="glow-bar" />
+        {/* Rest of the content */}
+        <div className="space-y-8">
+          {/* Existing components */}
+          <div className="grid grid-cols-2 gap-4">
+            <TokenMetric label="FLIPZ_PRICE" value={metrics.price} trend={2.5} />
+            <TokenMetric label="MARKET_CAP" value={metrics.marketCap} trend={-1.2} />
+            <TokenMetric label="HOLDERS" value={metrics.holders} trend={5.8} />
+            <TokenMetric label="24H_VOLUME" value={metrics.volume} trend={3.1} />
+          </div>
+
+          {/* System stats */}
+          <SystemStats />
+          
+          {/* Neural Matrix */}
+          <Card variant="quantum" className="p-6 relative overflow-hidden border-[#ff4400]/30 bg-black/40">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-[#ff4400]/10 to-[#ff0000]/5"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+                x: [0, 100, 0],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-sm font-mono text-[#ff4400] tracking-[0.3em]">COOKING_HEAT</span>
+              <motion.div className="flex items-center gap-2">
+                <motion.div
+                  className="w-1.5 h-1.5 rounded-full bg-[#ff4400]"
+                  animate={{
+                    opacity: [1, 0.3, 1],
+                    scale: [1, 0.8, 1],
+                    boxShadow: [
+                      "0 0 10px #ff4400",
+                      "0 0 5px #ff4400",
+                      "0 0 10px #ff4400"
+                    ]
+                  }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                />
+                <span className="text-xs font-mono text-[#ff4400] tracking-wider">LIVE</span>
+              </motion.div>
+            </div>
+            <NetworkWave 
+              total={300} 
+              columns={32} // Increased for more aggressive look
+              rows={20}    // Increased for higher peaks
+            />
+          </Card>
+
+          {/* Stats bars */}
+          <div className="space-y-6">
+            <LiveStatBar value={94} label="NEURAL_HARMONY" className="glow-bar" />
+            <LiveStatBar value={67} label="BEATS_ANALYZED" className="glow-bar" />
+            <LiveStatBar value={88} label="RHYTHM_SYNC" className="glow-bar" />
+            <LiveStatBar value={96} label="AI_FLOW" className="glow-bar" />
+            <LiveStatBar value={82} label="NEURAL_SYNC" className="glow-bar" />
+            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="glow-bar" />
+          </div>
+
+          {/* Initialization sequence */}
+          <InitializationSequence />
         </div>
       </div>
     </motion.div>
