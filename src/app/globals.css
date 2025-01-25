@@ -4,11 +4,11 @@
 
 :root {
   --background-start: #000000;
-  --background-end: #434343;
+  --background-end: #000000;
 }
 
 body {
-  background: linear-gradient(to bottom, var(--background-start), var(--background-end));
+  background: #000000;
   min-height: 100vh;
   color: white;
 }
