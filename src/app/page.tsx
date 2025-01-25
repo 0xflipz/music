@@ -14,7 +14,7 @@ export default function Home() {
 
       {/* Logo and Navigation Container */}
       <motion.div 
-        className="fixed top-[1px] left-[300px] z-50 flex flex-row items-center gap-6 pt-0"
+        className="fixed -top-20 left-[200px] z-50 flex flex-row items-center gap-6"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
