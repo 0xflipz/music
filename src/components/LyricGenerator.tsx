@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/utils/utils';
 
@@ -78,6 +78,14 @@ export default function LyricGenerator() {
   const [hook, setHook] = useState('');
   const [structure, setStructure] = useState(VERSE_STRUCTURES.trap);
   const [useAdLibs, setUseAdLibs] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+  const [bpm, setBpm] = useState(Math.floor(Math.random() * 40) + 120); // 120-160 BPM
+  const [key, setKey] = useState(['Am', 'Cm', 'Gm', 'Fm'][Math.floor(Math.random() * 4)]);
+  const [mood, setMood] = useState(['Energetic', 'Dark', 'Melodic', 'Aggressive'][Math.floor(Math.random() * 4)]);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const generateHook = useCallback(() => {
     const randomHook = HOOKS[Math.floor(Math.random() * HOOKS.length)];
@@ -87,6 +95,11 @@ export default function LyricGenerator() {
   const generateLyrics = async () => {
     setGenerating(true);
     generateHook();
+    
+    // Update music stats
+    setBpm(Math.floor(Math.random() * 40) + 120);
+    setKey(['Am', 'Cm', 'Gm', 'Fm'][Math.floor(Math.random() * 4)]);
+    setMood(['Energetic', 'Dark', 'Melodic', 'Aggressive'][Math.floor(Math.random() * 4)]);
     
     // Generate random ad-libs
     const getAdLib = () => AD_LIBS[Math.floor(Math.random() * AD_LIBS.length)];
@@ -132,265 +145,155 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
     }, 2000);
   };
 
-  return (
-    <div className="cyber-container w-full h-[280px] relative flex flex-col">
-      <div className="cyber-corner cyber-corner-tl" />
-      <div className="cyber-corner cyber-corner-tr" />
-      <div className="cyber-corner cyber-corner-bl" />
-      <div className="cyber-corner cyber-corner-br" />
-      
-      <div className="cyber-header p-3 flex items-center justify-between bg-black/40 border-b border-[#9945FF]/20">
-        <div className="flex items-center gap-3">
+  // Add this function to generate rain drops
+  const renderRainDrops = () => {
+    const drops = Array.from({ length: 100 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      delay: Math.random() * 2,
+      duration: 0.8 + Math.random() * 0.6, // Faster rain
+      width: Math.random() < 0.3 ? 3 : 2,
+      height: 30 + Math.random() * 50, // Longer streaks
+      opacity: 0.4 + Math.random() * 0.4, // More visible
+      glow: Math.random() < 0.4, // More glowing drops
+    }));
+
+    return (
+      <div className="fixed inset-0 pointer-events-none z-[-1]">
+        {drops.map((drop) => (
           <motion.div
-            className="w-2 h-2 rounded-full bg-[#00F0FF]"
-            animate={{ 
-              opacity: [1, 0.3, 1],
-              boxShadow: [
-                "0 0 10px #00F0FF",
-                "0 0 5px #00F0FF",
-                "0 0 10px #00F0FF"
-              ]
+            key={drop.id}
+            className={cn(
+              "absolute bg-gradient-to-b from-[#00F0FF]/60 via-[#00F0FF]/40 to-[#9945FF]/30",
+              drop.glow && "shadow-[0_0_15px_rgba(0,240,255,0.6)]"
+            )}
+            style={{
+              left: drop.left,
+              width: drop.width,
+              height: `${drop.height}px`,
+              opacity: drop.opacity,
             }}
-            transition={{ duration: 1, repeat: Infinity }}
+            animate={{
+              y: ['-10vh', '110vh'],
+              opacity: [0, drop.opacity, 0]
+            }}
+            transition={{
+              duration: drop.duration,
+              repeat: Infinity,
+              delay: drop.delay,
+              ease: 'linear'
+            }}
           />
-          <span className="text-white font-mono tracking-wider">FLIPZ_LYRIC_GENERATOR.exe</span>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="relative bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg">
+      {/* Enhanced Header */}
+      <div className="absolute inset-x-0 top-0 p-2 flex items-center justify-between border-b border-[#9945FF]/20">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-white tracking-wider font-mono">FLIPZ_LYRIC_GENERATOR.exe</span>
+          <div className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_8px_rgba(0,240,255,0.6)]"></div>
+          <select
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
+            className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF] focus:outline-none"
+          >
+            {GENRES.map((genre) => (
+              <option key={genre} value={genre} className="bg-black">
+                {genre}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={selectedGenre}
-          onChange={(e) => setSelectedGenre(e.target.value)}
-          className="cyber-input bg-black/30 text-white text-sm px-2 py-1 rounded focus:outline-none border border-[#9945FF]/30 hover:border-[#00F0FF]/40"
-        >
-          {GENRES.map(genre => (
-            <option key={genre} value={genre} className="bg-black">{genre}</option>
-          ))}
-        </select>
+
+        {/* Status Indicator */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-white">STATUS</span>
+          <div className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+            {generating ? 'GENERATING' : 'READY'}
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col flex-1 p-3 space-y-2 overflow-hidden">
-        <div className="flex gap-3 shrink-0">
-          <textarea
+      {/* Main Content Area */}
+      <div className="flex flex-col h-full pt-14">
+        <div className="flex-1 p-2">
+          <input
+            type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Enter your lyric theme or concept..."
-            className="cyber-input w-full p-2 h-[50px] text-white text-sm placeholder:text-white/30 focus:outline-none resize-none"
+            className="w-full bg-black/40 border border-[#9945FF]/20 rounded px-3 py-1.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#9945FF]/40"
           />
-          <button
-            onClick={generateLyrics}
-            disabled={generating || !prompt}
-            className={cn(
-              "relative px-6 py-2 rounded overflow-hidden",
-              "bg-black/40 backdrop-blur-sm",
-              "border border-[#9945FF]/40",
-              "text-[#00F0FF] font-mono text-sm",
-              "transition-all duration-200",
-              "hover:border-[#00F0FF]/60 hover:bg-[#9945FF]/10",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "whitespace-nowrap min-w-[120px]",
-              "flex items-center justify-center"
-            )}
-          >
-            <motion.div
-              className="absolute inset-0"
-              animate={{
-                boxShadow: [
-                  "inset 0 0 15px rgba(153, 69, 255, 0.3), 0 0 15px rgba(153, 69, 255, 0.3)",
-                  "inset 0 0 20px rgba(0, 240, 255, 0.4), 0 0 20px rgba(0, 240, 255, 0.4)",
-                  "inset 0 0 15px rgba(153, 69, 255, 0.3), 0 0 15px rgba(153, 69, 255, 0.3)"
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              {generating ? (
-                <>
-                  <motion.div
-                    className="w-2 h-2 rounded-full bg-[#00F0FF]"
-                    animate={{ 
-                      opacity: [1, 0.3, 1],
-                      boxShadow: [
-                        "0 0 8px rgba(0, 240, 255, 0.8)",
-                        "0 0 12px rgba(0, 240, 255, 0.9)",
-                        "0 0 8px rgba(0, 240, 255, 0.8)"
-                      ]
-                    }}
-                    transition={{ duration: 0.5, repeat: Infinity }}
-                  />
-                  <motion.span
-                    animate={{
-                      textShadow: [
-                        "0 0 8px rgba(0, 240, 255, 0.8)",
-                        "0 0 12px rgba(0, 240, 255, 0.9)",
-                        "0 0 8px rgba(0, 240, 255, 0.8)"
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    GENERATING...
-                  </motion.span>
-                </>
-              ) : (
-                <motion.span
-                  animate={{
-                    textShadow: [
-                      "0 0 8px rgba(0, 240, 255, 0.8)",
-                      "0 0 12px rgba(0, 240, 255, 0.9)",
-                      "0 0 8px rgba(0, 240, 255, 0.8)"
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  GENERATE
-                </motion.span>
+          
+          <div className="mt-2 flex justify-end">
+            <button
+              onClick={generateLyrics}
+              disabled={generating}
+              className={cn(
+                "px-3 py-1 text-xs rounded border",
+                "bg-[#9945FF]/20 border-[#9945FF]/30 text-[#00F0FF]",
+                "hover:bg-[#9945FF]/30 transition-colors",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
-            </div>
-          </button>
-        </div>
+            >
+              GENERATE
+            </button>
+          </div>
 
-        <div className="flex-1 overflow-y-auto min-h-0 max-h-[160px]">
-          {lyrics ? (
-            <div className="bg-black/30 border border-white/20 rounded-lg p-3">
-              <pre className="font-mono text-white text-sm whitespace-pre-wrap">{lyrics}</pre>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <motion.div 
-                className="font-mono text-sm relative p-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                {/* Core text with enhanced glow */}
-                <motion.span
-                  className="text-[#9945FF] relative z-10 tracking-widest text-lg"
-                  animate={{
-                    textShadow: [
-                      "0 0 8px rgba(153, 69, 255, 0.8), 0 0 12px rgba(0, 240, 255, 0.4)",
-                      "0 0 15px rgba(153, 69, 255, 0.9), 0 0 20px rgba(0, 240, 255, 0.5)",
-                      "0 0 8px rgba(153, 69, 255, 0.8), 0 0 12px rgba(0, 240, 255, 0.4)"
-                    ],
-                    opacity: [0.8, 1, 0.8]
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  AWAITING PROMPT INPUT
-                </motion.span>
-
-                {/* Animated dots with gradient */}
-                <motion.span
-                  className="ml-1 bg-gradient-to-r from-[#9945FF] to-[#00F0FF] text-transparent bg-clip-text"
-                  animate={{
-                    opacity: [0, 1, 0],
-                    x: [0, 4, 0]
-                  }}
-                  transition={{ 
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  ...
-                </motion.span>
-
-                {/* Circular pulse effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  animate={{
-                    boxShadow: [
-                      "0 0 20px rgba(153, 69, 255, 0.2), inset 0 0 20px rgba(0, 240, 255, 0.2)",
-                      "0 0 40px rgba(153, 69, 255, 0.3), inset 0 0 40px rgba(0, 240, 255, 0.3)",
-                      "0 0 20px rgba(153, 69, 255, 0.2), inset 0 0 20px rgba(0, 240, 255, 0.2)"
-                    ],
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-
-                {/* Rotating border effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-lg border border-transparent"
-                  style={{
-                    background: `linear-gradient(90deg, #9945FF, #00F0FF, #9945FF) border-box`
-                  }}
-                  animate={{
-                    rotate: [0, 360]
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                />
-
-                {/* Corner accents */}
-                {['-top-1 -left-1', '-top-1 -right-1', '-bottom-1 -left-1', '-bottom-1 -right-1'].map((position, i) => (
-                  <motion.div
-                    key={i}
-                    className={`absolute w-3 h-3 ${position}`}
-                    animate={{
-                      opacity: [0.4, 0.8, 0.4],
-                      scale: [1, 1.2, 1]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.5
-                    }}
-                  >
-                    <div className="w-full h-full bg-gradient-to-br from-[#9945FF] to-[#00F0FF] rounded-sm" />
-                  </motion.div>
-                ))}
-
-                {/* Vertical scan lines */}
-                <motion.div
-                  className="absolute inset-0 overflow-hidden"
-                  style={{
-                    background: `repeating-linear-gradient(
-                      90deg,
-                      transparent,
-                      rgba(153, 69, 255, 0.1) 1px,
-                      transparent 2px
-                    )`
-                  }}
-                  animate={{
-                    x: [-10, 10],
-                    opacity: [0.3, 0.5, 0.3]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                />
-
-                {/* Background gradient pulse */}
-                <motion.div
-                  className="absolute inset-0 -z-20 rounded-lg opacity-20"
-                  style={{
-                    background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
-                  }}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.2, 0.3, 0.2]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-              </motion.div>
-            </div>
+          {/* Generated Content */}
+          {lyrics && (
+            <motion.div
+              className="mt-4 space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className={cn(
+                "rounded-lg p-3",
+                "bg-gradient-to-r from-[#9945FF]/20 to-[#00F0FF]/20",
+                "border border-[#9945FF]/30",
+                "shadow-[0_0_15px_rgba(153,69,255,0.2)]"
+              )}>
+                <div className="text-xs text-white/90 whitespace-pre-line">
+                  {lyrics}
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-[#00F0FF]/70">
+                  <span>BPM: {bpm}</span>
+                  <span>•</span>
+                  <span>KEY: {key}</span>
+                  <span>•</span>
+                  <span>MOOD: {mood}</span>
+                </div>
+              </div>
+            </motion.div>
           )}
         </div>
       </div>
+
+      {/* Background Effects - Keep existing effects */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden"
+        style={{
+          background: `repeating-linear-gradient(
+            90deg,
+            transparent,
+            rgba(153, 69, 255, 0.1) 1px,
+            transparent 2px
+          )`
+        }}
+        animate={{
+          x: [-10, 10],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
     </div>
   );
 } 
