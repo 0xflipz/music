@@ -11,7 +11,7 @@ interface NetworkWaveProps {
   className?: string;
 }
 
-const NetworkWave = ({ total = 300, columns = 24, rows = 16, className }: NetworkWaveProps) => {
+const NetworkWave = ({ total = 300, columns = 48, rows = 24, className }: NetworkWaveProps) => {
   const [bars, setBars] = useState<number[]>([]);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -41,7 +41,12 @@ const NetworkWave = ({ total = 300, columns = 24, rows = 16, className }: Networ
 
   return (
     <div 
-      className={`flex justify-between h-32 items-end gap-0.5 ${className}`}
+      className={cn(
+        "flex justify-between h-32 items-end gap-0.5 px-4",
+        "relative mx-2",
+        "before:absolute before:inset-0 before:border before:border-red-500/20 before:rounded-lg",
+        className
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -49,7 +54,14 @@ const NetworkWave = ({ total = 300, columns = 24, rows = 16, className }: Networ
         {bars.map((height, i) => {
           const ratio = height / rows;
           return (
-            <div key={i} className="flex flex-col gap-0.5 justify-end">
+            <div 
+              key={i} 
+              className="flex flex-col gap-0.5 justify-end"
+              style={{
+                width: `${100 / columns}%`,
+                minWidth: '2px'
+              }}
+            >
               {Array.from({ length: height }).map((_, j) => (
                 <motion.div
                   key={j}
@@ -69,12 +81,12 @@ const NetworkWave = ({ total = 300, columns = 24, rows = 16, className }: Networ
                     getBarColor(height),
                     "backdrop-blur-sm",
                     "shadow-lg",
-                    isHovered ? "w-4" : "w-3",
+                    isHovered ? "w-full" : "w-full",
                     "relative",
                     "after:absolute after:inset-0 after:opacity-40 after:blur-sm",
                     ratio > 0.8 ? "after:bg-red-500" : 
-                    ratio > 0.6 ? "after:bg-orange-500" : 
-                    "after:bg-yellow-500"
+                    ratio > 0.6 ? "after:bg-white" : 
+                    "after:bg-red-500"
                   )}
                 />
               ))}
@@ -101,8 +113,8 @@ const NeuralBeats = () => {
       <div className="text-xs text-white/50 mb-2">AUDIO SEQUENCE</div>
       <NetworkWave 
         total={300} 
-        columns={24}
-        rows={16}
+        columns={48}
+        rows={24}
         className="h-24"
       />
       <div className="text-right text-xs text-white/50 mt-2">

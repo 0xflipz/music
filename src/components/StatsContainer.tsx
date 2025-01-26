@@ -35,67 +35,37 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
   }, [value, isAnimated]);
 
   return (
-    <Card className="relative p-4 bg-black/40 border-[#0ff]/20 backdrop-blur-md group hover:bg-black/50 transition-all duration-300">
-      {/* Animated border effect */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-[#0ff]/0 via-[#0ff]/20 to-[#0ff]/0"
-        animate={{
-          backgroundPosition: ['200% 0', '-200% 0'],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-      />
-      
-      {/* Hover highlight effect */}
-      <motion.div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[#0ff]/5 transition-opacity duration-300"
-        initial={false}
-        whileHover={{ scale: 1.02 }}
-      />
-
-      <div className="space-y-2 relative">
-        {/* Label with enhanced styling */}
-        <div className="flex justify-between items-center">
-          <span className="text-xs font-mono text-white/70 tracking-[0.2em] uppercase">{label}</span>
-          {trend && (
-            <motion.span
-              className={cn(
-                "text-xs font-mono",
-                trend > 0 ? "text-green-400" : "text-red-400"
-              )}
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              {trend > 0 ? "+" : ""}{trend}%
-            </motion.span>
-          )}
-        </div>
-
-        {/* Value with cyberpunk styling */}
-        <div className="flex items-baseline space-x-1">
-          <span className="text-2xl font-mono font-bold text-white tracking-tight">
-            {currentValue.split('.')[0]}
-          </span>
-          {currentValue.includes('.') && (
-            <span className="text-lg font-mono font-medium text-[#0ff]">
-              .{currentValue.split('.')[1]}
-            </span>
-          )}
-        </div>
-
-        {/* Decorative elements */}
-        <motion.div
-          className="absolute -bottom-1 left-0 h-[1px] bg-gradient-to-r from-[#0ff]/50 to-transparent"
-          animate={{
-            width: ['0%', '100%', '0%'],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-        
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-2 h-2 border-l-2 border-t-2 border-[#0ff]/30" />
-        <div className="absolute bottom-0 right-0 w-2 h-2 border-r-2 border-b-2 border-[#0ff]/30" />
+    <div className="token-metric">
+      <div className="flex justify-between items-center mb-2">
+        <span className="token-label">{label}</span>
+        {trend && (
+          <motion.span
+            className={cn(
+              "trend-value",
+              trend > 0 ? "trend-positive" : "trend-negative"
+            )}
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {trend > 0 ? "+" : ""}{trend}%
+          </motion.span>
+        )}
       </div>
-    </Card>
+      <motion.div 
+        className="token-value"
+        animate={isAnimated ? {
+          opacity: [0.9, 1, 0.9],
+          textShadow: [
+            "0 0 10px rgba(0, 255, 255, 0.3)",
+            "0 0 20px rgba(0, 255, 255, 0.5)",
+            "0 0 10px rgba(0, 255, 255, 0.3)"
+          ]
+        } : {}}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        {value}
+      </motion.div>
+    </div>
   );
 };
 
@@ -224,8 +194,49 @@ const InitializationSequence = () => {
   );
 };
 
+// Add these utility functions at the top
+const generateRandomValue = (min: number, max: number, decimals = 0) => {
+  const value = Math.random() * (max - min) + min;
+  return Number(value.toFixed(decimals));
+};
+
+// Add this interface
+interface CookingHeatMetrics {
+  bpm: number;
+  peak: number;
+  intensity: number;
+  frequency: number;
+  amplitude: number;
+  saturation: number;
+}
+
+// Add this component
+const AnimatedMetric = ({ label, value, unit = '' }: { label: string, value: string, unit?: string }) => (
+  <div className="flex flex-col">
+    <motion.span 
+      className="text-white/60 mb-1 text-xs tracking-wider"
+      animate={{ opacity: [0.6, 0.8, 0.6] }}
+      transition={{ duration: 2, repeat: Infinity }}
+    >
+      {label}
+    </motion.span>
+    <motion.span 
+      className="text-white font-bold"
+      animate={{ 
+        textShadow: [
+          "0 0 10px rgba(255,255,255,0.5)",
+          "0 0 20px rgba(255,255,255,0.8)",
+          "0 0 10px rgba(255,255,255,0.5)"
+        ]
+      }}
+      transition={{ duration: 1.5, repeat: Infinity }}
+    >
+      {value}{unit}
+    </motion.span>
+  </div>
+);
+
 export default function StatsContainer() {
-  // Use memo for expensive calculations
   const [metrics, setMetrics] = useState(() => ({
     price: "$1.247",
     marketCap: "$12.4M",
@@ -233,7 +244,6 @@ export default function StatsContainer() {
     volume: "$847.2K"
   }));
 
-  // Reduce update frequency
   useEffect(() => {
     const interval = setInterval(() => {
       setMetrics(prev => ({
@@ -242,12 +252,11 @@ export default function StatsContainer() {
         holders: Math.floor(1247 + Math.random() * 10).toString(),
         volume: fluctuate(847.2, 3)
       }));
-    }, 5000); // Slower updates
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Use transform instead of opacity for better performance
   return (
     <motion.div
       className="fixed top-0 right-0 w-[400px] h-screen z-50"
@@ -255,12 +264,11 @@ export default function StatsContainer() {
       animate={{ transform: 'translateX(0)' }}
       transition={{ duration: 0.3 }}
     >
-      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-8 border-l border-[#0ff]/20">
-        {/* Terminal header styling */}
-        <div className="sticky top-0 z-10 bg-black/80 -mx-8 px-8 pt-4 pb-4 mb-8">
-          <div className="text-[#0ff] font-mono text-sm border-b border-[#0ff]/20 pb-4 relative">
+      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-8 border-l border-white/20">
+        <div className="sticky top-0 z-10 bg-black/40 -mx-8 px-8 pt-4 pb-4 mb-8">
+          <div className="text-white font-mono text-sm border-b border-white/20 pb-4 relative">
             <motion.span
-              className="absolute -left-2 top-0 h-full w-1 bg-[#0ff]/50"
+              className="absolute -left-2 top-0 h-full w-1 bg-white/50"
               animate={{
                 height: ["0%", "100%", "0%"],
                 opacity: [0.3, 1, 0.3]
@@ -270,7 +278,7 @@ export default function StatsContainer() {
             <span className="tracking-[0.3em] relative">
               SYSTEM_STATUS.exe
               <motion.span 
-                className="absolute -top-1 right-0 text-[8px] text-[#0ff]/70"
+                className="absolute -top-1 right-0 text-[8px] text-white/70"
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
@@ -280,9 +288,7 @@ export default function StatsContainer() {
           </div>
         </div>
 
-        {/* Rest of the content */}
         <div className="space-y-8">
-          {/* Existing components */}
           <div className="grid grid-cols-2 gap-4">
             <TokenMetric label="FLIPZ_PRICE" value={metrics.price} trend={2.5} />
             <TokenMetric label="MARKET_CAP" value={metrics.marketCap} trend={-1.2} />
@@ -290,46 +296,82 @@ export default function StatsContainer() {
             <TokenMetric label="24H_VOLUME" value={metrics.volume} trend={3.1} />
           </div>
 
-          {/* System stats */}
           <SystemStats />
           
-          {/* Neural Matrix */}
           <Card variant="quantum" className="p-6 relative overflow-hidden border-[#ff4400]/30 bg-black/40">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-[#ff4400]/10 to-[#ff0000]/5"
+              className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/10 via-transparent to-[#ff0000]/10"
               animate={{
                 opacity: [0.2, 0.4, 0.2],
                 x: [0, 100, 0],
               }}
               transition={{ duration: 3, repeat: Infinity }}
             />
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-sm font-mono text-[#ff4400] tracking-[0.3em]">COOKING_HEAT</span>
-              <motion.div className="flex items-center gap-2">
-                <motion.div
-                  className="w-1.5 h-1.5 rounded-full bg-[#ff4400]"
-                  animate={{
-                    opacity: [1, 0.3, 1],
-                    scale: [1, 0.8, 1],
-                    boxShadow: [
-                      "0 0 10px #ff4400",
-                      "0 0 5px #ff4400",
-                      "0 0 10px #ff4400"
-                    ]
-                  }}
-                  transition={{ duration: 1, repeat: Infinity }}
+            
+            <div className="flex flex-col space-y-4 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-mono text-[#ff4400] tracking-[0.3em]">COOKING_HEAT</span>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-white/60">BPM</span>
+                    <span className="text-xs font-mono text-white">{generateRandomValue(138, 145)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-white/60">PEAK</span>
+                    <span className="text-xs font-mono text-white">{generateRandomValue(95, 99)}%</span>
+                  </div>
+                  <motion.div className="flex items-center gap-2">
+                    <motion.div
+                      className="w-1 h-1 rounded-full bg-[#ff0000]"
+                      animate={{
+                        scale: [1, 0.8, 1],
+                        boxShadow: [
+                          "0 0 10px #ff0000",
+                          "0 0 5px #ff0000",
+                          "0 0 10px #ff0000"
+                        ]
+                      }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    />
+                    <span className="text-[10px] font-mono text-white tracking-wider">LIVE</span>
+                  </motion.div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-4 text-xs font-mono">
+                <AnimatedMetric 
+                  label="INTENSITY" 
+                  value={generateRandomValue(85, 89).toString()} 
+                  unit="%" 
                 />
-                <span className="text-xs font-mono text-[#ff4400] tracking-wider">LIVE</span>
-              </motion.div>
+                <AnimatedMetric 
+                  label="FREQUENCY" 
+                  value={generateRandomValue(18.0, 18.4, 1).toString()} 
+                  unit="kHz" 
+                />
+                <AnimatedMetric 
+                  label="AMPLITUDE" 
+                  value={`-${generateRandomValue(3.0, 3.4, 1)}`} 
+                  unit="dB" 
+                />
+                <AnimatedMetric 
+                  label="SATURATION" 
+                  value={generateRandomValue(90, 94).toString()} 
+                  unit="%" 
+                />
+              </div>
             </div>
-            <NetworkWave 
-              total={300} 
-              columns={32} // Increased for more aggressive look
-              rows={20}    // Increased for higher peaks
-            />
+
+            <div className="mt-4 rounded-lg overflow-hidden bg-black/40 border border-red-500/20">
+              <NetworkWave 
+                total={300} 
+                columns={48} 
+                rows={24}
+                className="network-wave-enhanced"
+              />
+            </div>
           </Card>
 
-          {/* Stats bars */}
           <div className="space-y-6">
             <LiveStatBar value={94} label="NEURAL_HARMONY" className="glow-bar" />
             <LiveStatBar value={67} label="BEATS_ANALYZED" className="glow-bar" />
@@ -339,7 +381,6 @@ export default function StatsContainer() {
             <LiveStatBar value={91} label="SYSTEM_HEALTH" className="glow-bar" />
           </div>
 
-          {/* Initialization sequence */}
           <InitializationSequence />
         </div>
       </div>

@@ -7,8 +7,8 @@
 :root {
   --background-start: #000000;
   --background-end: #000000;
-  --terminal-glow: rgba(0, 255, 255, 0.15);
-  --terminal-border: rgba(0, 255, 255, 0.2);
+  --terminal-glow: rgba(255, 255, 255, 0.15);
+  --terminal-border: rgba(255, 255, 255, 0.2);
 }
 
 body {
@@ -32,15 +32,15 @@ body {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
-    90deg,
+    0deg,
     transparent 0%,
     rgba(255, 255, 255, 0.05) 0.5%,
     transparent 1%
   );
-  animation: scan-lines 15s linear infinite;
+  animation: scan-lines 8s linear infinite;
   pointer-events: none;
   mix-blend-mode: overlay;
-  z-index: 75;
+  z-index: 2;
 }
 
 .glitch-primary {
@@ -121,8 +121,8 @@ body {
 }
 
 .glow-bar {
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .glow-bar::after {
@@ -131,7 +131,7 @@ body {
   inset: 0;
   background: linear-gradient(90deg, 
     transparent,
-    rgba(0, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.2),
     transparent
   );
   animation: scan-line 2s linear infinite;
@@ -174,8 +174,11 @@ body {
 }
 
 @keyframes scan-lines {
-  0%, 100% {
+  0% {
     background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
   }
 }
 
@@ -236,17 +239,43 @@ body {
 
 /* Terminal container styling */
 .terminal-container {
+  position: relative;
+  overflow: hidden;
   background: rgba(0, 0, 0, 0.7);
-  border: 1px solid var(--terminal-border);
-  box-shadow: 0 0 20px var(--terminal-glow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+/* This adds the horizontal glow effect */
+.terminal-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 255, 255, 0) 0%,
+    rgba(0, 255, 255, 0.05) 50%,
+    rgba(0, 255, 255, 0) 100%
+  );
 }
 
 /* Terminal text effects */
-.terminal-text {
-  color: #00ffff;
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-  letter-spacing: 0.1em;
+.terminal-text-primary {
+  color: rgba(0, 255, 255, 0.9);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.terminal-text-secondary {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
 }
 
 .terminal-value {
@@ -257,17 +286,17 @@ body {
 
 /* Progress bar styling */
 .progress-bar {
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid var(--terminal-border);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 }
 
 .progress-fill {
   background: linear-gradient(90deg, 
-    rgba(0, 255, 255, 0.2),
-    rgba(0, 255, 255, 0.4)
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.4)
   );
-  box-shadow: 0 0 10px var(--terminal-glow);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 /* Hide scrollbar but keep functionality */
@@ -278,4 +307,584 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Add glowing dot animation */
+.terminal-dot {
+  width: 6px;
+  height: 6px;
+  background: #0ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Update the loading avatar styles */
+.loading-avatar {
+  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.3));
+  mix-blend-mode: screen;
+}
+
+.loading-avatar-glitch-1 {
+  mix-blend-mode: screen;
+  filter: brightness(1.2) contrast(1.2);
+  opacity: 0.5;
+}
+
+/* Update the chromatic aberration effect */
+.loading-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 70%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Add this to your existing styles */
+.bg-scan-lines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.1) 2px,
+    rgba(255, 255, 255, 0.1) 3px
+  );
+  background-size: 100% 3px;
+  pointer-events: none;
+}
+
+/* Optional: Add a subtle animation to scan lines */
+@keyframes scan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 100%;
+  }
+}
+
+.bg-scan-lines {
+  animation: scan 10s linear infinite;
+}
+
+/* Add these new styles */
+.cyber-container {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 
+    inset 0 0 20px rgba(255,255,255,0.05),
+    0 0 20px rgba(255,255,255,0.05);
+  backdrop-filter: blur(5px);
+}
+
+.cyber-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(255,255,255,0.3),
+    transparent
+  );
+}
+
+.cyber-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(255,255,255,0.1),
+    transparent
+  );
+}
+
+.cyber-header {
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.05) 0%, 
+    rgba(255,255,255,0.02) 100%
+  );
+}
+
+.cyber-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,0.2),
+    transparent
+  );
+}
+
+.cyber-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.cyber-corner-tl {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.cyber-corner-tr {
+  top: -1px;
+  right: -1px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.cyber-corner-bl {
+  bottom: -1px;
+  left: -1px;
+  border-right: none;
+  border-top: none;
+}
+
+.cyber-corner-br {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+.cyber-button {
+  position: relative;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cyber-button:hover {
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.2),
+    inset 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.cyber-input {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    inset 0 0 10px rgba(0,0,0,0.5),
+    0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.cyber-input:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    inset 0 0 15px rgba(0,0,0,0.5),
+    0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Red glow effect */
+.red-glow-wrapper {
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.red-glow-effect {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 0, 0, 0.9) 0%,
+    rgba(255, 0, 0, 0.7) 20%,
+    rgba(255, 0, 0, 0.3) 40%,
+    transparent 60%
+  );
+  filter: blur(20px);
+  animation: red-pulse 2s ease-in-out infinite, red-glitch 0.3s ease-in-out infinite;
+}
+
+@keyframes red-pulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes red-glitch {
+  0%, 100% {
+    transform: translate(0) scale(1);
+    filter: blur(20px) brightness(1);
+  }
+  10% {
+    transform: translate(-2px, 2px) scale(1.02);
+    filter: blur(22px) brightness(1.2);
+  }
+  30% {
+    transform: translate(2px, -2px) scale(0.98);
+    filter: blur(18px) brightness(0.9);
+  }
+  50% {
+    transform: translate(-1px, 1px) scale(1);
+    filter: blur(20px) brightness(1.1);
+  }
+  70% {
+    transform: translate(1px, -1px) scale(1.01);
+    filter: blur(21px) brightness(1);
+  }
+}
+
+/* System Stats styling */
+.system-stats-container {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    inset 0 0 20px rgba(255, 255, 255, 0.05),
+    0 0 20px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  padding: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stats value styling */
+.stats-value {
+  font-family: 'Share Tech Mono', monospace;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+/* Stats label styling */
+.stats-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Progress bar styling for CPU and Memory */
+.stats-progress-bar {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  height: 4px;
+  position: relative;
+}
+
+.stats-progress-fill {
+  background: linear-gradient(90deg,
+    rgba(0, 255, 255, 0.4),
+    rgba(0, 255, 255, 0.7)
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Add scan line effect */
+.system-stats-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.05) 2px,
+    rgba(255, 255, 255, 0.05) 3px
+  );
+  background-size: 100% 3px;
+  animation: scan 10s linear infinite;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Add cyber corners */
+.system-stats-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
+/* Positive/negative value colors */
+.value-positive {
+  color: #00ff00;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.value-negative {
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+/* System status text styling */
+.system-status {
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Stats container specific styling */
+.stats-box {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 4px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Value styling for numbers */
+.stats-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Progress bars */
+.stats-progress {
+  height: 4px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stats-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(0, 255, 255, 0.5),
+    rgba(0, 255, 255, 0.8)
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Percentage indicators */
+.percentage-value {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+/* Status indicators */
+.status-live {
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Token metric container styling */
+.token-metric {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Token metric value styling */
+.token-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+}
+
+/* Token metric label styling */
+.token-label {
+  font-family: 'Share Tech Mono', monospace;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Token trend indicator */
+.trend-value {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  animation: pulse 2s infinite;
+}
+
+.trend-positive {
+  color: #00ff00;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.trend-negative {
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+/* Add scan lines to token metrics */
+.token-metric::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.05) 2px,
+    rgba(255, 255, 255, 0.05) 3px
+  );
+  background-size: 100% 3px;
+  animation: scan 10s linear infinite;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+/* Add corner accents */
+.token-metric::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  clip-path: polygon(
+    0 0, 15px 0, 15px 15px,
+    calc(100% - 15px) 15px, calc(100% - 15px) 0, 100% 0,
+    100% 100%, calc(100% - 15px) 100%, calc(100% - 15px) calc(100% - 15px),
+    15px calc(100% - 15px), 15px 100%, 0 100%
+  );
+  pointer-events: none;
+}
+
+/* Glow effect on hover */
+.token-metric:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    inset 0 0 30px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* Value change animation */
+@keyframes value-update {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.value-update {
+  animation: value-update 0.3s ease-out;
+}
+
+/* Update Network Wave styling */
+.network-wave-enhanced {
+  --wave-primary: #ff0000;
+  --wave-secondary: #ffffff;
+  --wave-highlight: #ff3333;
+}
+
+/* Bar styling */
+.network-wave-enhanced rect {
+  filter: drop-shadow(0 0 8px var(--wave-primary));
+  transition: all 0.2s ease;
+}
+
+.network-wave-enhanced rect:nth-child(3n) {
+  fill: var(--wave-primary);
+}
+
+.network-wave-enhanced rect:nth-child(3n+1) {
+  fill: var(--wave-secondary);
+  opacity: 0.8; /* Slightly dim the white bars */
+}
+
+.network-wave-enhanced rect:nth-child(3n+2) {
+  fill: var(--wave-highlight);
+}
+
+/* Enhanced glow effects */
+.network-wave-enhanced rect:hover {
+  filter: drop-shadow(0 0 12px var(--wave-primary));
+}
+
+/* Pulsing animation for bars */
+@keyframes wave-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px var(--wave-primary));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px var(--wave-primary));
+    opacity: 0.9;
+  }
+}
+
+.metric-glow {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  animation: metric-pulse 2s infinite;
+}
+
+@keyframes metric-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+  }
 }
