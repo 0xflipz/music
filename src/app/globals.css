@@ -16,7 +16,6 @@ body {
   min-height: 100vh;
   color: white;
   font-family: 'Share Tech Mono', monospace;
-  overflow-y: hidden; /* Prevent vertical scrolling */
 }
 
 .glitch-container {
@@ -1263,12 +1262,12 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    to bottom,
-    rgba(153, 69, 255, 0.5),
-    rgba(0, 240, 255, 0.5)
-  );
+  background: rgba(153, 69, 255, 0.3);
   border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(153, 69, 255, 0.5);
 }
 
 /* Update message animations */
@@ -1549,4 +1548,10 @@ body {
   border-top: none;
   border-right: none;
   transform: translateX(-50%) rotate(-45deg);
+}
+
+/* Add a new class for the main app container */
+.app-container {
+  overflow-y: hidden;
+  min-height: 100vh;
 }

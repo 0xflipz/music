@@ -118,38 +118,46 @@ type GeneratorStatus = 'idle' | 'ready' | 'generating' | 'error';
 // Add this type at the top with other interfaces
 interface LyricsModalProps {
   lyrics: string;
-  stats: {
-    bpm: number;
-    key: string;
-    mood: string;
-  };
   onClose: () => void;
 }
 
-// Add these SVG icons at the top of the file
+// Add these SVG components at the top of the file
 const CloseIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+  <svg 
+    width="14" 
+    height="14" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2"
+    className="text-[#00F0FF]"
+  >
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 
 const DownloadIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+  <svg 
+    width="14" 
+    height="14" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2"
+    className="text-[#00F0FF]"
+  >
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
   </svg>
 );
 
-// Update the modal header and download button in LyricsModal
-function LyricsModal({ lyrics, stats, onClose }: LyricsModalProps) {
+// Update the LyricsModal component
+function LyricsModal({ lyrics, onClose }: LyricsModalProps) {
   const handleDownload = () => {
     const element = document.createElement("a");
-    const file = new Blob([
-      `FLIPZ AI GENERATED LYRICS\n\n` +
-      `BPM: ${stats.bpm}\n` +
-      `KEY: ${stats.key}\n` +
-      `MOOD: ${stats.mood}\n\n` +
-      lyrics
-    ], { type: 'text/plain' });
+    const file = new Blob([lyrics], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
     element.download = "flipz_lyrics.txt";
     document.body.appendChild(element);
@@ -162,75 +170,46 @@ function LyricsModal({ lyrics, stats, onClose }: LyricsModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] overflow-y-auto p-4"
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-black/90 border border-[#9945FF]/30 rounded-lg w-full max-w-md relative"
-      >
-        {/* Updated Header with CSS Icons */}
-        <div className="border-b border-[#9945FF]/20 p-3 flex justify-between items-center">
-          <div className="text-xs text-[#00F0FF] flex items-center gap-2">
-            <span>GENERATED_LYRICS.txt</span>
-            <button
-              onClick={handleDownload}
-              className="p-1.5 hover:bg-[#9945FF]/20 rounded-md transition-colors duration-200 
-                       text-[#00F0FF] hover:text-[#00F0FF] group relative"
-              title="Download Lyrics"
-            >
-              <div className="icon-download" />
-            </button>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-[#9945FF]/20 rounded-md transition-colors duration-200 
-                     text-white/50 hover:text-white relative"
-            title="Close"
-          >
-            <div className="icon-close" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4">
-          <div className="bg-black/40 rounded p-3 mb-3 text-xs text-white/90 whitespace-pre-line max-h-[200px] overflow-y-auto scrollbar-hide">
-            {lyrics}
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center gap-3 text-[10px] text-[#00F0FF]/70 mb-4">
-            <span>BPM: {stats.bpm}</span>
-            <span>•</span>
-            <span>KEY: {stats.key}</span>
-            <span>•</span>
-            <span>MOOD: {stats.mood}</span>
-          </div>
-
-          {/* Updated Download Button */}
-          <button
-            onClick={handleDownload}
-            className="w-full py-2 px-4 bg-[#9945FF]/20 hover:bg-[#9945FF]/30 
-                     border border-[#9945FF]/30 hover:border-[#9945FF]/50 
-                     rounded text-xs text-[#00F0FF] transition-all duration-200
-                     flex items-center justify-center gap-2 group"
-          >
-            <DownloadIcon />
-            <span>DOWNLOAD LYRICS</span>
-          </button>
-        </div>
-
-        {/* Background Effects */}
+      <div className="min-h-full flex items-center justify-center py-8">
         <motion.div
-          className="absolute inset-0 -z-10 rounded-lg opacity-30"
-          style={{
-            background: `radial-gradient(circle, rgba(153,69,255,0.2) 0%, rgba(0,240,255,0.2) 50%, transparent 70%)`
-          }}
-          animate={{ opacity: [0.2, 0.3, 0.2] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-black/90 border border-[#9945FF]/30 rounded-lg w-full max-w-md"
+        >
+          <div className="p-4 flex flex-col">
+            {/* Lyrics Display */}
+            <div 
+              className="bg-black/40 rounded p-3 mb-4 text-xs text-white/90 
+                       whitespace-pre-line max-h-[60vh] overflow-y-auto custom-scrollbar"
+            >
+              {lyrics}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between gap-3">
+              <button
+                onClick={handleDownload}
+                className="flex-1 py-2 px-4 bg-[#9945FF]/20 hover:bg-[#9945FF]/30 
+                         border border-[#9945FF]/30 hover:border-[#9945FF]/50 
+                         rounded text-white font-medium text-xs transition-all duration-200"
+              >
+                DOWNLOAD LYRICS
+              </button>
+              <button
+                onClick={onClose}
+                className="flex-1 py-2 px-4 bg-[#9945FF]/20 hover:bg-[#9945FF]/30 
+                         border border-[#9945FF]/30 hover:border-[#9945FF]/50 
+                         rounded text-white font-medium text-xs transition-all duration-200"
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -464,15 +443,6 @@ ${hook}`;
                   "text-xs text-white/90 whitespace-pre-line"
                 )}>
                   {lyrics}
-                  
-                  {/* Music Stats */}
-                  <div className="mt-2 flex items-center gap-2 text-[10px] text-[#00F0FF]/70">
-                    <span>BPM: {bpm}</span>
-                    <span>•</span>
-                    <span>KEY: {key}</span>
-                    <span>•</span>
-                    <span>MOOD: {mood}</span>
-                  </div>
                 </div>
               </motion.div>
             )}
@@ -587,10 +557,9 @@ ${hook}`;
       {showModal && lyrics && (
         <LyricsModal
           lyrics={lyrics}
-          stats={{ bpm, key, mood }}
           onClose={() => {
             setShowModal(false);
-            setLyrics(''); // Clear lyrics when closing modal
+            setLyrics('');
           }}
         />
       )}
