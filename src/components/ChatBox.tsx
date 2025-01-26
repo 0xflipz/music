@@ -2,90 +2,83 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-interface TokenHolder {
-  address: string;
-  balance: number;
-  title: string;
-}
+import { cn } from '@/utils/utils';
 
 interface Message {
   id: string;
   text: string;
-  sender: 'holder' | 'flipz';
+  sender: 'user' | 'flipz';
   timestamp: Date;
-  holderInfo?: TokenHolder;
 }
 
-// Token holder titles based on balance
-const getTitleByBalance = (balance: number): string => {
-  if (balance >= 100000) return "WHALE";
-  if (balance >= 50000) return "SHARK";
-  if (balance >= 10000) return "DOLPHIN";
-  if (balance >= 5000) return "FISH";
-  return "MINNOW";
+// FLIPZ AI personality responses
+const FLIPZ_RESPONSES = {
+  greeting: [
+    "Yo! Ready to drop some beats?",
+    "Welcome to the future of music. What's on your mind?",
+    "FLIPZ AI online. How can I assist you today?",
+  ],
+  default: [
+    "That's dope! Tell me more about your music vision.",
+    "I'm feeling those vibes. What else you got?",
+    "Interesting perspective! Let's explore that further.",
+  ],
+  music: [
+    "I'm analyzing the latest trends in neural beats.",
+    "The rhythm algorithms are showing promising patterns today.",
+    "We could create something unique with those sound waves.",
+  ]
 };
-
-// Mock market updates
-const MARKET_UPDATES = [
-  "FLIPZ token showing strong momentum with 24h volume up 23%",
-  "New partnership announcement incoming. Stay tuned holders!",
-  "Whale alert: Large accumulation detected in the last hour",
-  "Market sentiment analysis: Bullish divergence forming",
-  "Network activity reaching new ATH with 1.2M transactions"
-];
 
 export default function ChatBox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentHolder, setCurrentHolder] = useState<TokenHolder>({
-    address: '0x742...3f9',
-    balance: 15000,
-    title: 'DOLPHIN'
-  });
+
+  // Initial greeting
+  useEffect(() => {
+    const greeting = FLIPZ_RESPONSES.greeting[Math.floor(Math.random() * FLIPZ_RESPONSES.greeting.length)];
+    setMessages([{
+      id: Date.now().toString(),
+      text: greeting,
+      sender: 'flipz',
+      timestamp: new Date()
+    }]);
+  }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Simulate periodic market updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const randomUpdate = MARKET_UPDATES[Math.floor(Math.random() * MARKET_UPDATES.length)];
-      const marketUpdate: Message = {
-        id: Date.now().toString(),
-        text: `[MARKET UPDATE] ${randomUpdate}`,
-        sender: 'flipz',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, marketUpdate]);
-    }, 30000); // Every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+  const generateFlipzResponse = (userInput: string): string => {
+    const input = userInput.toLowerCase();
+    if (input.includes('music') || input.includes('beat') || input.includes('song')) {
+      return FLIPZ_RESPONSES.music[Math.floor(Math.random() * FLIPZ_RESPONSES.music.length)];
+    }
+    return FLIPZ_RESPONSES.default[Math.floor(Math.random() * FLIPZ_RESPONSES.default.length)];
+  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const holderMessage: Message = {
+    // User message
+    const userMessage: Message = {
       id: Date.now().toString(),
       text: input,
-      sender: 'holder',
-      timestamp: new Date(),
-      holderInfo: currentHolder
+      sender: 'user',
+      timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, holderMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
 
-    // AI response with context awareness
+    // FLIPZ AI response
     setTimeout(() => {
-      const aiResponse = generateAIResponse(input, currentHolder);
+      const flipzResponse = generateFlipzResponse(input);
       const flipzMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: aiResponse,
+        text: flipzResponse,
         sender: 'flipz',
         timestamp: new Date()
       };
@@ -93,101 +86,82 @@ export default function ChatBox() {
     }, 1000);
   };
 
-  const generateAIResponse = (userInput: string, holder: TokenHolder): string => {
-    if (userInput.toLowerCase().includes('price')) {
-      return `Current FLIPZ price: $1.291 (+2.5%). As a ${holder.title}, you're in a great position!`;
-    }
-    if (userInput.toLowerCase().includes('market')) {
-      return "Market analysis: Strong buy signals detected. Network activity up 31% this week.";
-    }
-    if (userInput.toLowerCase().includes('volume')) {
-      return "24h Volume: $847,169 | Top pairs: FLIPZ/ETH (76%), FLIPZ/USDT (24%)";
-    }
-    return `Thanks for being a valuable ${holder.title} in our ecosystem! How can I assist you with FLIPZ today?`;
-  };
-
   return (
-    <div className="w-full h-[350px] relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
+    <div className="relative h-full rounded-lg border border-white/20 bg-black/40 p-4">
+      <div className="absolute inset-0 solana-chat-gradient opacity-20" />
       
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="cyber-container w-full h-[400px] relative overflow-hidden">
-          <div className="cyber-corner cyber-corner-tl" />
-          <div className="cyber-corner cyber-corner-tr" />
-          <div className="cyber-corner cyber-corner-bl" />
-          <div className="cyber-corner cyber-corner-br" />
-          
-          <div className="cyber-header p-4 flex items-center justify-between sticky top-0 bg-black z-10">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  className="w-2 h-2 rounded-full bg-white"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
-                <span className="text-white text-sm">FLIPZ_CHAT.exe</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-white/70">{currentHolder.address}</span>
-                <span className="cyber-button px-2 py-0.5 text-xs text-white">
-                  {currentHolder.title}
-                </span>
-              </div>
-            </div>
-            <div />
+      {/* Header */}
+      <div className="sticky top-0 z-20 -mt-4 -mx-4 px-4 py-2 bg-black/80 border-b border-[#9945FF]/20 backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-mono text-white">FLIPZ_AI.exe</span>
+            <span className="px-1.5 py-0.5 text-xs bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+              ONLINE
+            </span>
           </div>
+          <motion.div 
+            className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]"
+            animate={{
+              opacity: [1, 0.5, 1],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        </div>
+      </div>
 
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 h-[calc(430px-140px)] fixed-scroll">
-            <div className="space-y-4 pb-12">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sender === 'holder' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] p-2 rounded-lg ${
-                      message.sender === 'holder'
-                        ? 'bg-white/5 border border-white/15'
-                        : 'bg-[#ff4400]/5 border border-[#ff4400]/15'
-                    }`}
-                  >
-                    {message.holderInfo && (
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-white/70">{message.holderInfo.address}</span>
-                        <span className="px-1.5 py-0.5 bg-white/10 rounded text-xs text-white">
-                          {message.holderInfo.title}
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-white font-mono text-sm">{message.text}</p>
-                    <p className="text-xs text-white/50 mt-1">
-                      {message.timestamp.toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
+      {/* Chat messages */}
+      <div className="h-[calc(100%-50px)] flex flex-col space-y-4 overflow-y-auto custom-scrollbar mt-4">
+        {messages.map((message, index) => (
+          <motion.div
+            key={message.id}
+            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            initial={{ opacity: 0, x: message.sender === 'user' ? 20 : -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
+            <div className={cn(
+              "rounded-lg p-3 relative max-w-[80%]",
+              message.sender === 'user' 
+                ? "bg-gradient-to-r from-[#00F0FF]/20 to-[#9945FF]/20 border-[#00F0FF]/30"
+                : "bg-gradient-to-r from-[#9945FF]/20 to-[#00F0FF]/20 border-[#9945FF]/30",
+              "border shadow-[0_0_15px_rgba(153,69,255,0.2)]"
+            )}>
+              <div className="text-sm text-white/90">{message.text}</div>
+              <div className="mt-1 text-xs text-[#00F0FF]/70">{message.timestamp.toLocaleTimeString()}</div>
             </div>
-          </div>
+          </motion.div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
 
-          <div className="p-4 border-t border-white/20 absolute bottom-0 left-0 right-0 bg-black">
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Ask about FLIPZ market, price, or volume..."
-                className="cyber-input w-full px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none"
-              />
-              <button
-                onClick={sendMessage}
-                className="cyber-button px-6 py-3 text-white text-sm flex items-center gap-2"
-              >
-                <span>SEND</span>
-              </button>
-            </div>
+      {/* Input area */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <div className="relative">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Chat with FLIPZ AI..."
+            className={cn(
+              "w-full px-4 py-2 rounded-lg",
+              "bg-black/60 backdrop-blur-sm",
+              "border border-[#9945FF]/40",
+              "text-white placeholder-white/50",
+              "focus:outline-none focus:border-[#00F0FF]/60",
+              "transition-colors duration-200"
+            )}
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <motion.div
+              className="w-2 h-2 rounded-full bg-[#00F0FF]"
+              animate={{
+                opacity: [1, 0.5, 1],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
           </div>
         </div>
       </div>

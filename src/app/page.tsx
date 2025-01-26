@@ -83,7 +83,9 @@ export default function Home() {
                 <LyricGenerator />
                 <HolographicVideo />
               </div>
-              <ChatBox />
+              <div className="h-[calc(100vh-520px)]">
+                <ChatBox />
+              </div>
             </div>
             <StatsContainer />
           </div>

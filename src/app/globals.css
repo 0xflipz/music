@@ -1247,3 +1247,70 @@ body {
     0 0 10px rgba(0, 240, 255, 0.8),
     0 0 2px rgba(255, 255, 255, 0.8);
 }
+
+/* Solana chat gradient */
+.solana-chat-gradient {
+  background: radial-gradient(
+    circle at top right,
+    rgba(153, 69, 255, 0.3) 0%,
+    rgba(0, 240, 255, 0.2) 25%,
+    rgba(153, 69, 255, 0.1) 50%,
+    transparent 75%
+  );
+}
+
+/* Custom scrollbar for chat */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(153, 69, 255, 0.1);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    rgba(153, 69, 255, 0.5),
+    rgba(0, 240, 255, 0.5)
+  );
+  border-radius: 2px;
+}
+
+/* Update message animations */
+@keyframes messageGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(153, 69, 255, 0.2);
+    border-color: rgba(153, 69, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    border-color: rgba(0, 240, 255, 0.4);
+  }
+}
+
+.message-glow {
+  animation: messageGlow 3s ease-in-out infinite;
+}
+
+/* Chat header styles */
+.chat-header-gradient {
+  background: linear-gradient(
+    to bottom,
+    rgba(153, 69, 255, 0.1),
+    rgba(0, 240, 255, 0.05)
+  );
+  border-bottom: 1px solid rgba(153, 69, 255, 0.2);
+}
+
+/* Enhance scrollbar styling */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(153, 69, 255, 0.3) rgba(0, 240, 255, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 240, 255, 0.1);
+  margin-top: 60px; /* Account for header */
+}
