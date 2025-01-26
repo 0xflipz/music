@@ -190,7 +190,7 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
   };
 
   return (
-    <div className="relative bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg">
+    <div className="relative h-[238px] w-[520px] bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
       {/* Enhanced Header */}
       <div className="absolute inset-x-0 top-0 p-2 flex items-center justify-between border-b border-[#9945FF]/20">
         <div className="flex items-center gap-2">
@@ -218,9 +218,9 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Updated to match HolographicVideo */}
       <div className="flex flex-col h-full pt-14">
-        <div className="flex-1 p-2">
+        <div className="relative flex-1 overflow-hidden p-2">
           <input
             type="text"
             value={prompt}
@@ -244,10 +244,10 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
             </button>
           </div>
 
-          {/* Generated Content */}
+          {/* Generated Content - Updated for better scrolling */}
           {lyrics && (
             <motion.div
-              className="mt-4 space-y-4"
+              className="mt-2 overflow-y-auto max-h-[110px] scrollbar-hide"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
@@ -273,9 +273,46 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
         </div>
       </div>
 
-      {/* Background Effects - Keep existing effects */}
+      {/* Add the same glow effects as HolographicVideo */}
       <motion.div
-        className="absolute inset-0 overflow-hidden"
+        className="absolute inset-0 -z-10 rounded-lg"
+        style={{
+          background: `radial-gradient(
+            circle at center,
+            rgba(153, 69, 255, 0.2) 0%,
+            rgba(0, 240, 255, 0.15) 50%,
+            transparent 70%
+          )`
+        }}
+        animate={{
+          opacity: [0.4, 0.6, 0.4]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      <motion.div
+        className="absolute inset-0 -z-20 rounded-lg opacity-20"
+        style={{
+          background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {/* Replace existing background effect with this updated one */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden -z-10"
         style={{
           background: `repeating-linear-gradient(
             90deg,
