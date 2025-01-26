@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { cn } from '@/utils/utils';
 
 interface Track {
   id: string;
@@ -77,56 +78,82 @@ export default function MusicPlayer() {
   const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="flex items-center gap-4 px-4 py-3 bg-black/80 border-t border-white/20 backdrop-blur-md">
-        <div className="flex items-center text-sm font-mono">
-          <span className="text-white">young $FLIPZ</span>
-          <span className="text-white/50 mx-2">•</span>
-          <span className="text-white/50">FLIPZ A.I.</span>
-        </div>
+    <div className="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-[#9945FF]/20 backdrop-blur-lg">
+      <div className="max-w-[1600px] mx-auto px-8 py-4">
+        <div className="flex items-center gap-6">
+          {/* Controls and Track Info */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <button className="text-[#00F0FF]/70 hover:text-[#00F0FF] transition-colors">
+                <BackwardIcon className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={togglePlay}
+                className="w-10 h-10 rounded-full bg-[#9945FF]/10 border border-[#9945FF]/30 
+                          flex items-center justify-center hover:bg-[#00F0FF]/20 transition-all"
+              >
+                {isPlaying ? (
+                  <PauseIcon className="w-5 h-5 text-[#00F0FF]" />
+                ) : (
+                  <PlayIcon className="w-5 h-5 text-[#00F0FF]" />
+                )}
+              </button>
+              <button className="text-[#00F0FF]/70 hover:text-[#00F0FF] transition-colors">
+                <ForwardIcon className="w-5 h-5" />
+              </button>
+            </div>
 
-        <div className="flex items-center gap-2">
-          <button 
-            className="text-white/70 hover:text-white transition-colors"
-            onClick={() => {/* Previous track logic */}}
-          >
-            <BackwardIcon className="w-4 h-4" />
-          </button>
-          
-          <button 
-            onClick={togglePlay}
-            className="w-8 h-8 rounded-full bg-white/10 border border-white/20 
-                     flex items-center justify-center hover:bg-white/20 transition-colors"
-          >
-            {isPlaying ? (
-              <PauseIcon className="w-4 h-4 text-white" />
-            ) : (
-              <PlayIcon className="w-4 h-4 text-white ml-0.5" />
-            )}
-          </button>
-          
-          <button 
-            className="text-white/70 hover:text-white transition-colors"
-            onClick={() => {/* Next track logic */}}
-          >
-            <ForwardIcon className="w-4 h-4" />
-          </button>
-        </div>
+            {/* Track Info */}
+            <div>
+              <div className="text-sm font-mono text-[#00F0FF]">{currentTrack.title}</div>
+              <div className="text-xs font-mono text-[#9945FF]/70">{currentTrack.artist}</div>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-3 flex-grow">
-          <div className="text-xs text-white/50 font-mono">
-            {Math.floor(currentTime / 60)}:
-            {Math.floor(currentTime % 60).toString().padStart(2, '0')}
+          {/* Progress Bar */}
+          <div className="flex-1 max-w-2xl">
+            <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+                style={{ width: `${progressPercentage}%` }}
+                animate={{
+                  boxShadow: [
+                    "0 0 10px rgba(153, 69, 255, 0.5)",
+                    "0 0 20px rgba(0, 240, 255, 0.5)",
+                    "0 0 10px rgba(153, 69, 255, 0.5)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
+            <div className="flex justify-between text-xs font-mono mt-1">
+              <span className="text-[#00F0FF]/70">
+                {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}
+              </span>
+              <span className="text-[#00F0FF]/70">{currentTrack.duration}</span>
+            </div>
           </div>
-          
-          <div className="flex-grow h-1 bg-white/10 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-white rounded-full"
-              style={{ width: `${progressPercentage}%` }}
-            />
+
+          {/* Volume Control */}
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-[#9945FF]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+            </svg>
+            <div className="w-20 h-1 bg-black/40 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+                style={{ width: '75%' }}
+                animate={{
+                  boxShadow: [
+                    "0 0 10px rgba(153, 69, 255, 0.5)",
+                    "0 0 20px rgba(0, 240, 255, 0.5)",
+                    "0 0 10px rgba(153, 69, 255, 0.5)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
           </div>
-          
-          <div className="text-xs text-white/50 font-mono">{currentTrack.duration}</div>
         </div>
       </div>
 
