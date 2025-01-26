@@ -477,26 +477,61 @@ body {
 }
 
 .cyber-button {
-  position: relative;
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    rgba(255, 255, 255, 0.05) 100%
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.1) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 0, 0, 0.1) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 0 10px rgba(255, 255, 255, 0.1),
-    inset 0 0 10px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
 }
 
 .cyber-button:hover {
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    rgba(255, 255, 255, 0.1) 100%
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.2) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 0, 0, 0.2) 100%
   );
+  border-color: rgba(255, 255, 255, 0.4);
   box-shadow: 
-    0 0 20px rgba(255, 255, 255, 0.2),
-    inset 0 0 15px rgba(255, 255, 255, 0.2);
+    0 0 20px rgba(255, 0, 0, 0.2),
+    inset 0 0 10px rgba(255, 0, 0, 0.1);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.active-cyber-button {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.3) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 0, 0, 0.3) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 0 30px rgba(255, 0, 0, 0.3),
+    inset 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+.cyber-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.cyber-button:hover::after {
+  left: 100%;
 }
 
 .cyber-input {
@@ -833,58 +868,168 @@ body {
   animation: value-update 0.3s ease-out;
 }
 
-/* Update Network Wave styling */
+/* Optimized animations and styles */
 .network-wave-enhanced {
   --wave-primary: #ff0000;
   --wave-secondary: #ffffff;
-  --wave-highlight: #ff3333;
-}
-
-/* Bar styling */
-.network-wave-enhanced rect {
-  filter: drop-shadow(0 0 8px var(--wave-primary));
-  transition: all 0.2s ease;
-}
-
-.network-wave-enhanced rect:nth-child(3n) {
-  fill: var(--wave-primary);
-}
-
-.network-wave-enhanced rect:nth-child(3n+1) {
-  fill: var(--wave-secondary);
-  opacity: 0.8; /* Slightly dim the white bars */
-}
-
-.network-wave-enhanced rect:nth-child(3n+2) {
-  fill: var(--wave-highlight);
-}
-
-/* Enhanced glow effects */
-.network-wave-enhanced rect:hover {
-  filter: drop-shadow(0 0 12px var(--wave-primary));
-}
-
-/* Pulsing animation for bars */
-@keyframes wave-pulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 8px var(--wave-primary));
-  }
-  50% {
-    filter: drop-shadow(0 0 15px var(--wave-primary));
-    opacity: 0.9;
-  }
 }
 
 .metric-glow {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-  animation: metric-pulse 2s infinite;
 }
 
-@keyframes metric-pulse {
-  0%, 100% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse {
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Remove old nav-tab styles and add these new ones */
+.neon-tab-button {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.1) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 0, 0, 0.1) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.neon-tab-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.neon-tab-button:hover::before {
+  transform: translateX(100%);
+}
+
+.neon-tab-button:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 20px rgba(255, 0, 0, 0.2),
+    inset 0 0 10px rgba(255, 0, 0, 0.1);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.neon-tab-active {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.2) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 0, 0, 0.2) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 15px rgba(255, 0, 0, 0.2),
+    inset 0 0 10px rgba(255, 0, 0, 0.1);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.neon-tab-inactive {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Add pulsing glow effect for active tab */
+@keyframes tabGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.3); }
+}
+
+.neon-tab-active {
+  animation: tabGlow 2s ease-in-out infinite;
+}
+
+/* Add these new styles for the enhanced cyber tabs */
+.cyber-tab {
+  background: rgba(20, 0, 0, 0.8);
+  box-shadow: 
+    0 0 10px rgba(255, 0, 0, 0.15),
+    inset 0 0 15px rgba(255, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+}
+
+.cyber-tab:hover {
+  box-shadow: 
+    0 0 20px rgba(255, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 0, 0, 0.1);
+}
+
+.cyber-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 0, 0, 0.1),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.cyber-tab:hover::before {
+  transform: translateX(100%);
+}
+
+.cyber-tab-inactive {
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.cyber-tab-inactive:hover {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 
+    0 0 8px rgba(255, 0, 0, 0.5),
+    0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Add new text shadow effect for inactive tabs */
+.text-shadow-red {
+  text-shadow: 
+    0 0 5px rgba(255, 0, 0, 0.3),
+    0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+/* Enhanced active state */
+.cyber-tab-active {
+  background: rgba(40, 0, 0, 0.9);
+  border-color: rgba(255, 0, 0, 0.4) !important;
+  box-shadow: 
+    0 0 25px rgba(255, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 0, 0, 0.2);
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 12px rgba(255, 0, 0, 0.5);
+}
+
+/* Enhanced pulsing animation */
+@keyframes tabPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(255, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.4);
   }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+  50% { 
+    box-shadow: 
+      0 0 30px rgba(255, 0, 0, 0.4),
+      inset 0 0 30px rgba(255, 0, 0, 0.3);
+    border-color: rgba(255, 0, 0, 0.6);
   }
 }
