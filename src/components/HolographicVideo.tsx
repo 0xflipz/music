@@ -1,106 +1,104 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { cn } from '@/utils/utils';
 
 export default function HolographicVideo() {
-  const [isHovered, setIsHovered] = useState(false);
-  const videoUrl = "/hologram.mp4"; // Add your video path here
-
   return (
-    <div className="cyber-container w-full h-[280px] relative">
+    <div className="cyber-container w-full h-[280px] relative flex flex-col">
       <div className="cyber-corner cyber-corner-tl" />
       <div className="cyber-corner cyber-corner-tr" />
       <div className="cyber-corner cyber-corner-bl" />
       <div className="cyber-corner cyber-corner-br" />
       
-      <div className="cyber-header p-3 flex items-center justify-between">
+      <div className="cyber-header p-3 flex items-center justify-between bg-black/40 border-b border-[#9945FF]/20">
         <div className="flex items-center gap-3">
           <motion.div
-            className="w-2 h-2 rounded-full bg-white"
-            animate={{ opacity: [1, 0.3, 1] }}
+            className="w-2 h-2 rounded-full bg-[#00F0FF]"
+            animate={{ 
+              opacity: [1, 0.3, 1],
+              boxShadow: [
+                "0 0 10px #00F0FF",
+                "0 0 5px #00F0FF",
+                "0 0 10px #00F0FF"
+              ]
+            }}
             transition={{ duration: 1, repeat: Infinity }}
           />
-          <span className="text-white text-sm">FLIPZ_HOLOGRAM.exe</span>
+          <span className="text-[#00F0FF] text-sm font-mono tracking-wider">FLIPZ_HOLOGRAM.exe</span>
         </div>
-        <span className="cyber-button px-2 py-0.5 text-xs text-white">
-          LIVE
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[#00F0FF] text-xs font-mono">LIVE</span>
+          <motion.div
+            className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]"
+            animate={{
+              opacity: [1, 0.5, 1],
+              scale: [1, 1.2, 1],
+              boxShadow: [
+                "0 0 10px #00F0FF",
+                "0 0 5px #00F0FF",
+                "0 0 10px #00F0FF"
+              ]
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        </div>
       </div>
 
-      <div className="relative z-10 h-[calc(280px-48px)]">
-        <div className="relative h-full overflow-hidden">
-          {/* Holographic container */}
-          <div className="absolute inset-0 z-20">
-            {/* Scan lines */}
-            <div className="absolute inset-0 bg-scan-lines opacity-10" />
-            
-            {/* Top glow */}
-            <motion.div
-              className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-white/20 to-transparent"
-              animate={{ opacity: [0.3, 0.5, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
+      <div className="relative flex-1 overflow-hidden bg-black/20">
+        {/* Scan lines effect */}
+        <div className="absolute inset-0 bg-scan-lines opacity-20 z-[1]" />
+        
+        {/* Holographic glow effect */}
+        <motion.div 
+          className="absolute inset-0 solana-glow-effect z-[2]"
+          animate={{
+            opacity: [0.6, 0.8, 0.6],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+
+        {/* Main content */}
+        <div className="relative z-[3] w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full">
+            <video
+              src="/hologram.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
             />
             
-            {/* Bottom glow */}
+            {/* Recording indicator */}
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+              <motion.div
+                className="w-2 h-2 rounded-full bg-[#FF4400]"
+                animate={{
+                  opacity: [1, 0.5, 1],
+                }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+              />
+              <span className="text-[#FF4400] text-xs font-mono">REC</span>
+            </div>
+
+            {/* Error alert overlay - conditionally rendered */}
             <motion.div
-              className="absolute inset-x-0 bottom-0 h-[100px] bg-gradient-to-t from-white/20 to-transparent"
-              animate={{ opacity: [0.3, 0.5, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            
-            {/* Side glows */}
-            <motion.div
-              className="absolute inset-y-0 left-0 w-[50px] bg-gradient-to-r from-white/20 to-transparent"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute inset-y-0 right-0 w-[50px] bg-gradient-to-l from-white/20 to-transparent"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 4, repeat: Infinity, repeatDelay: 8 }}
+            >
+              <div className="text-[#FF4400] text-2xl font-bold font-mono tracking-wider">
+                ERROR_ALERT
+              </div>
+            </motion.div>
           </div>
-
-          {/* Video element */}
-          <video
-            className="relative z-10 w-full h-full object-cover mix-blend-screen"
-            src={videoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline // Add this for better mobile support
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          />
-
-          {/* Holographic overlay effects */}
-          <motion.div
-            className="absolute inset-0 z-30 mix-blend-overlay bg-gradient-to-b from-white/5 via-transparent to-white/5"
-            animate={{
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-
-          {/* Border glow effect */}
-          <motion.div
-            className="absolute inset-0 z-40 border border-white/20"
-            animate={{
-              boxShadow: isHovered 
-                ? [
-                    'inset 0 0 15px rgba(255,255,255,0.2), 0 0 30px rgba(255,255,255,0.2)',
-                    'inset 0 0 30px rgba(255,255,255,0.4), 0 0 50px rgba(255,255,255,0.3)',
-                    'inset 0 0 15px rgba(255,255,255,0.2), 0 0 30px rgba(255,255,255,0.2)'
-                  ]
-                : [
-                    'inset 0 0 10px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.1)',
-                    'inset 0 0 20px rgba(255,255,255,0.2), 0 0 30px rgba(255,255,255,0.2)',
-                    'inset 0 0 10px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.1)'
-                  ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
         </div>
       </div>
     </div>
