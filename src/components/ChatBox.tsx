@@ -3,13 +3,48 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/utils/utils';
+import NetworkWave from './NetworkWave';
+
+// Add FLIPZ_RESPONSES object
+const FLIPZ_RESPONSES = {
+  greeting: [
+    "Yo, FLIPZ A.I. in the building! What's good?",
+    "Welcome to the future of music. How can I assist?",
+    "FLIPZ A.I. online. Ready to create some heat?",
+    "System initialized. Let's make something legendary."
+  ],
+  music: [
+    "That beat is straight fire! 🔥",
+    "We cooking up something special!",
+    "The neural flow is strong with this one.",
+    "These frequencies are hitting different!"
+  ],
+  default: [
+    "I got you fam, let's make it happen!",
+    "Processing that through the neural matrix...",
+    "Analyzing the frequencies...",
+    "Running it through the algorithm..."
+  ],
+  analysis: [
+    "Analyzing beat patterns...",
+    "Processing audio frequencies...",
+    "Running neural analysis...",
+    "Calculating rhythm metrics..."
+  ],
+  beats: [
+    "Generating neural patterns...",
+    "Synthesizing frequencies...",
+    "Creating beat structure...",
+    "Optimizing sound waves..."
+  ]
+};
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'flipz';
   timestamp: Date;
-  type?: 'text' | 'beat' | 'analysis' | 'system'; // New message types
+  type?: 'system' | 'analysis' | 'beat';
   beatData?: {
     bpm: number;
     key: string;
@@ -21,30 +56,6 @@ interface Message {
     mood: string;
   };
 }
-
-// Enhanced FLIPZ AI responses
-const FLIPZ_RESPONSES = {
-  greeting: [
-    "Yo! Ready to drop some beats?",
-    "Welcome to the future of music. What's on your mind?",
-    "FLIPZ AI online. How can I assist you today?",
-  ],
-  beats: [
-    "Analyzing your beat pattern... BPM matches current trends 🎵",
-    "I can help modify that rhythm to hit harder 🔊",
-    "Let me run that through the neural mixer...",
-  ],
-  analysis: [
-    "Breaking down the sonic elements...",
-    "Running genre classification algorithms...",
-    "Detecting key harmonic patterns...",
-  ],
-  suggestions: [
-    "Try adding some neural-enhanced 808s to that pattern",
-    "I'm detecting space for a counter-melody around bar 16",
-    "The wave analysis suggests room for more sub-bass",
-  ]
-};
 
 export default function ChatBox() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -69,12 +80,16 @@ export default function ChatBox() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const generateFlipzResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-    if (input.includes('music') || input.includes('beat') || input.includes('song')) {
-      return FLIPZ_RESPONSES.music[Math.floor(Math.random() * FLIPZ_RESPONSES.music.length)];
+  const generateFlipzResponse = () => {
+    // Add null check before accessing length
+    if (!FLIPZ_RESPONSES.music || !FLIPZ_RESPONSES.default) {
+      return "I'm here to help!"; // Fallback response
     }
-    return FLIPZ_RESPONSES.default[Math.floor(Math.random() * FLIPZ_RESPONSES.default.length)];
+
+    // Use optional chaining to safely access properties
+    return Math.random() > 0.5
+      ? FLIPZ_RESPONSES.music?.[Math.floor(Math.random() * FLIPZ_RESPONSES.music.length)] 
+      : FLIPZ_RESPONSES.default?.[Math.floor(Math.random() * FLIPZ_RESPONSES.default.length)];
   };
 
   const sendMessage = async () => {
@@ -93,7 +108,7 @@ export default function ChatBox() {
 
     // FLIPZ AI response
     setTimeout(() => {
-      const flipzResponse = generateFlipzResponse(input);
+      const flipzResponse = generateFlipzResponse();
       const flipzMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: flipzResponse,
@@ -181,130 +196,131 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="relative h-full rounded-lg border border-white/20 bg-black/40 p-4">
-      <div className="absolute inset-0 solana-chat-gradient opacity-20" />
-      
-      {/* Header with integrated quick actions */}
-      <div className="sticky top-0 z-20 -mt-4 -mx-4 px-4 py-2 bg-black/80 border-b border-[#9945FF]/20 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-mono text-white">FLIPZ_AI.exe</span>
-            <span className="px-1.5 py-0.5 text-xs bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
-              ONLINE
-            </span>
-            
-            {/* Quick Actions integrated in header */}
-            <div className="flex gap-1.5 ml-3">
-              {quickActions.map((action) => (
-                <motion.button
-                  key={action.id}
-                  onClick={() => handleQuickAction(action.id)}
-                  disabled={isAnalyzing}
-                  className={cn(
-                    "px-2 py-0.5 rounded",
-                    "bg-black/40 backdrop-blur-sm",
-                    "border border-[#9945FF]/30",
-                    "text-[10px] text-white/80",
-                    "hover:border-[#00F0FF]/40",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "flex items-center gap-1",
-                    activeFeature === action.id && "border-[#00F0FF] bg-[#00F0FF]/10"
-                  )}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="text-xs">{action.icon}</span>
-                  <span className="tracking-wide">{action.label}</span>
-                </motion.button>
-              ))}
-            </div>
+    <div className="relative bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg h-[400px]">
+      {/* Enhanced Header */}
+      <div className="absolute inset-x-0 top-0 p-2 flex items-center border-b border-[#9945FF]/20">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-white tracking-wider font-mono">FLIPZ_AI.exe</span>
+          <div className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_8px_rgba(0,240,255,0.6)]"></div>
+          <div className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+            ONLINE
           </div>
           
-          <motion.div 
-            className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]"
-            animate={{
-              opacity: [1, 0.5, 1],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          {/* Quick Actions - Moved here */}
+          <div className="flex items-center gap-2 ml-2">
+            {quickActions.map((action) => (
+              <button
+                key={action.id}
+                onClick={() => handleQuickAction(action.id)}
+                className="px-2 py-0.5 text-[10px] bg-black/40 rounded border border-[#9945FF]/30 text-[#00F0FF] hover:bg-[#9945FF]/20 transition-colors"
+              >
+                <span className="mr-1">{action.icon}</span>
+                {action.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Chat messages */}
-      <div className="h-[calc(100%-100px)] flex flex-col space-y-4 overflow-y-auto custom-scrollbar mt-4">
-        {messages.map((message, index) => (
-          <motion.div
-            key={message.id}
-            className="flex justify-start"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-          >
-            <div className={cn(
-              "rounded-lg p-3 relative max-w-[80%]",
-              message.sender === 'user' 
-                ? "bg-gradient-to-r from-[#FF4400]/20 to-[#FF8800]/20 border-[#FF4400]/30"
-                : "bg-gradient-to-r from-[#9945FF]/20 to-[#00F0FF]/20 border-[#9945FF]/30",
-              "border shadow-[0_0_15px_rgba(153,69,255,0.2)]"
-            )}>
-              <div className="text-sm text-white/90">{message.text}</div>
-              {message.type === 'beat' && <BeatAnalysis />}
-              {message.type === 'analysis' && (
-                <div className="mt-2 text-xs text-[#00F0FF]/70">
-                  <div>Confidence: {message.analysisData?.confidence}%</div>
-                  <div>Genre: {message.analysisData?.genre}</div>
-                  <div>Mood: {message.analysisData?.mood}</div>
-                </div>
-              )}
-              <div className="mt-1 text-xs text-[#00F0FF]/70">
-                {message.timestamp.toLocaleTimeString()}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-        <div ref={messagesEndRef} />
+      {/* Status Indicators */}
+      <div className="absolute top-2 right-2 flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] text-white">STATUS</span>
+          <div className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+            {isAnalyzing ? 'PROCESSING' : 'READY'}
+          </div>
+        </div>
       </div>
 
-      {/* Input area */}
-      <div className="absolute bottom-4 left-4 right-4">
-        <div className="relative">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder={isAnalyzing ? "Analyzing beat patterns..." : "Chat with FLIPZ AI..."}
-            className={cn(
-              "w-full px-4 py-2 rounded-lg",
-              "bg-black/60 backdrop-blur-sm",
-              "border border-[#9945FF]/40",
-              "text-white placeholder-white/50",
-              "focus:outline-none focus:border-[#00F0FF]/60",
-              "transition-colors duration-200"
-            )}
-            disabled={isAnalyzing}
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            {isAnalyzing ? (
-              <motion.div
-                className="w-2 h-2 rounded-full bg-[#FF4400]"
-                animate={{
-                  opacity: [1, 0.5, 1],
-                  scale: [1, 1.2, 1],
-                }}
-                transition={{ duration: 0.8, repeat: Infinity }}
-              />
-            ) : (
-              <motion.div
-                className="w-2 h-2 rounded-full bg-[#00F0FF]"
-                animate={{
-                  opacity: [1, 0.5, 1],
-                  scale: [1, 1.2, 1],
-                }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            )}
+      {/* Background effects remain the same */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden"
+        style={{
+          background: `repeating-linear-gradient(
+            90deg,
+            transparent,
+            rgba(153, 69, 255, 0.1) 1px,
+            transparent 2px
+          )`
+        }}
+        animate={{
+          x: [-10, 10],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+
+      {/* Chat content area - adjusted padding for new header */}
+      <div className="flex flex-col h-full pt-14"> {/* Increased from pt-7 to pt-14 */}
+        <div className="flex-1 overflow-y-auto px-2 py-0.5 space-y-0.5 scrollbar-hide">
+          {messages.map((message, index) => (
+            <motion.div
+              key={message.id}
+              className="flex justify-start"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
+              <div className={cn(
+                "rounded-lg p-0.5", // Reduced from p-1 to p-0.5
+                message.sender === 'user' 
+                  ? "bg-gradient-to-r from-[#FF4400]/20 to-[#FF8800]/20 border-[#FF4400]/30"
+                  : "bg-gradient-to-r from-[#9945FF]/20 to-[#00F0FF]/20 border-[#9945FF]/30",
+                "border shadow-[0_0_15px_rgba(153,69,255,0.2)]"
+              )}>
+                <div className="text-xs text-white/90">{message.text}</div>
+                {message.type === 'beat' && <BeatAnalysis />}
+                {message.type === 'analysis' && (
+                  <div className="mt-1 text-[10px] text-[#00F0FF]/70">
+                    <div>Confidence: {message.analysisData?.confidence}%</div>
+                    <div>Genre: {message.analysisData?.genre}</div>
+                    <div>Mood: {message.analysisData?.mood}</div>
+                  </div>
+                )}
+                <div className="mt-0.5 text-[10px] text-[#00F0FF]/70">
+                  {message.timestamp.toLocaleTimeString()}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        {/* Enhanced input area */}
+        <div className="border-t border-[#9945FF]/20 p-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+              className="flex-1 bg-black/40 border border-[#9945FF]/20 rounded px-3 py-1.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#9945FF]/40"
+              placeholder="Chat with FLIPZ AI..."
+            />
+            <div className="flex items-center gap-2">
+              {isAnalyzing ? (
+                <motion.div
+                  className="w-2 h-2 rounded-full bg-[#9945FF]"
+                  animate={{
+                    opacity: [1, 0.5, 1],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                />
+              ) : (
+                <motion.div
+                  className="w-2 h-2 rounded-full bg-[#00F0FF]"
+                  animate={{
+                    opacity: [1, 0.5, 1],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
