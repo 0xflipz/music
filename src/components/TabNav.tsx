@@ -17,16 +17,18 @@ export default function TabNav() {
   const [hoveredTab, setHoveredTab] = React.useState<string | null>(null);
   
   return (
-    <div className="flex items-center gap-6 h-[45px]">
-      <Image
-        src="/logo.png"
-        alt="FLIPZ Logo"
-        width={280}
-        height={280}
-        className="object-contain -ml-2"
-        priority
-      />
-      <div className="flex gap-3">
+    <div className="flex items-center gap-4 h-[45px] px-4">
+      <div className="flex-shrink-0 w-[180px]">
+        <Image
+          src="/logo.png"
+          alt="FLIPZ Logo"
+          width={180}
+          height={180}
+          className="object-contain"
+          priority
+        />
+      </div>
+      <div className="flex gap-3 ml-4">
         {tabs.map((tab) => (
           <motion.button
             key={tab.id}
@@ -36,64 +38,50 @@ export default function TabNav() {
             className={cn(
               "cyber-tab relative px-6 py-2.5",
               "font-mono text-sm tracking-wider",
-              "border border-red-500/30 backdrop-blur-sm",
+              "border border-[#9945FF]/40 backdrop-blur-sm",
               "transition-all duration-300 ease-out",
-              "hover:border-red-500/60",
-              "before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-950/50 before:via-black/90 before:to-red-950/50",
-              activeTab === tab.id ? "cyber-tab-active" : "cyber-tab-inactive"
+              "hover:border-[#00F0FF]/80",
+              activeTab === tab.id ? "cyber-tab-active solana-header-active" : "cyber-tab-inactive"
             )}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {/* Text content with enhanced visibility */}
             <span className={cn(
-              "relative z-10",
+              "relative z-20",
               "transition-all duration-300",
-              activeTab !== tab.id && "text-shadow-red"
+              "text-white font-bold",
+              "text-shadow-solana-bright",
+              activeTab === tab.id ? "text-white" : "text-white/90"
             )}>
               {tab.label}
             </span>
             
-            {/* Ambient background glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-red-900/10 via-red-800/5 to-red-900/10" />
+            <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#9945FF]/20 via-[#00F0FF]/10 to-[#9945FF]/20" />
             
-            {/* Enhanced hover effect */}
             <div className={cn(
-              "absolute inset-0 transition-all duration-300",
-              "bg-gradient-to-r from-red-500/10 via-white/5 to-red-500/10",
+              "absolute inset-0 z-[2] transition-all duration-300",
+              "bg-gradient-to-r from-[#9945FF]/30 via-[#00F0FF]/20 to-[#9945FF]/30",
               hoveredTab === tab.id ? "opacity-100" : "opacity-0"
             )} />
-            
-            {/* Corner accents */}
-            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-red-500/40" />
-            <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-red-500/40" />
-            <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-red-500/40" />
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-red-500/40" />
             
             {activeTab === tab.id && (
               <>
                 <motion.div
                   layoutId="activeTabBg"
-                  className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-red-400/10 to-red-500/20"
+                  className="absolute inset-0 z-[3] solana-button-glow"
                   transition={{ type: "spring", duration: 0.5 }}
                 />
                 
                 <motion.div
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-[4]"
                   animate={{
-                    opacity: [1, 0.3, 1],
+                    opacity: [1, 0.5, 1],
                     scale: [1, 1.2, 1],
                   }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_12px_rgba(153,69,255,0.9)]" />
                 </motion.div>
-                
-                <motion.div
-                  layoutId="activeTabBorder"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-500 via-white to-red-500"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
               </>
             )}
           </motion.button>

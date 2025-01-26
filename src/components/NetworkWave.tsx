@@ -15,85 +15,64 @@ const NetworkWave = ({ total = 300, columns = 48, rows = 24, className }: Networ
   const [bars, setBars] = useState<number[]>([]);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Optimized wave generation with reduced calculations
+  // Optimized wave generation with memoized calculation
   const generateWave = useCallback(() => {
-    const time = Date.now() / 2000; // Slower animation
-    return Array.from({ length: columns }, (_, i) => {
+    const time = Date.now() / 2500; // Slower animation for better performance
+    const baseWave = new Array(columns).fill(0);
+    return baseWave.map((_, i) => {
       const wave = Math.sin((i / columns) * Math.PI * 2 + time) * 0.5;
-      const noise = Math.random() * 0.15; // Reduced noise
+      const noise = Math.random() * 0.1; // Reduced noise
       return Math.min(rows, Math.max(2, Math.floor((wave + 1) * rows * 0.5 + noise * rows)));
     });
   }, [columns, rows]);
 
+  // Reduced update frequency
   useEffect(() => {
-    const interval = setInterval(() => setBars(generateWave()), isHovered ? 100 : 200); // Reduced update frequency
+    const interval = setInterval(() => setBars(generateWave()), isHovered ? 150 : 250);
     return () => clearInterval(interval);
   }, [generateWave, isHovered]);
 
-  const getBarColor = (height: number) => {
-    const ratio = height / rows;
-    // Heat-themed aggressive color variations
-    if (ratio > 0.8) return "bg-gradient-to-t from-red-600 to-[#ff0000] shadow-red-500/50";
-    if (ratio > 0.6) return "bg-gradient-to-t from-orange-500 to-[#ff4400] shadow-orange-500/50";
-    if (ratio > 0.4) return "bg-gradient-to-t from-yellow-500 to-[#ffaa00] shadow-yellow-500/50";
-    return "bg-gradient-to-t from-yellow-300 to-[#ffdd00] shadow-yellow-400/50";
-  };
+  // Memoized color getter
+  const getBarColor = useCallback((ratio: number) => {
+    if (ratio > 0.8) return "bg-gradient-to-t from-red-600 to-[#ff0000]";
+    if (ratio > 0.6) return "bg-gradient-to-t from-orange-500 to-[#ff4400]";
+    return "bg-gradient-to-t from-red-500 to-[#ff0000]";
+  }, []);
 
   return (
     <div 
       className={cn(
-        "flex justify-between h-32 items-end gap-0.5 px-4",
+        "flex h-32 items-end gap-[1px] px-4",
         "relative mx-2",
-        "before:absolute before:inset-0 before:border before:border-red-500/20 before:rounded-lg",
+        "before:absolute before:inset-0 before:border before:border-white/20 before:rounded-lg",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <AnimatePresence mode="sync">
-        {bars.map((height, i) => {
-          const ratio = height / rows;
-          return (
-            <div 
-              key={i} 
-              className="flex flex-col gap-0.5 justify-end"
-              style={{
-                width: `${100 / columns}%`,
-                minWidth: '2px'
-              }}
-            >
-              {Array.from({ length: height }).map((_, j) => (
-                <motion.div
-                  key={j}
-                  initial={false}
-                  animate={{ 
-                    height: isHovered ? "4px" : "3px",
-                    scale: isHovered ? [1, 1.1, 1] : 1,
-                  }}
-                  transition={{
-                    scale: {
-                      repeat: Infinity,
-                      duration: 0.5
-                    }
-                  }}
-                  className={cn(
-                    "rounded-full",
-                    getBarColor(height),
-                    "backdrop-blur-sm",
-                    "shadow-lg",
-                    isHovered ? "w-full" : "w-full",
-                    "relative",
-                    "after:absolute after:inset-0 after:opacity-40 after:blur-sm",
-                    ratio > 0.8 ? "after:bg-red-500" : 
-                    ratio > 0.6 ? "after:bg-white" : 
-                    "after:bg-red-500"
-                  )}
-                />
-              ))}
-            </div>
-          );
-        })}
-      </AnimatePresence>
+      {bars.map((height, i) => {
+        const ratio = height / rows;
+        return (
+          <div 
+            key={i} 
+            className="flex-1 min-w-[2px] flex flex-col gap-[1px] justify-end"
+          >
+            {Array.from({ length: height }).map((_, j) => (
+              <div
+                key={j}
+                style={{ height: isHovered ? 4 : 3 }}
+                className={cn(
+                  "rounded-full w-full",
+                  getBarColor(ratio),
+                  "shadow-lg relative",
+                  ratio > 0.6 ? "after:bg-white/40" : "after:bg-red-500/40",
+                  "after:absolute after:inset-0 after:blur-[1px]"
+                )}
+              />
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

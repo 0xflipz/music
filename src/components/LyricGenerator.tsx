@@ -56,74 +56,69 @@ Where human art and machine transcends`);
   };
 
   return (
-    <div className="w-full h-[280px] relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0ff]/0 via-[#0ff]/5 to-[#0ff]/0" />
+    <div className="cyber-container w-full h-[280px] relative flex flex-col">
+      <div className="cyber-corner cyber-corner-tl" />
+      <div className="cyber-corner cyber-corner-tr" />
+      <div className="cyber-corner cyber-corner-bl" />
+      <div className="cyber-corner cyber-corner-br" />
       
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="sticky top-0 bg-black p-3 border-b border-[#0ff]/15 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <motion.div
-              className="w-2 h-2 rounded-full bg-[#0ff]"
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            />
-            <span className="terminal-text-primary text-sm">FLIPZ_LYRIC_GENERATOR.exe</span>
-          </div>
-          
-          <select
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-            className="bg-black/30 border border-[#0ff]/20 rounded px-2 py-1
-                     text-[#0ff] font-mono text-xs focus:outline-none
-                     focus:border-[#0ff]/50"
+      <div className="cyber-header p-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <motion.div
+            className="w-2 h-2 rounded-full bg-white"
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+          <span className="text-white text-sm">FLIPZ_LYRIC_GENERATOR.exe</span>
+        </div>
+        <select
+          value={selectedGenre}
+          onChange={(e) => setSelectedGenre(e.target.value)}
+          className="cyber-input bg-black/30 text-white text-sm px-2 py-1 rounded focus:outline-none"
+        >
+          {GENRES.map(genre => (
+            <option key={genre} value={genre}>{genre}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col flex-1 p-3 space-y-2 overflow-hidden">
+        <div className="flex gap-3 shrink-0">
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Enter your lyric theme or concept..."
+            className="cyber-input w-full p-2 h-[50px] text-white text-sm placeholder:text-white/30 focus:outline-none resize-none"
+          />
+          <button
+            onClick={generateLyrics}
+            disabled={generating || !prompt}
+            className="cyber-button px-3 py-2 text-white text-sm disabled:opacity-50 whitespace-nowrap"
           >
-            {GENRES.map(genre => (
-              <option key={genre} value={genre}>{genre}</option>
-            ))}
-          </select>
+            {generating ? (
+              <div className="flex items-center gap-2">
+                <motion.div
+                  className="w-2 h-2 rounded-full bg-white"
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 0.5, repeat: Infinity }}
+                />
+                <span>GENERATING...</span>
+              </div>
+            ) : (
+              'GENERATE'
+            )}
+          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-3">
-          <div className="flex gap-3">
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your lyric theme or concept..."
-              className="flex-1 h-16 bg-black/20 border border-[#0ff]/15 rounded-lg p-2
-                       text-white font-mono text-sm placeholder:text-white/20
-                       focus:outline-none focus:border-[#0ff]/30 resize-none"
-            />
-            <button
-              onClick={generateLyrics}
-              disabled={generating || !prompt}
-              className="px-4 bg-[#0ff]/5 border border-[#0ff]/15 rounded-lg
-                       text-[#0ff] font-mono text-sm hover:bg-[#0ff]/10 
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       whitespace-nowrap h-16 flex items-center justify-center"
-            >
-              {generating ? (
-                <div className="flex items-center gap-2">
-                  <motion.div
-                    className="w-2 h-2 rounded-full bg-[#0ff]"
-                    animate={{ opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 0.5, repeat: Infinity }}
-                  />
-                  <span>GENERATING...</span>
-                </div>
-              ) : (
-                'GENERATE'
-              )}
-            </button>
-          </div>
-
+        <div className="flex-1 overflow-y-auto min-h-0 max-h-[160px]">
           {lyrics ? (
-            <div className="bg-black/30 border border-[#0ff]/20 rounded-lg p-3">
+            <div className="bg-black/30 border border-white/20 rounded-lg p-3">
               <pre className="font-mono text-white text-sm whitespace-pre-wrap">{lyrics}</pre>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="h-full flex items-center justify-center">
               <motion.div 
-                className="text-[#0ff]/50 font-mono text-sm"
+                className="text-white/50 font-mono text-sm"
                 animate={{ opacity: [0.5, 0.3, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >

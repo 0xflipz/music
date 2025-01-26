@@ -1,15 +1,28 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import React, { Suspense } from "react";
 import dynamic from 'next/dynamic';
 import TabNav from "@/components/TabNav";
-import MusicPlayer from "@/components/MusicPlayer";
-import LyricGenerator from "@/components/LyricGenerator";
-import ChatBox from "@/components/ChatBox";
-import HolographicVideo from "@/components/HolographicVideo";
 import LoadingAvatar from "@/components/LoadingAvatar";
+import Image from "next/image";
+
+// Lazy load less critical components
+const MusicPlayer = dynamic(() => import('@/components/MusicPlayer'), {
+  ssr: false,
+  loading: () => <div className="h-[80px] bg-black/20" />
+});
+
+const LyricGenerator = dynamic(() => import('@/components/LyricGenerator'), {
+  loading: () => <div className="h-[280px] bg-black/20" />
+});
+
+const ChatBox = dynamic(() => import('@/components/ChatBox'), {
+  loading: () => <div className="h-[280px] bg-black/20" />
+});
+
+const HolographicVideo = dynamic(() => import('@/components/HolographicVideo'), {
+  loading: () => <div className="h-[280px] bg-black/20" />
+});
 
 const StatsContainer = dynamic(() => import('@/components/StatsContainer'), {
   ssr: false,
@@ -53,7 +66,7 @@ const CalibrationText = () => {
 
 export default function Home() {
   return (
-    <main className="h-screen p-1 pl-8 relative pt-[80px] pb-[80px]">
+    <main className="h-screen p-1 pl-8 relative pt-[100px] pb-[80px]">
       <div className="fixed top-0 left-0 right-0 z-50 bg-black/95 px-8 pt-6 pb-4">
         <div className="max-w-[1600px] mx-0">
           <TabNav />
@@ -62,24 +75,21 @@ export default function Home() {
       
       <LoadingAvatar />
       
-      <div className="max-w-[1600px] mx-0">
-        <div className="grid grid-cols-[1fr_400px] gap-6 mt-4">
-          <div className="space-y-6">
-            <div className="grid grid-cols-[1fr_300px] gap-6">
-              <div>
+      <Suspense fallback={<div className="h-screen bg-black/20" />}>
+        <div className="max-w-[1600px] mx-0">
+          <div className="grid grid-cols-[1fr_400px] gap-8">
+            <div className="space-y-4">
+              <div className="grid grid-cols-[1.5fr_1fr] gap-8 h-[280px] mt-4">
                 <LyricGenerator />
-              </div>
-              <div>
                 <HolographicVideo />
               </div>
-            </div>
-            <div className="col-span-1">
               <ChatBox />
             </div>
+            <StatsContainer />
           </div>
-          <StatsContainer />
         </div>
-      </div>
+      </Suspense>
+      
       <MusicPlayer />
     </main>
   );

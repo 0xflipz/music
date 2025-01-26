@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "./ui/card";
 import { cn } from "@/utils/utils";
@@ -69,38 +69,71 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
   );
 };
 
-interface LiveStatBarProps {
-  value: number;
-  max?: number;
-  label: string;
-  className?: string;
-}
+// Add this function at the top
+const generateRandomFluctuation = (baseValue: number, range: number = 2) => {
+  return Math.min(100, Math.max(0, baseValue + (Math.random() - 0.5) * range));
+};
 
-const LiveStatBar = ({ value, max = 100, label, className }: LiveStatBarProps) => {
+// Add this utility function at the top
+const generateFluctuation = (baseValue: number, range: number = 3) => {
+  return Math.min(100, Math.max(0, baseValue + (Math.random() - 0.5) * range));
+};
+
+const LiveStatBar = ({ value: initialValue, label, className }: { value: number; label: string; className?: string }) => {
+  const [value, setValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setValue(prev => generateFluctuation(initialValue));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [initialValue]);
+
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <span className="text-xs font-mono text-[#0ff] tracking-[0.3em] opacity-90">{label}</span>
-        <span className="text-xs font-mono text-[#0ff] font-bold">{value}%</span>
+        <span className="text-sm font-mono tracking-wider text-white cyber-flicker">{label}</span>
+        <span className="text-sm font-mono text-white cyber-flicker">{value.toFixed(1)}%</span>
       </div>
       <div className={cn(
-        "relative h-1.5 bg-black/60 rounded-sm overflow-hidden border border-[#0ff]/10",
-        "before:absolute before:inset-0 before:bg-black/40 before:backdrop-blur-sm",
+        "h-2 bg-black/40 rounded-sm overflow-hidden",
+        "border border-blue-500/30",
+        "relative shadow-[0_0_15px_rgba(0,157,255,0.3)]",
         className
       )}>
         <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#0ff]/90 via-[#0ff] to-[#0ff]/80"
-          initial={{ width: 0 }}
-          animate={{ width: `${(value / max) * 100}%` }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0ff]/20 to-transparent"
-          animate={{
-            x: [-20, 20, -20],
-            opacity: [0.5, 0.8, 0.5]
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600"
+          animate={{ 
+            width: `${value}%`,
+            transition: { duration: 1, ease: "easeInOut" }
           }}
-          transition={{ duration: 2, repeat: Infinity }}
+        />
+        
+        {/* Pulsing glow effect */}
+        <motion.div
+          className="absolute inset-0 bg-blue-500/10"
+          animate={{
+            opacity: [0.1, 0.3, 0.1],
+          }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+
+        {/* Scanning line */}
+        <motion.div
+          className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"
+          animate={{
+            x: ['-100%', '100%'],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear"
+          }}
         />
       </div>
     </div>
@@ -194,48 +227,25 @@ const InitializationSequence = () => {
   );
 };
 
-// Add these utility functions at the top
+// Memoized components
+const AnimatedMetric = memo(({ label, value, unit = '' }: { label: string, value: string, unit?: string }) => (
+  <div className="flex flex-col">
+    <span className="text-white/60 mb-1 text-xs tracking-wider">{label}</span>
+    <span className="text-white font-bold metric-glow">
+      {value}{unit}
+    </span>
+  </div>
+));
+
+AnimatedMetric.displayName = 'AnimatedMetric';
+
+// Optimized random value generator
 const generateRandomValue = (min: number, max: number, decimals = 0) => {
-  const value = Math.random() * (max - min) + min;
+  const value = min + Math.random() * (max - min);
   return Number(value.toFixed(decimals));
 };
 
-// Add this interface
-interface CookingHeatMetrics {
-  bpm: number;
-  peak: number;
-  intensity: number;
-  frequency: number;
-  amplitude: number;
-  saturation: number;
-}
-
-// Add this component
-const AnimatedMetric = ({ label, value, unit = '' }: { label: string, value: string, unit?: string }) => (
-  <div className="flex flex-col">
-    <motion.span 
-      className="text-white/60 mb-1 text-xs tracking-wider"
-      animate={{ opacity: [0.6, 0.8, 0.6] }}
-      transition={{ duration: 2, repeat: Infinity }}
-    >
-      {label}
-    </motion.span>
-    <motion.span 
-      className="text-white font-bold"
-      animate={{ 
-        textShadow: [
-          "0 0 10px rgba(255,255,255,0.5)",
-          "0 0 20px rgba(255,255,255,0.8)",
-          "0 0 10px rgba(255,255,255,0.5)"
-        ]
-      }}
-      transition={{ duration: 1.5, repeat: Infinity }}
-    >
-      {value}{unit}
-    </motion.span>
-  </div>
-);
-
+// Main component optimization
 export default function StatsContainer() {
   const [metrics, setMetrics] = useState(() => ({
     price: "$1.247",
@@ -257,6 +267,10 @@ export default function StatsContainer() {
     return () => clearInterval(interval);
   }, []);
 
+  // Memoized value generators
+  const getBPM = useCallback(() => generateRandomValue(138, 145), []);
+  const getPeak = useCallback(() => generateRandomValue(95, 99), []);
+  
   return (
     <motion.div
       className="fixed top-0 right-0 w-[400px] h-screen z-50"
@@ -298,7 +312,7 @@ export default function StatsContainer() {
 
           <SystemStats />
           
-          <Card variant="quantum" className="p-6 relative overflow-hidden border-[#ff4400]/30 bg-black/40">
+          <Card variant="quantum" className="p-6 relative overflow-hidden border-white/20 bg-black/40">
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/10 via-transparent to-[#ff0000]/10"
               animate={{
@@ -314,27 +328,16 @@ export default function StatsContainer() {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-white/60">BPM</span>
-                    <span className="text-xs font-mono text-white">{generateRandomValue(138, 145)}</span>
+                    <span className="text-xs font-mono text-white">{getBPM()}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-white/60">PEAK</span>
-                    <span className="text-xs font-mono text-white">{generateRandomValue(95, 99)}%</span>
+                    <span className="text-xs font-mono text-white">{getPeak()}%</span>
                   </div>
-                  <motion.div className="flex items-center gap-2">
-                    <motion.div
-                      className="w-1 h-1 rounded-full bg-[#ff0000]"
-                      animate={{
-                        scale: [1, 0.8, 1],
-                        boxShadow: [
-                          "0 0 10px #ff0000",
-                          "0 0 5px #ff0000",
-                          "0 0 10px #ff0000"
-                        ]
-                      }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    />
-                    <span className="text-[10px] font-mono text-white tracking-wider">LIVE</span>
-                  </motion.div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-mono text-white">LIVE</span>
+                  </div>
                 </div>
               </div>
               
@@ -362,10 +365,10 @@ export default function StatsContainer() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-lg overflow-hidden bg-black/40 border border-red-500/20">
+            <div className="mt-4 rounded-lg overflow-hidden bg-black/40 border border-white/20">
               <NetworkWave 
                 total={300} 
-                columns={48} 
+                columns={48}
                 rows={24}
                 className="network-wave-enhanced"
               />
@@ -373,12 +376,12 @@ export default function StatsContainer() {
           </Card>
 
           <div className="space-y-6">
-            <LiveStatBar value={94} label="NEURAL_HARMONY" className="glow-bar" />
-            <LiveStatBar value={67} label="BEATS_ANALYZED" className="glow-bar" />
-            <LiveStatBar value={88} label="RHYTHM_SYNC" className="glow-bar" />
-            <LiveStatBar value={96} label="AI_FLOW" className="glow-bar" />
-            <LiveStatBar value={82} label="NEURAL_SYNC" className="glow-bar" />
-            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="glow-bar" />
+            <LiveStatBar value={94} label="NEURAL_HARMONY" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={67} label="BEATS_ANALYZED" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={88} label="RHYTHM_SYNC" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={96} label="AI_FLOW" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={82} label="NEURAL_SYNC" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
           </div>
 
           <InitializationSequence />
