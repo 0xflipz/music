@@ -8,6 +8,8 @@ import TabNav from "@/components/TabNav";
 import MusicPlayer from "@/components/MusicPlayer";
 import LyricGenerator from "@/components/LyricGenerator";
 import ChatBox from "@/components/ChatBox";
+import HolographicVideo from "@/components/HolographicVideo";
+import LoadingAvatar from "@/components/LoadingAvatar";
 
 const StatsContainer = dynamic(() => import('@/components/StatsContainer'), {
   ssr: false,
@@ -51,52 +53,33 @@ const CalibrationText = () => {
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between relative pb-20">
-      {/* Stats Container */}
-      <StatsContainer />
-
-      {/* Logo and Navigation Container - Stays high */}
-      <motion.div 
-        className="fixed -top-6 left-8 z-50 flex flex-row items-center gap-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Logo and TabNav remain unchanged */}
-        <div className="relative w-[200px] z-[51]">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={200}
-            height={270}
-            className="w-auto h-auto object-contain"
-            priority
-          />
+    <main className="h-screen p-1 pl-8 relative pt-[80px] pb-[80px]">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-black/95 px-8 pt-6 pb-4">
+        <div className="max-w-[1600px] mx-0">
+          <TabNav />
         </div>
-        <TabNav />
-      </motion.div>
-
-      {/* Main Content Area - Adjusted positioning */}
-      <div className="fixed left-8 top-32 flex flex-col gap-8 w-[600px]">
-        <LyricGenerator />
-        <ChatBox />
       </div>
-
-      {/* Rest of the components */}
-      <motion.div 
-        className="fixed -right-[100px] bottom-0 w-[1000px] z-[100]"
-      >
-        <div className="relative flex items-end justify-center">
-          <Image
-            src="/loadingavatar.png"
-            alt="Loading Avatar"
-            width={800}
-            height={800}
-            className="w-auto h-auto object-contain"
-          />
+      
+      <LoadingAvatar />
+      
+      <div className="max-w-[1600px] mx-0">
+        <div className="grid grid-cols-[1fr_400px] gap-6 mt-4">
+          <div className="space-y-6">
+            <div className="grid grid-cols-[1fr_300px] gap-6">
+              <div>
+                <LyricGenerator />
+              </div>
+              <div>
+                <HolographicVideo />
+              </div>
+            </div>
+            <div className="col-span-1">
+              <ChatBox />
+            </div>
+          </div>
+          <StatsContainer />
         </div>
-      </motion.div>
-
+      </div>
       <MusicPlayer />
     </main>
   );

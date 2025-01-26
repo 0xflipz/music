@@ -107,11 +107,11 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="terminal-container w-full h-[300px] flex flex-col relative">
+    <div className="w-full h-[280px] relative">
       <div className="absolute inset-0 bg-gradient-to-r from-[#0ff]/0 via-[#0ff]/5 to-[#0ff]/0" />
       
-      <div className="relative z-10">
-        <div className="p-3 border-b border-[#0ff]/15 flex items-center justify-between">
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="sticky top-0 bg-black p-3 border-b border-[#0ff]/15 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
               className="w-2 h-2 rounded-full bg-[#0ff]"
@@ -128,7 +128,7 @@ export default function ChatBox() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[200px]">
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[320px]">
           {messages.map((message) => (
             <div
               key={message.id}
