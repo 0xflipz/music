@@ -41,38 +41,31 @@ const NetworkWave = ({ total = 300, columns = 48, rows = 24, className }: Networ
 
   return (
     <div 
-      className={cn(
-        "flex h-32 items-end gap-[1px] px-4",
-        "relative mx-2",
-        "before:absolute before:inset-0 before:border before:border-white/20 before:rounded-lg",
-        className
-      )}
+      className={cn("relative w-full h-full", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {bars.map((height, i) => {
-        const ratio = height / rows;
-        return (
-          <div 
-            key={i} 
-            className="flex-1 min-w-[2px] flex flex-col gap-[1px] justify-end"
-          >
-            {Array.from({ length: height }).map((_, j) => (
-              <div
-                key={j}
-                style={{ height: isHovered ? 4 : 3 }}
-                className={cn(
-                  "rounded-full w-full",
-                  getBarColor(ratio),
-                  "shadow-lg relative",
-                  ratio > 0.6 ? "after:bg-white/40" : "after:bg-red-500/40",
-                  "after:absolute after:inset-0 after:blur-[1px]"
-                )}
-              />
-            ))}
-          </div>
-        );
-      })}
+      <div className="absolute inset-0 flex items-end justify-between">
+        {bars.map((height, i) => (
+          <motion.div
+            key={i}
+            className={cn(
+              "w-full mx-px rounded-t",
+              className?.includes('cooking-heat') 
+                ? "bg-gradient-to-t from-[#9945FF] to-[#00F0FF] opacity-90"
+                : "bg-gradient-to-t from-[#9945FF]/80 to-[#00F0FF]/80"
+            )}
+            style={{
+              height: `${(height / rows) * 100}%`,
+            }}
+            animate={{
+              height: `${(height / rows) * 100}%`,
+              opacity: isHovered ? 1 : 0.8,
+            }}
+            transition={{ duration: 0.2 }}
+          />
+        ))}
+      </div>
     </div>
   );
 };

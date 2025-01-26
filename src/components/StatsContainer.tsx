@@ -312,76 +312,15 @@ export default function StatsContainer() {
 
           <SystemStats />
           
-          <Card variant="quantum" className="p-6 relative overflow-hidden border-white/20 bg-black/40">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/10 via-transparent to-[#ff0000]/10"
-              animate={{
-                opacity: [0.2, 0.4, 0.2],
-                x: [0, 100, 0],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-            
-            <div className="flex flex-col space-y-4 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-mono text-[#ff4400] tracking-[0.3em]">COOKING_HEAT</span>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-white/60">BPM</span>
-                    <span className="text-xs font-mono text-white">{getBPM()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-white/60">PEAK</span>
-                    <span className="text-xs font-mono text-white">{getPeak()}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-mono text-white">LIVE</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-4 gap-4 text-xs font-mono">
-                <AnimatedMetric 
-                  label="INTENSITY" 
-                  value={generateRandomValue(85, 89).toString()} 
-                  unit="%" 
-                />
-                <AnimatedMetric 
-                  label="FREQUENCY" 
-                  value={generateRandomValue(18.0, 18.4, 1).toString()} 
-                  unit="kHz" 
-                />
-                <AnimatedMetric 
-                  label="AMPLITUDE" 
-                  value={`-${generateRandomValue(3.0, 3.4, 1)}`} 
-                  unit="dB" 
-                />
-                <AnimatedMetric 
-                  label="SATURATION" 
-                  value={generateRandomValue(90, 94).toString()} 
-                  unit="%" 
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-lg overflow-hidden bg-black/40 border border-white/20">
-              <NetworkWave 
-                total={300} 
-                columns={48}
-                rows={24}
-                className="network-wave-enhanced"
-              />
-            </div>
-          </Card>
+          <CookingHeat />
 
           <div className="space-y-6">
-            <LiveStatBar value={94} label="NEURAL_HARMONY" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
-            <LiveStatBar value={67} label="BEATS_ANALYZED" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
-            <LiveStatBar value={88} label="RHYTHM_SYNC" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
-            <LiveStatBar value={96} label="AI_FLOW" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
-            <LiveStatBar value={82} label="NEURAL_SYNC" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
-            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="shadow-[0_0_15px_rgba(255,0,0,0.2)]" />
+            <LiveStatBar value={94} label="NEURAL_HARMONY" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
+            <LiveStatBar value={67} label="BEATS_ANALYZED" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
+            <LiveStatBar value={88} label="RHYTHM_SYNC" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
+            <LiveStatBar value={96} label="AI_FLOW" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
+            <LiveStatBar value={82} label="NEURAL_SYNC" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
+            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
           </div>
 
           <InitializationSequence />
@@ -389,4 +328,65 @@ export default function StatsContainer() {
       </div>
     </motion.div>
   );
-} 
+}
+
+// Add this CookingHeat component inside StatsContainer.tsx
+const CookingHeat = () => {
+  // Generate random values for demo
+  const getBPM = () => Math.floor(Math.random() * (145 - 135) + 135);
+  const getPeak = () => Math.floor(Math.random() * (98 - 93) + 93);
+  
+  return (
+    <Card className="bg-black/40 border-[#9945FF]/20">
+      <div className="p-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-mono text-[#00F0FF]">COOKING_HEAT</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-[#9945FF]">BPM</span>
+              <span className="text-xs text-[#00F0FF]">{getBPM()}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-[#9945FF]">PEAK</span>
+              <span className="text-xs text-[#00F0FF]">{getPeak()}%</span>
+            </div>
+            <span className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+              LIVE
+            </span>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-4 gap-4 text-[10px] mb-4">
+          <div>
+            <div className="text-[#9945FF]">INTENSITY</div>
+            <div className="text-[#00F0FF]">86%</div>
+          </div>
+          <div>
+            <div className="text-[#9945FF]">FREQUENCY</div>
+            <div className="text-[#00F0FF]">18.3kHz</div>
+          </div>
+          <div>
+            <div className="text-[#9945FF]">AMPLITUDE</div>
+            <div className="text-[#00F0FF]">-3.2dB</div>
+          </div>
+          <div>
+            <div className="text-[#9945FF]">SATURATION</div>
+            <div className="text-[#00F0FF]">93%</div>
+          </div>
+        </div>
+
+        {/* Visualization */}
+        <div className="h-32 rounded-lg overflow-hidden bg-black/40 border border-[#9945FF]/20">
+          <NetworkWave 
+            total={128}
+            columns={32}
+            rows={24}
+            className="cooking-heat"
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}; 
