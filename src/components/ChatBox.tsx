@@ -129,7 +129,7 @@ function ChatBox() {
   };
 
   return (
-    <div className="component-container chat-box relative h-[320px] w-[1060px] bg-black/40 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
+    <div className="component-container chat-box relative h-[550px] w-[1060px] bg-black/40 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
       {/* Add NetworkWave visualization */}
       <div className="absolute inset-0 -z-10 opacity-30">
         <NetworkWave
@@ -191,17 +191,14 @@ function ChatBox() {
                   : message.type === 'analysis'
                   ? 'bg-[#9945FF]/20 text-white border border-[#9945FF]/30 shadow-[0_0_8px_rgba(153,69,255,0.2)]'
                   : message.type === 'beat'
-                  ? 'bg-gradient-to-r from-[#00F0FF]/20 to-[#9945FF]/20 text-white border border-[#00F0FF]/30'
+                  ? 'bg-white/95 text-black border border-[#00F0FF]/50 shadow-[0_0_15px_rgba(0,240,255,0.15)]'
                   : 'bg-[#00F0FF]/20 text-white border border-[#00F0FF]/30'
               )}>
                 {message.text}
                 {message.stats && (
-                  <div className="mt-1 pt-1 border-t border-[#00F0FF]/30 text-[9px] text-[#00F0FF] flex gap-2">
+                  <div className="mt-1 pt-1 border-t border-[#9945FF]/30 text-[9px] text-[#9945FF]">
                     {message.stats.confidence && (
-                      <span>CONF: {(message.stats.confidence * 100).toFixed(1)}%</span>
-                    )}
-                    {message.stats.sentiment && (
-                      <span>SENT: {(message.stats.sentiment * 100).toFixed(1)}%</span>
+                      <span>CONF: {(message.stats.confidence * 100).toFixed(1)}% | </span>
                     )}
                     {message.stats.responseTime && (
                       <span>TIME: {message.stats.responseTime.toFixed(3)}s</span>
@@ -209,7 +206,7 @@ function ChatBox() {
                   </div>
                 )}
                 {message.beatData && (
-                  <div className="mt-1 pt-1 border-t border-[#9945FF]/30 text-[9px] text-[#9945FF]">
+                  <div className="mt-1 pt-1 border-t border-[#00F0FF]/30 text-[9px] text-[#9945FF] font-bold">
                     <div>BPM: {message.beatData.bpm} | Key: {message.beatData.key} | Genre: {message.beatData.genre}</div>
                     {message.beatData.neural_harmony && (
                       <div>Neural Harmony: {(message.beatData.neural_harmony * 100).toFixed(1)}%</div>
