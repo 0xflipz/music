@@ -24,48 +24,80 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
   
   useEffect(() => {
     if (!isAnimated) return;
-    
     const interval = setInterval(() => {
       const baseValue = parseFloat(value.replace(/[^0-9.-]+/g, ""));
       const newValue = (baseValue + (Math.random() - 0.5) * 0.1).toFixed(3);
       setCurrentValue(value.startsWith("$") ? `$${newValue}` : newValue);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [value, isAnimated]);
 
   return (
-    <div className="token-metric">
-      <div className="flex justify-between items-center mb-2">
-        <span className="token-label">{label}</span>
-        {trend && (
-          <motion.span
-            className={cn(
-              "trend-value",
-              trend > 0 ? "trend-positive" : "trend-negative"
-            )}
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            {trend > 0 ? "+" : ""}{trend}%
-          </motion.span>
-        )}
+    <Card className="bg-black/40 border-[#9945FF]/20">
+      <div className="p-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-mono text-[#9945FF] tracking-wider">{label}</span>
+          {trend && (
+            <div className="flex items-center gap-2">
+              <motion.span
+                className={cn(
+                  "px-1.5 py-0.5 text-[10px] rounded",
+                  "border border-[#9945FF]/30",
+                  trend > 0 
+                    ? "text-[#00F0FF] bg-[#00F0FF]/10" 
+                    : "text-[#FF4400] bg-[#FF4400]/10"
+                )}
+                animate={{
+                  opacity: [0.7, 1, 0.7],
+                  boxShadow: [
+                    "0 0 10px rgba(153, 69, 255, 0.2)",
+                    "0 0 15px rgba(0, 240, 255, 0.3)",
+                    "0 0 10px rgba(153, 69, 255, 0.2)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {trend > 0 ? "+" : ""}{trend}%
+              </motion.span>
+            </div>
+          )}
+        </div>
+
+        <motion.div 
+          className="text-xl font-mono text-[#00F0FF] tracking-wider"
+          animate={isAnimated ? {
+            opacity: [0.9, 1, 0.9],
+            textShadow: [
+              "0 0 10px rgba(0, 240, 255, 0.3)",
+              "0 0 20px rgba(0, 240, 255, 0.5)",
+              "0 0 10px rgba(0, 240, 255, 0.3)"
+            ]
+          } : {}}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          {currentValue.split('.')[0]}
+          <span className="text-base opacity-90">.{currentValue.split('.')[1] || '000'}</span>
+        </motion.div>
+
+        {/* Bottom line animation */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-[1px]"
+          style={{
+            background: 'linear-gradient(to right, #9945FF, #00F0FF)'
+          }}
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+            boxShadow: [
+              "0 0 10px rgba(153, 69, 255, 0.2)",
+              "0 0 15px rgba(0, 240, 255, 0.3)",
+              "0 0 10px rgba(153, 69, 255, 0.2)"
+            ]
+          }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
       </div>
-      <motion.div 
-        className="token-value"
-        animate={isAnimated ? {
-          opacity: [0.9, 1, 0.9],
-          textShadow: [
-            "0 0 10px rgba(0, 255, 255, 0.3)",
-            "0 0 20px rgba(0, 255, 255, 0.5)",
-            "0 0 10px rgba(0, 255, 255, 0.3)"
-          ]
-        } : {}}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        {value}
-      </motion.div>
-    </div>
+    </Card>
   );
 };
 
@@ -79,61 +111,41 @@ const generateFluctuation = (baseValue: number, range: number = 3) => {
   return Math.min(100, Math.max(0, baseValue + (Math.random() - 0.5) * range));
 };
 
-const LiveStatBar = ({ value: initialValue, label, className }: { value: number; label: string; className?: string }) => {
-  const [value, setValue] = React.useState(initialValue);
+// Add this LiveStatBar component
+const LiveStatBar = ({ label, value, className }: { label: string; value: number; className?: string }) => {
+  const [currentValue, setCurrentValue] = useState(value);
 
-  React.useEffect(() => {
+  // Add subtle value fluctuation
+  useEffect(() => {
     const interval = setInterval(() => {
-      setValue(prev => generateFluctuation(initialValue));
-    }, 1000);
+      setCurrentValue(prev => {
+        const fluctuation = (Math.random() - 0.5) * 0.4;
+        return Number((prev + fluctuation).toFixed(1));
+      });
+    }, 2000);
 
     return () => clearInterval(interval);
-  }, [initialValue]);
+  }, []);
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-sm font-mono tracking-wider text-white cyber-flicker">{label}</span>
-        <span className="text-sm font-mono text-white cyber-flicker">{value.toFixed(1)}%</span>
+    <div className={cn("relative", className)}>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-mono text-[#9945FF] tracking-[0.2em]">{label}</span>
+        <span className="text-xs font-mono text-[#00F0FF]">{currentValue.toFixed(1)}%</span>
       </div>
-      <div className={cn(
-        "h-2 bg-black/40 rounded-sm overflow-hidden",
-        "border border-blue-500/30",
-        "relative shadow-[0_0_15px_rgba(0,157,255,0.3)]",
-        className
-      )}>
+      <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
         <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600"
-          animate={{ 
-            width: `${value}%`,
-            transition: { duration: 1, ease: "easeInOut" }
-          }}
-        />
-        
-        {/* Pulsing glow effect */}
-        <motion.div
-          className="absolute inset-0 bg-blue-500/10"
+          className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+          style={{ width: `${currentValue}%` }}
           animate={{
-            opacity: [0.1, 0.3, 0.1],
+            opacity: [0.7, 1, 0.7],
+            boxShadow: [
+              "0 0 10px rgba(153, 69, 255, 0.3)",
+              "0 0 15px rgba(0, 240, 255, 0.5)",
+              "0 0 10px rgba(153, 69, 255, 0.3)"
+            ]
           }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-
-        {/* Scanning line */}
-        <motion.div
-          className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"
-          animate={{
-            x: ['-100%', '100%'],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "linear"
-          }}
+          transition={{ duration: 2, repeat: Infinity }}
         />
       </div>
     </div>
@@ -167,37 +179,97 @@ const NetworkGrid = ({ total, active }: { total: number; active: number }) => {
   );
 };
 
-// Add new system stats component
-const SystemStats = () => {
+// Add this component near the top of StatsContainer.tsx, after the TokenMetric component
+const SystemMetric = ({ label, value, maxValue = 100 }: { label: string; value: number; maxValue?: number }) => {
   return (
-    <div className="grid grid-cols-2 gap-4 mb-6">
-      <div className="terminal-container p-3">
-        <div className="text-xs text-[#0ff]/70">CPU Load</div>
-        <div className="flex items-center gap-2">
-          <span className="terminal-value">34.5%</span>
-          <div className="progress-bar w-full h-2 rounded">
-            <motion.div 
-              className="progress-fill h-full rounded"
-              initial={{ width: "0%" }}
-              animate={{ width: "34.5%" }}
+    <Card className="bg-black/40 border-[#9945FF]/20 p-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-mono text-[#9945FF] tracking-wider">{label}</span>
+        <span className="text-xs font-mono text-[#00F0FF]">{value}%</span>
+      </div>
+      <div className="relative h-2 bg-black/60 rounded-full overflow-hidden">
+        <motion.div
+          className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+          style={{ width: `${(value / maxValue) * 100}%` }}
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            boxShadow: [
+              "0 0 10px rgba(153, 69, 255, 0.3)",
+              "0 0 20px rgba(0, 240, 255, 0.5)",
+              "0 0 10px rgba(153, 69, 255, 0.3)"
+            ]
+          }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+      </div>
+    </Card>
+  );
+};
+
+// Update the SystemStats component
+const SystemStats = () => {
+  const [cpuLoad, setCpuLoad] = useState(34.5);
+  const [memory, setMemory] = useState(37.9);
+
+  // Simulate fluctuating values
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCpuLoad(prev => Number((prev + (Math.random() - 0.5) * 2).toFixed(1)));
+      setMemory(prev => Number((prev + (Math.random() - 0.5) * 2).toFixed(1)));
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <Card className="bg-black/40 border-[#9945FF]/20">
+        <div className="p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-mono text-[#9945FF] tracking-wider">CPU_LOAD</span>
+            <span className="text-xs font-mono text-[#00F0FF]">{cpuLoad}%</span>
+          </div>
+          <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+              style={{ width: `${cpuLoad}%` }}
+              animate={{
+                opacity: [0.7, 1, 0.7],
+                boxShadow: [
+                  "0 0 10px rgba(153, 69, 255, 0.3)",
+                  "0 0 15px rgba(0, 240, 255, 0.5)",
+                  "0 0 10px rgba(153, 69, 255, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
           </div>
         </div>
-      </div>
-      <div className="terminal-container p-3">
-        <div className="text-xs text-[#0ff]/70">Memory</div>
-        <div className="flex items-center gap-2">
-          <span className="terminal-value">37.9%</span>
-          <div className="progress-bar w-full h-2 rounded">
-            <motion.div 
-              className="progress-fill h-full rounded"
-              initial={{ width: "0%" }}
-              animate={{ width: "37.9%" }}
+      </Card>
+
+      <Card className="bg-black/40 border-[#9945FF]/20">
+        <div className="p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-mono text-[#9945FF] tracking-wider">MEMORY</span>
+            <span className="text-xs font-mono text-[#00F0FF]">{memory}%</span>
+          </div>
+          <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+              style={{ width: `${memory}%` }}
+              animate={{
+                opacity: [0.7, 1, 0.7],
+                boxShadow: [
+                  "0 0 10px rgba(153, 69, 255, 0.3)",
+                  "0 0 15px rgba(0, 240, 255, 0.5)",
+                  "0 0 10px rgba(153, 69, 255, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
           </div>
         </div>
-      </div>
-      {/* Add Network and GPU temp stats similarly */}
+      </Card>
     </div>
   );
 };
@@ -314,15 +386,7 @@ export default function StatsContainer() {
           
           <CookingHeat />
 
-          <div className="space-y-6">
-            <LiveStatBar value={94} label="NEURAL_HARMONY" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-            <LiveStatBar value={67} label="BEATS_ANALYZED" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-            <LiveStatBar value={88} label="RHYTHM_SYNC" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-            <LiveStatBar value={96} label="AI_FLOW" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-            <LiveStatBar value={82} label="NEURAL_SYNC" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-            <LiveStatBar value={91} label="SYSTEM_HEALTH" className="shadow-[0_0_15px_rgba(153,69,255,0.2)]" />
-          </div>
-
+          <NeuralMetrics />
           <InitializationSequence />
         </div>
       </div>
@@ -386,6 +450,22 @@ const CookingHeat = () => {
             className="cooking-heat"
           />
         </div>
+      </div>
+    </Card>
+  );
+};
+
+// Update the stats section in StatsContainer
+const NeuralMetrics = () => {
+  return (
+    <Card className="bg-black/40 border-[#9945FF]/20">
+      <div className="p-4 space-y-4">
+        <LiveStatBar value={93.3} label="NEURAL_HARMONY" />
+        <LiveStatBar value={67.7} label="BEATS_ANALYZED" />
+        <LiveStatBar value={88.4} label="RHYTHM_SYNC" />
+        <LiveStatBar value={96.9} label="AI_FLOW" />
+        <LiveStatBar value={81.3} label="NEURAL_SYNC" />
+        <LiveStatBar value={91.7} label="SYSTEM_HEALTH" />
       </div>
     </Card>
   );
