@@ -12,7 +12,11 @@ const GENRES = [
   "Cloud Rap",
   "Phonk",
   "Hyperpop",
-  "Lo-fi Hip Hop"
+  "Lo-fi Hip Hop",
+  "Synthwave Rap",
+  "Cyber Punk",
+  "Future Bass",
+  "Glitch Hop"
 ];
 
 const HOOKS = [
@@ -23,24 +27,50 @@ const HOOKS = [
   "Web3 gang, we don't fuck with banks (nah)",
   "Blockchain life got unlimited ranks (up)",
   "DeFi money hit different ways (cash)",
-  "Crypto life, we don't see no days (never)"
+  "Crypto life, we don't see no days (never)",
+  "Digital dreams in my neural space (plug)",
+  "Quantum flows got me levitating (float)",
+  "AI mind, human heart collide (sync)",
+  "Cyber streets where the data flows (hack)",
+  "Neural nets got my mind enhanced (boost)",
+  "Virtual worlds in my DNA (code)"
 ];
 
 const VERSE_STRUCTURES = {
   trap: {
     flow: "triplet",
     lineCount: 16,
-    rhymeScheme: "AABB"
+    rhymeScheme: "AABB",
+    tempo: "fast",
+    adLibFrequency: "high"
   },
   drill: {
     flow: "sliding",
     lineCount: 12,
-    rhymeScheme: "ABAB"
+    rhymeScheme: "ABAB",
+    tempo: "aggressive",
+    adLibFrequency: "medium"
   },
   boomBap: {
     flow: "steady",
     lineCount: 16,
-    rhymeScheme: "ABAB"
+    rhymeScheme: "ABAB",
+    tempo: "classic",
+    adLibFrequency: "low"
+  },
+  synthwave: {
+    flow: "melodic",
+    lineCount: 14,
+    rhymeScheme: "AABBA",
+    tempo: "atmospheric",
+    adLibFrequency: "minimal"
+  },
+  cyberPunk: {
+    flow: "glitch",
+    lineCount: 18,
+    rhymeScheme: "AABAAB",
+    tempo: "erratic",
+    adLibFrequency: "high"
   }
 };
 
@@ -58,7 +88,19 @@ const AD_LIBS = [
 const THEMES = {
   web3: [
     "blockchain", "crypto", "NFT", "smart contracts",
-    "DeFi", "metaverse", "mining", "tokens"
+    "DeFi", "metaverse", "mining", "tokens",
+    "smart wallet", "gas fees", "web3 social", "DAO life",
+    "governance", "yield farming", "liquidity", "staking"
+  ],
+  cyberpunk: [
+    "neural link", "cyber implants", "digital dreams",
+    "neon streets", "quantum code", "virtual reality",
+    "data streams", "neural networks", "binary soul"
+  ],
+  future: [
+    "AI fusion", "quantum leap", "digital ascension",
+    "cyber enhancement", "neural upgrade", "virtual essence",
+    "digital transformation", "synthetic evolution"
   ],
   flex: [
     "racks", "bands", "chains", "whips",
@@ -69,6 +111,129 @@ const THEMES = {
     "quantum", "virtual", "binary", "matrix"
   ]
 };
+
+// Add status types for better state management
+type GeneratorStatus = 'idle' | 'ready' | 'generating' | 'error';
+
+// Add this type at the top with other interfaces
+interface LyricsModalProps {
+  lyrics: string;
+  stats: {
+    bpm: number;
+    key: string;
+    mood: string;
+  };
+  onClose: () => void;
+}
+
+// Add these SVG icons at the top of the file
+const CloseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const DownloadIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// Update the modal header and download button in LyricsModal
+function LyricsModal({ lyrics, stats, onClose }: LyricsModalProps) {
+  const handleDownload = () => {
+    const element = document.createElement("a");
+    const file = new Blob([
+      `FLIPZ AI GENERATED LYRICS\n\n` +
+      `BPM: ${stats.bpm}\n` +
+      `KEY: ${stats.key}\n` +
+      `MOOD: ${stats.mood}\n\n` +
+      lyrics
+    ], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = "flipz_lyrics.txt";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-black/90 border border-[#9945FF]/30 rounded-lg w-full max-w-md relative"
+      >
+        {/* Updated Header with CSS Icons */}
+        <div className="border-b border-[#9945FF]/20 p-3 flex justify-between items-center">
+          <div className="text-xs text-[#00F0FF] flex items-center gap-2">
+            <span>GENERATED_LYRICS.txt</span>
+            <button
+              onClick={handleDownload}
+              className="p-1.5 hover:bg-[#9945FF]/20 rounded-md transition-colors duration-200 
+                       text-[#00F0FF] hover:text-[#00F0FF] group relative"
+              title="Download Lyrics"
+            >
+              <div className="icon-download" />
+            </button>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-[#9945FF]/20 rounded-md transition-colors duration-200 
+                     text-white/50 hover:text-white relative"
+            title="Close"
+          >
+            <div className="icon-close" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="bg-black/40 rounded p-3 mb-3 text-xs text-white/90 whitespace-pre-line max-h-[200px] overflow-y-auto scrollbar-hide">
+            {lyrics}
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center gap-3 text-[10px] text-[#00F0FF]/70 mb-4">
+            <span>BPM: {stats.bpm}</span>
+            <span>•</span>
+            <span>KEY: {stats.key}</span>
+            <span>•</span>
+            <span>MOOD: {stats.mood}</span>
+          </div>
+
+          {/* Updated Download Button */}
+          <button
+            onClick={handleDownload}
+            className="w-full py-2 px-4 bg-[#9945FF]/20 hover:bg-[#9945FF]/30 
+                     border border-[#9945FF]/30 hover:border-[#9945FF]/50 
+                     rounded text-xs text-[#00F0FF] transition-all duration-200
+                     flex items-center justify-center gap-2 group"
+          >
+            <DownloadIcon />
+            <span>DOWNLOAD LYRICS</span>
+          </button>
+        </div>
+
+        {/* Background Effects */}
+        <motion.div
+          className="absolute inset-0 -z-10 rounded-lg opacity-30"
+          style={{
+            background: `radial-gradient(circle, rgba(153,69,255,0.2) 0%, rgba(0,240,255,0.2) 50%, transparent 70%)`
+          }}
+          animate={{ opacity: [0.2, 0.3, 0.2] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function LyricGenerator() {
   const [prompt, setPrompt] = useState('');
@@ -82,6 +247,11 @@ export default function LyricGenerator() {
   const [bpm, setBpm] = useState(Math.floor(Math.random() * 40) + 120); // 120-160 BPM
   const [key, setKey] = useState(['Am', 'Cm', 'Gm', 'Fm'][Math.floor(Math.random() * 4)]);
   const [mood, setMood] = useState(['Energetic', 'Dark', 'Melodic', 'Aggressive'][Math.floor(Math.random() * 4)]);
+  const [status, setStatus] = useState<GeneratorStatus>('idle');
+  const [selectedTheme, setSelectedTheme] = useState('web3');
+  const [complexity, setComplexity] = useState(50);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -93,6 +263,7 @@ export default function LyricGenerator() {
   }, []);
 
   const generateLyrics = async () => {
+    setStatus('generating');
     setGenerating(true);
     generateHook();
     
@@ -101,35 +272,30 @@ export default function LyricGenerator() {
     setKey(['Am', 'Cm', 'Gm', 'Fm'][Math.floor(Math.random() * 4)]);
     setMood(['Energetic', 'Dark', 'Melodic', 'Aggressive'][Math.floor(Math.random() * 4)]);
     
-    // Generate random ad-libs
+    // Helper functions for generation
     const getAdLib = () => AD_LIBS[Math.floor(Math.random() * AD_LIBS.length)];
-    
-    // Get random theme words
     const getThemeWord = (theme: keyof typeof THEMES) => 
       THEMES[theme][Math.floor(Math.random() * THEMES[theme].length)];
 
-    setTimeout(() => {
-      setLyrics(`[Intro]
-${hook} ${useAdLibs ? `(${getAdLib()})` : ''}
-Yeah, FLIPZ on the beat (let's go!)
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-[Verse 1]
-Stacking ${getThemeWord('web3')} while they sleeping on me ${useAdLibs ? `(${getAdLib()})` : ''}
-${prompt} got the whole game freezing homie
-Digital flows, yeah I keep it going ${useAdLibs ? `(${getAdLib()})` : ''}
-${getThemeWord('tech')} mind, keep the beats flowing
+      const generatedLyrics = `[Verse 1]
+${getThemeWord(selectedTheme)} in my veins, I'm feeling blessed ${useAdLibs ? `(${getAdLib()})` : ''}
+Digital dreams while they're catching rest ${useAdLibs ? `(${getAdLib()})` : ''}
+${getThemeWord('tech')} flow, yeah I'm in my zone ${useAdLibs ? `(${getAdLib()})` : ''}
+Virtual reality is where I roam
 
-[Chorus]
-${hook} ${useAdLibs ? `(${getAdLib()})` : ''}
-Got that ${getThemeWord('flex')} up in my wallet (facts)
-Can't stop won't stop, better call it ${useAdLibs ? `(${getAdLib()})` : ''}
-Web3 gang, yeah we ball it
+[Hook]
+${hook}
+${hook.split('(')[0]} // Repeat hook without ad-lib
 
 [Verse 2]
-${getThemeWord('web3')} life got me feeling blessed ${useAdLibs ? `(${getAdLib()})` : ''}
-While they sleeping we don't need no rest
-Flipping ${getThemeWord('flex')}, yeah we doing fine ${useAdLibs ? `(${getAdLib()})` : ''}
-AI flows dropping every line
+${getThemeWord(selectedTheme)} life got me levitating high ${useAdLibs ? `(${getAdLib()})` : ''}
+While they sleeping, watch my tokens multiply ${useAdLibs ? `(${getAdLib()})` : ''}
+${getThemeWord('flex')}, yeah we doing fine ${useAdLibs ? `(${getAdLib()})` : ''}
+Every bar I drop becomes a power line
 
 [Bridge]
 They don't know (what!)
@@ -138,11 +304,25 @@ Getting paid in crypto (facts!)
 Watch it grow (up!)
 
 [Outro]
-${hook} ${useAdLibs ? `(${getAdLib()})` : ''}
-FLIPZ A.I., yeah we out this bitch (gang!)`);
-      
+${hook}`;
+
+      setLyrics(generatedLyrics);
+      setShowModal(true);
+      setStatus('ready');
+    } catch (err) {
+      setError('Generation failed. Please try again.');
+      setStatus('error');
+    } finally {
       setGenerating(false);
-    }, 2000);
+    }
+  };
+
+  // Update input handler to change status immediately when text is entered
+  const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrompt = e.target.value;
+    setPrompt(newPrompt);
+    // Update status based on input presence
+    setStatus(newPrompt.trim().length > 0 ? 'ready' : 'idle');
   };
 
   // Add this function to generate rain drops
@@ -190,7 +370,7 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
   };
 
   return (
-    <div className="relative h-[238px] w-[520px] bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
+    <div className="component-container lyric-generator relative h-[238px] w-[520px] bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
       {/* Enhanced Header */}
       <div className="absolute inset-x-0 top-0 p-2 flex items-center justify-between border-b border-[#9945FF]/20">
         <div className="flex items-center gap-2">
@@ -213,63 +393,134 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-white">STATUS</span>
           <div className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
-            {generating ? 'GENERATING' : 'READY'}
+            {status}
           </div>
         </div>
       </div>
 
-      {/* Main Content Area - Updated to match HolographicVideo */}
-      <div className="flex flex-col h-full pt-14">
-        <div className="relative flex-1 overflow-hidden p-2">
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your lyric theme or concept..."
-            className="w-full bg-black/40 border border-[#9945FF]/20 rounded px-3 py-1.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#9945FF]/40"
-          />
-          
-          <div className="mt-2 flex justify-end">
-            <button
-              onClick={generateLyrics}
-              disabled={generating}
-              className={cn(
-                "px-3 py-1 text-xs rounded border",
-                "bg-[#9945FF]/20 border-[#9945FF]/30 text-[#00F0FF]",
-                "hover:bg-[#9945FF]/30 transition-colors",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
-              )}
+      {/* Main Content Area */}
+      <div className="flex flex-col h-full pt-14 p-2">
+        {/* Controls Section */}
+        <div className="space-y-2">
+          {/* Theme and Genre Selectors */}
+          <div className="flex gap-2 mb-2">
+            <select
+              value={selectedTheme}
+              onChange={(e) => setSelectedTheme(e.target.value as keyof typeof THEMES)}
+              className="flex-1 bg-black/40 border border-[#9945FF]/20 rounded px-2 py-1.5 text-xs text-[#00F0FF] focus:outline-none"
             >
-              GENERATE
-            </button>
+              {Object.keys(THEMES).map((theme) => (
+                <option key={theme} value={theme}>{theme}</option>
+              ))}
+            </select>
+            <select
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+              className="flex-1 bg-black/40 border border-[#9945FF]/20 rounded px-2 py-1.5 text-xs text-[#00F0FF] focus:outline-none"
+            >
+              {GENRES.map((genre) => (
+                <option key={genre} value={genre}>{genre}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Generated Content - Updated for better scrolling */}
-          {lyrics && (
-            <motion.div
-              className="mt-2 overflow-y-auto max-h-[110px] scrollbar-hide"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className={cn(
-                "rounded-lg p-3",
-                "bg-gradient-to-r from-[#9945FF]/20 to-[#00F0FF]/20",
-                "border border-[#9945FF]/30",
-                "shadow-[0_0_15px_rgba(153,69,255,0.2)]"
-              )}>
-                <div className="text-xs text-white/90 whitespace-pre-line">
+          {/* Complexity Slider */}
+          <div className="mb-2">
+            <div className="flex justify-between text-[10px] text-white/70 mb-1">
+              <span>Complexity</span>
+              <span>{complexity}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={complexity}
+              onChange={(e) => setComplexity(parseInt(e.target.value))}
+              className="w-full h-1 bg-[#9945FF]/20 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
+
+          {/* Input or Lyrics Display */}
+          <div className="relative h-[80px]">
+            {!lyrics ? (
+              <input
+                type="text"
+                value={prompt}
+                onChange={handlePromptChange}
+                placeholder="Enter your lyric theme or concept..."
+                className="w-full bg-black/40 border border-[#9945FF]/20 rounded px-3 py-1.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#9945FF]/40"
+              />
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full overflow-y-auto scrollbar-hide"
+              >
+                <div className={cn(
+                  "rounded-lg p-3 h-full",
+                  "bg-gradient-to-r from-[#9945FF]/10 to-[#00F0FF]/10",
+                  "border border-[#9945FF]/30",
+                  "text-xs text-white/90 whitespace-pre-line"
+                )}>
                   {lyrics}
+                  
+                  {/* Music Stats */}
+                  <div className="mt-2 flex items-center gap-2 text-[10px] text-[#00F0FF]/70">
+                    <span>BPM: {bpm}</span>
+                    <span>•</span>
+                    <span>KEY: {key}</span>
+                    <span>•</span>
+                    <span>MOOD: {mood}</span>
+                  </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-[10px] text-[#00F0FF]/70">
-                  <span>BPM: {bpm}</span>
-                  <span>•</span>
-                  <span>KEY: {key}</span>
-                  <span>•</span>
-                  <span>MOOD: {mood}</span>
-                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Controls */}
+        <div className="absolute bottom-0 left-0 right-0 p-2 border-t border-[#9945FF]/20 bg-black/40">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-xs text-white/70">
+                <input
+                  type="checkbox"
+                  checked={useAdLibs}
+                  onChange={(e) => setUseAdLibs(e.target.checked)}
+                  className="accent-[#9945FF]"
+                />
+                Ad-libs
+              </label>
+              <div className="flex items-center gap-2 text-xs text-white/70">
+                <span>Flow:</span>
+                <span className="text-[#00F0FF]">
+                  {VERSE_STRUCTURES[selectedGenre.toLowerCase()]?.flow || 'standard'}
+                </span>
               </div>
-            </motion.div>
-          )}
+            </div>
+
+            <button
+              onClick={generateLyrics}
+              disabled={status === 'generating' || status === 'idle'}
+              className={cn(
+                "relative px-4 py-1.5 text-xs rounded border transition-all duration-200",
+                {
+                  // Ready state - green glow effect
+                  "bg-[#00FF94]/20 border-[#00FF94]/30 text-[#00FF94] hover:bg-[#00FF94]/30 hover:shadow-[0_0_15px_rgba(0,255,148,0.3)]": 
+                    status === 'ready',
+                  // Generating state - purple pulse
+                  "bg-[#9945FF]/30 border-[#9945FF]/40 text-[#00F0FF] animate-pulse":
+                    status === 'generating',
+                  // Idle state - disabled look
+                  "bg-[#9945FF]/20 border-[#9945FF]/30 text-white/50 cursor-not-allowed":
+                    status === 'idle',
+                }
+              )}
+            >
+              {status === 'generating' ? 'GENERATING...' : 'GENERATE'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -331,6 +582,42 @@ FLIPZ A.I., yeah we out this bitch (gang!)`);
           ease: "linear"
         }}
       />
+
+      {/* Add Modal */}
+      {showModal && lyrics && (
+        <LyricsModal
+          lyrics={lyrics}
+          stats={{ bpm, key, mood }}
+          onClose={() => {
+            setShowModal(false);
+            setLyrics(''); // Clear lyrics when closing modal
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Enhanced WaveformVisualizer
+function WaveformVisualizer({ isGenerating, complexity }: { isGenerating: boolean; complexity: number }) {
+  return (
+    <div className="absolute bottom-0 left-0 right-0 h-8 flex items-center justify-center gap-1 overflow-hidden">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="w-0.5 bg-gradient-to-t from-[#9945FF] to-[#00F0FF]"
+          animate={{
+            height: isGenerating 
+              ? [10, 20 + (Math.random() * complexity / 5), 10] 
+              : 4,
+          }}
+          transition={{
+            duration: 0.5,
+            repeat: Infinity,
+            delay: i * 0.1,
+          }}
+        />
+      ))}
     </div>
   );
 } 
