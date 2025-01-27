@@ -234,10 +234,10 @@ const SystemMetrics = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-2">
       {/* CPU Load */}
       <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
-        <div className="p-4">
+        <div className="p-2">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[10px] text-white tracking-wider font-mono">CPU_LOAD</span>
             <span className="text-[10px] text-[#00F0FF]">{metrics.cpu.toFixed(1)}%</span>
@@ -281,7 +281,7 @@ const SystemMetrics = () => {
 
       {/* Memory Usage */}
       <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
-        <div className="p-4">
+        <div className="p-2">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[10px] text-white tracking-wider font-mono">MEMORY</span>
             <span className="text-[10px] text-[#00F0FF]">{metrics.memory.toFixed(1)}%</span>
@@ -410,9 +410,9 @@ export default function StatsContainer() {
       animate={{ transform: 'translateX(0)' }}
       transition={{ duration: 0.3 }}
     >
-      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-8 border-l border-white/20">
-        <div className="sticky top-0 z-10 bg-black/40 -mx-8 px-8 pt-4 pb-4 mb-8">
-          <div className="text-white font-mono text-sm border-b border-white/20 pb-4 relative">
+      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-4 border-l border-white/20">
+        <div className="sticky top-0 z-10 bg-black/40 -mx-4 px-4 pt-2 pb-2 mb-4">
+          <div className="text-white font-mono text-sm border-b border-white/20 pb-2 relative">
             <motion.span
               className="absolute -left-2 top-0 h-full w-1 bg-white/50"
               animate={{
@@ -433,7 +433,7 @@ export default function StatsContainer() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           <TokenMetrics />
           <SystemMetrics />
           <CookingHeat />
@@ -451,7 +451,7 @@ const CookingHeat = () => {
   
   return (
     <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
-      <div className="p-4">
+      <div className="p-2">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-[10px] text-white tracking-wider font-mono">COOKING_HEAT</span>
@@ -532,18 +532,15 @@ const CookingHeat = () => {
   );
 };
 
-// Update the stats section in StatsContainer
+// Update the NeuralMetrics component to remove SYSTEM_HEALTH
 const NeuralMetrics = () => {
   return (
     <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
-      <div className="p-4 space-y-4">
+      <div className="p-2 space-y-4">
         {[
           { label: "NEURAL_HARMONY", value: 93.3 },
           { label: "BEATS_ANALYZED", value: 67.7 },
-          { label: "RHYTHM_SYNC", value: 88.4 },
-          { label: "AI_FLOW", value: 96.9 },
-          { label: "NEURAL_SYNC", value: 81.3 },
-          { label: "SYSTEM_HEALTH", value: 91.7 }
+          { label: "AI_FLOW", value: 96.9 }
         ].map((metric) => (
           <div key={metric.label} className="relative">
             <div className="flex justify-between items-center mb-2">
@@ -571,7 +568,7 @@ const NeuralMetrics = () => {
         ))}
       </div>
 
-      {/* Background Glow */}
+      {/* Background Glow - keeping the exact same effect */}
       <motion.div
         className="absolute inset-0 -z-10 rounded-lg opacity-20"
         style={{
@@ -621,7 +618,7 @@ const TokenMetrics = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 pt-[14px]">
       {/* Price */}
       <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
         <div className="p-4">
