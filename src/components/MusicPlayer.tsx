@@ -50,6 +50,49 @@ export default function MusicPlayer() {
     return () => audio.removeEventListener('loadedmetadata', handleMetadata);
   }, []);
 
+  useEffect(() => {
+    const initializeAudio = async () => {
+      if (!audioRef.current) return;
+      
+      try {
+        audioRef.current.volume = volume;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          setIsPlaying(true);
+        }
+      } catch (error) {
+        console.log("Initial autoplay failed:", error);
+        setIsPlaying(false);
+        
+        // Add click-to-play fallback
+        const handleFirstInteraction = async () => {
+          try {
+            if (audioRef.current) {
+              await audioRef.current.play();
+              setIsPlaying(true);
+              document.removeEventListener('click', handleFirstInteraction);
+            }
+          } catch (err) {
+            console.log("Play on click failed:", err);
+          }
+        };
+        
+        document.addEventListener('click', handleFirstInteraction, { once: true });
+      }
+    };
+
+    initializeAudio();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      document.removeEventListener('click', () => {});
+    };
+  }, []); // Empty dependency array so it only runs once on mount
+
   const togglePlay = async () => {
     if (!audioRef.current) return;
 
@@ -129,9 +172,20 @@ export default function MusicPlayer() {
         <div className="flex items-center justify-end w-[120px] px-4">
           <button 
             onClick={togglePlay}
-            className="text-white hover:text-white/90 transition-colors p-2 rounded-full border border-white/20 hover:border-white/50"
+            className="play-button text-white hover:text-white/90 transition-colors p-2 rounded-full border border-white/20 hover:border-white/50 relative group"
           >
-            {isPlaying ? <PauseIcon className="w-6 h-6" /> : <PlayIcon className="w-6 h-6" />}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{
+                boxShadow: [
+                  "0 0 10px rgba(0, 240, 255, 0.3)",
+                  "0 0 20px rgba(0, 240, 255, 0.5)",
+                  "0 0 10px rgba(0, 240, 255, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            {isPlaying ? <PauseIcon className="w-6 h-6 relative z-10" /> : <PlayIcon className="w-6 h-6 relative z-10" />}
           </button>
         </div>
 
@@ -140,21 +194,34 @@ export default function MusicPlayer() {
           <div className="w-full space-y-1">
             <div 
               ref={progressBarRef}
-              className="h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer progress-bar"
+              className="h-1.5 rounded-full overflow-hidden cursor-pointer progress-bar"
               onClick={handleProgressBarClick}
             >
               <motion.div 
-                className="h-full bg-white/50 relative"
+                className="h-full progress-indicator relative"
                 style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
                 animate={{
                   boxShadow: [
-                    "0 0 5px rgba(255, 255, 255, 0.3)",
-                    "0 0 10px rgba(255, 255, 255, 0.3)",
-                    "0 0 5px rgba(255, 255, 255, 0.3)"
+                    "0 0 10px rgba(0, 240, 255, 0.5)",
+                    "0 0 20px rgba(0, 240, 255, 0.7)",
+                    "0 0 10px rgba(0, 240, 255, 0.5)"
                   ]
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <motion.div
+                  className="progress-lightning"
+                  animate={{
+                    opacity: [0.5, 1, 0.5],
+                    scaleY: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </motion.div>
             </div>
             <div className="flex justify-between text-xs text-white/50">
               <span>{formatTime(currentTime)}</span>
@@ -171,13 +238,24 @@ export default function MusicPlayer() {
               setVolume(newVolume);
               if (audioRef.current) audioRef.current.volume = newVolume;
             }}
-            className="hover:text-white/70 transition-colors"
+            className="volume-control hover:text-white/70 transition-colors relative group"
           >
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                boxShadow: [
+                  "0 0 5px rgba(0, 240, 255, 0.2)",
+                  "0 0 10px rgba(0, 240, 255, 0.4)",
+                  "0 0 5px rgba(0, 240, 255, 0.2)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             <VolumeIcon />
           </button>
           <div 
             ref={volumeBarRef}
-            className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer relative group"
+            className="volume-slider w-24 h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer relative group"
             onClick={handleVolumeChange}
             onMouseMove={(e) => e.buttons === 1 && handleVolumeChange(e)}
           >
@@ -186,14 +264,25 @@ export default function MusicPlayer() {
               style={{ width: `${volume * 100}%` }}
               animate={{
                 boxShadow: [
-                  "0 0 5px rgba(255, 255, 255, 0.3)",
-                  "0 0 10px rgba(255, 255, 255, 0.3)",
-                  "0 0 5px rgba(255, 255, 255, 0.3)"
+                  "0 0 5px rgba(0, 240, 255, 0.3)",
+                  "0 0 10px rgba(0, 240, 255, 0.5)",
+                  "0 0 5px rgba(0, 240, 255, 0.3)"
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <motion.div
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"
+                animate={{
+                  opacity: [0.5, 1, 0.5],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
             </motion.div>
           </div>
         </div>

@@ -13,6 +13,7 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
   const [showEnter, setShowEnter] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -21,62 +22,68 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Auto-play music when component mounts with retry logic
+  // Create and unlock AudioContext
   useEffect(() => {
-    const playAudio = async () => {
-      if (audioRef.current) {
-        try {
-          audioRef.current.volume = 0.5;
-          // Try to play immediately
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            await playPromise;
-            setIsPlaying(true);
-          }
-        } catch (error) {
-          console.log("Initial autoplay failed, trying with user interaction");
-          // Add event listener for first user interaction
-          const handleFirstInteraction = async () => {
-            try {
-              await audioRef.current?.play();
-              setIsPlaying(true);
-              // Remove the event listeners after successful play
-              document.removeEventListener('click', handleFirstInteraction);
-              document.removeEventListener('touchstart', handleFirstInteraction);
-            } catch (error) {
-              console.log("Autoplay failed after interaction:", error);
-            }
-          };
-
-          // Add listeners for user interaction
-          document.addEventListener('click', handleFirstInteraction);
-          document.addEventListener('touchstart', handleFirstInteraction);
+    const unlockAudioContext = async () => {
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
         }
+      } catch (error) {
+        console.log("Audio context initialization failed:", error);
       }
     };
 
-    playAudio();
+    unlockAudioContext();
 
+    // Add mouse movement handler
+    const handleMouseMove = async () => {
+      if (!audioRef.current || isPlaying) return;
+      
+      try {
+        audioRef.current.volume = 0.5;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          setIsPlaying(true);
+          // Remove the event listener after successful play
+          document.removeEventListener('mousemove', handleMouseMove);
+        }
+      } catch (error) {
+        console.log("Play on mouse move failed:", error);
+        setIsPlaying(false);
+      }
+    };
+
+    // Add mouse movement listener
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // Cleanup
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
       }
-      // Clean up event listeners if they were added
-      document.removeEventListener('click', () => {});
-      document.removeEventListener('touchstart', () => {});
+      document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [isPlaying]); // Add isPlaying to dependencies
 
+  // Modified togglePlay function
   const togglePlay = async () => {
     if (!audioRef.current) return;
     
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      await audioRef.current.play();
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.log("Toggle play error:", error);
+      setIsPlaying(false);
     }
-    setIsPlaying(!isPlaying);
   };
 
   return (
