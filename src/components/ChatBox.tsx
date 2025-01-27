@@ -129,18 +129,18 @@ function ChatBox() {
   };
 
   return (
-    <div className="component-container chat-box relative h-[550px] w-[1060px] bg-black/40 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
-      {/* Add NetworkWave visualization */}
-      <div className="absolute inset-0 -z-10 opacity-30">
+    <div className="component-container chat-box relative h-[550px] w-full bg-black/20 backdrop-blur-sm border border-[#9945FF]/20 rounded-lg overflow-hidden">
+      {/* Network Wave background */}
+      <div className="absolute inset-0 -z-10">
         <NetworkWave
           total={40}
           columns={8}
           rows={5}
-          className="w-full h-full"
+          className="w-full h-full opacity-20"
         />
       </div>
 
-      <div className="absolute inset-x-0 top-0 p-2 flex items-center justify-between border-b border-[#9945FF]/20 bg-black/40">
+      <div className="absolute inset-x-0 top-0 p-2 flex items-center justify-between border-b border-[#9945FF]/20 bg-black/10">
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-white tracking-wider font-mono font-bold">
             FLIPZ_CHAT.exe
@@ -168,8 +168,8 @@ function ChatBox() {
         </div>
       </div>
 
-      <div className="flex flex-col h-full pt-12">
-        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
+      <div className="h-[calc(100%-96px)] overflow-y-auto scrollbar-none p-4 pt-16">
+        <div className="space-y-4">
           {messages.map((message) => (
             <motion.div
               key={message.id}
@@ -185,14 +185,14 @@ function ChatBox() {
               <div className={cn(
                 "max-w-[80%] px-3 py-2 rounded text-xs font-medium",
                 message.sender === 'user' 
-                  ? 'bg-[#9945FF]/30 text-white border border-[#9945FF]/30'
+                  ? 'bg-white/10 text-white border border-white/20'
                   : message.type === 'system'
-                  ? 'bg-[#00F0FF]/20 text-white border border-[#00F0FF]/30 shadow-[0_0_8px_rgba(0,240,255,0.2)]'
+                  ? 'bg-white/20 text-white border border-white/30 shadow-[0_0_8px_rgba(255,255,255,0.2)]'
                   : message.type === 'analysis'
-                  ? 'bg-[#9945FF]/20 text-white border border-[#9945FF]/30 shadow-[0_0_8px_rgba(153,69,255,0.2)]'
+                  ? 'bg-white/15 text-white border border-white/25 shadow-[0_0_8px_rgba(255,255,255,0.15)]'
                   : message.type === 'beat'
-                  ? 'bg-white/95 text-black border border-[#00F0FF]/50 shadow-[0_0_15px_rgba(0,240,255,0.15)]'
-                  : 'bg-[#00F0FF]/20 text-white border border-[#00F0FF]/30'
+                  ? 'bg-white/95 text-black border border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.15)]'
+                  : 'bg-white/20 text-white border border-white/30'
               )}>
                 {message.text}
                 {message.stats && (
@@ -218,64 +218,50 @@ function ChatBox() {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        
-        {/* Enhanced input section with styled send button */}
-        <div className="border-t border-[#9945FF]/20 p-4 bg-black/40">
-          <div className="relative flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1 bg-black/60 border border-[#9945FF]/30 rounded px-4 py-2 text-xs text-white font-medium"
-              placeholder="Chat with FLIPZ AI..."
-            />
-            <div className="relative group">
-              <button
-                onClick={handleSendMessage}
-                className="px-4 py-2 bg-[#9945FF]/20 border border-[#9945FF]/30 rounded text-xs text-white font-bold 
-                  hover:bg-[#9945FF]/30 hover:border-[#9945FF]/50 hover:text-[#00F0FF] transition-all duration-200
-                  shadow-[0_0_10px_rgba(153,69,255,0.2)] hover:shadow-[0_0_15px_rgba(153,69,255,0.3)]"
-              >
-                Send
-              </button>
-              {/* Button glow effect */}
-              <motion.div
-                className="absolute inset-0 -z-10 rounded opacity-50"
-                style={{
-                  background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
-                }}
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            </div>
-          </div>
+      </div>
+
+      {/* Input section */}
+      <div className="absolute inset-x-0 bottom-0 border-t border-[#9945FF]/20 p-4 bg-black/10">
+        <div className="relative">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleSendMessage}
+            placeholder="Chat with FLIPZ AI..."
+            className="w-full bg-black/20 text-white placeholder-white/30 px-4 py-2 rounded border border-[#9945FF]/20 focus:outline-none focus:border-[#9945FF]/40"
+          />
+          <button
+            onClick={handleSendMessage}
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1 text-xs bg-[#9945FF]/20 hover:bg-[#9945FF]/30 text-white rounded border border-[#9945FF]/30 transition-colors"
+          >
+            Send
+          </button>
         </div>
       </div>
 
-      {/* More subtle background animation */}
+      {/* Beat pulse visualization */}
       <motion.div
-        className="absolute inset-0 -z-20 rounded-lg opacity-10"
-        style={{
-          background: `radial-gradient(circle, rgba(153, 69, 255, 0.2) 0%, rgba(0, 240, 255, 0.2) 50%, transparent 70%)`
-        }}
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.1, 0.15, 0.1]
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+        className="absolute bottom-0 left-0 right-0 h-8 flex items-center justify-center gap-1 overflow-hidden bg-gradient-to-t from-black/40 to-transparent"
+      >
+        {Array.from({ length: 12 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="w-0.5 bg-gradient-to-t from-[#9945FF] to-[#00F0FF]"
+            animate={{
+              height: isAnalyzing 
+                ? [10, 20 + (Math.random() * 5), 10] 
+                : 4,
+            }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              delay: i * 0.1,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
+      </motion.div>
     </div>
   );
 }
