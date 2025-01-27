@@ -261,7 +261,7 @@ export default function LyricGenerator() {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const generatedLyrics = `[Verse 1]
-${getThemeWord(selectedTheme)} in my veins, I'm feeling blessed ${useAdLibs ? `(${getAdLib()})` : ''}
+${getThemeWord(selectedTheme as "flex" | "web3" | "cyberpunk" | "future" | "tech")} in my veins, I'm feeling blessed ${useAdLibs ? `(${getAdLib()})` : ''}
 Digital dreams while they're catching rest ${useAdLibs ? `(${getAdLib()})` : ''}
 ${getThemeWord('tech')} flow, yeah I'm in my zone ${useAdLibs ? `(${getAdLib()})` : ''}
 Virtual reality is where I roam
@@ -271,7 +271,7 @@ ${hook}
 ${hook.split('(')[0]} // Repeat hook without ad-lib
 
 [Verse 2]
-${getThemeWord(selectedTheme)} life got me levitating high ${useAdLibs ? `(${getAdLib()})` : ''}
+${getThemeWord(selectedTheme as "flex" | "web3" | "cyberpunk" | "future" | "tech")} life got me levitating high ${useAdLibs ? `(${getAdLib()})` : ''}
 While they sleeping, watch my tokens multiply ${useAdLibs ? `(${getAdLib()})` : ''}
 ${getThemeWord('flex')}, yeah we doing fine ${useAdLibs ? `(${getAdLib()})` : ''}
 Every bar I drop becomes a power line
@@ -465,7 +465,7 @@ ${hook}`;
               <div className="flex items-center gap-2 text-xs text-white/70">
                 <span>Flow:</span>
                 <span className="text-[#00F0FF]">
-                  {VERSE_STRUCTURES[selectedGenre.toLowerCase()]?.flow || 'standard'}
+                  {VERSE_STRUCTURES[selectedGenre.toLowerCase() as keyof typeof VERSE_STRUCTURES]?.flow || 'standard'}
                 </span>
               </div>
             </div>

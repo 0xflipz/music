@@ -12,6 +12,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", children, ...props }, ref) => {
     return (
+      //@ts-ignore
       <motion.button
         ref={ref}
         whileHover={{ scale: 1.02 }}

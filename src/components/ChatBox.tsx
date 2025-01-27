@@ -156,6 +156,8 @@ const ChatMessage = memo(({ message }: { message: Message }) => {
   );
 });
 
+ChatMessage.displayName = "ChatMessage";
+
 // Memoized Market Data Component
 const MarketDataDisplay = memo(({ data }: { data: Message['marketData'] }) => {
   if (!data) return null;
@@ -222,6 +224,8 @@ const MarketDataDisplay = memo(({ data }: { data: Message['marketData'] }) => {
   );
 });
 
+MarketDataDisplay.displayName = "MarketDataDisplay";
+
 // Memoized Stats Display Component
 const StatsDisplay = memo(({ stats }: { stats: Message['stats'] }) => {
   if (!stats) return null;
@@ -256,6 +260,8 @@ const StatsDisplay = memo(({ stats }: { stats: Message['stats'] }) => {
   );
 });
 
+StatsDisplay.displayName = "StatsDisplay";
+
 // Memoized Beat Data Display Component
 const BeatDataDisplay = memo(({ data }: { data: Message['beatData'] }) => {
   if (!data) return null;
@@ -289,6 +295,8 @@ const BeatDataDisplay = memo(({ data }: { data: Message['beatData'] }) => {
     </motion.div>
   );
 });
+
+BeatDataDisplay.displayName = "BeatDataDisplay";
 
 // Add a UUID generator function at the top
 const generateUUID = () => {
@@ -441,6 +449,7 @@ function ChatBox() {
           columns={8}
           rows={5}
           className="w-full h-full opacity-10"
+          //@ts-ignore
           color="rgba(255, 255, 255, 0.8)"
         />
       </div>
