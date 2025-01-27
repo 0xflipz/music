@@ -1432,7 +1432,7 @@ body {
 .chat-box {
   top: 360px;
   left: 20px;
-  height: 320px;
+  height: 400px;
   width: 1060px;
   background: linear-gradient(
     180deg,
@@ -1554,4 +1554,259 @@ body {
 .app-container {
   overflow-y: hidden;
   min-height: 100vh;
+}
+
+/* Update music player footer styles */
+.music-player-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 0, 40, 0.95),
+    rgba(0, 0, 20, 0.98)
+  );
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(153, 69, 255, 0.2);
+  padding: 12px 0;
+  z-index: 50;
+  box-shadow: 0 -4px 20px rgba(153, 69, 255, 0.15);
+}
+
+/* Add glossy overlay effect */
+.music-player-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 15%,
+    rgba(255, 255, 255, 0.02) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Add subtle side glow */
+.music-player-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(153, 69, 255, 0.1),
+    rgba(0, 240, 255, 0.1) 50%,
+    rgba(153, 69, 255, 0.1)
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.music-player-content {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Enhanced button styles */
+.music-player-content button {
+  position: relative;
+  overflow: hidden;
+}
+
+.music-player-content button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.music-player-content button:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced progress bar styles */
+.music-player-content .progress-bar {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, 
+    rgba(0, 0, 0, 0.5),
+    rgba(20, 0, 40, 0.5)
+  );
+  border: 1px solid rgba(153, 69, 255, 0.2);
+}
+
+.music-player-content .progress-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(0, 240, 255, 0.1) 20%,
+      rgba(153, 69, 255, 0.1) 40%,
+      rgba(0, 240, 255, 0.1) 60%,
+      transparent 100%
+    );
+  animation: electric-flow 2s linear infinite;
+}
+
+.music-player-content .progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    rgba(0, 240, 255, 0.1) 20px,
+    rgba(0, 240, 255, 0.1) 21px
+  );
+  opacity: 0.5;
+  filter: blur(1px);
+}
+
+/* Electric animation for progress bar */
+@keyframes electric-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Update the progress indicator style */
+.music-player-content .progress-bar .progress-indicator {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg,
+    rgba(0, 240, 255, 0.5),
+    rgba(153, 69, 255, 0.5)
+  );
+  box-shadow: 
+    0 0 10px rgba(0, 240, 255, 0.5),
+    0 0 20px rgba(153, 69, 255, 0.3);
+}
+
+/* Add lightning effect */
+.progress-lightning {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 200%;
+  background: rgba(0, 240, 255, 0.8);
+  filter: blur(1px);
+  clip-path: polygon(
+    50% 0%,
+    100% 50%,
+    50% 100%,
+    0% 50%
+  );
+}
+
+/* Add electric button styles */
+.music-player-content .play-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.music-player-content .play-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 240, 255, 0.5),
+    rgba(153, 69, 255, 0.5)
+  );
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.music-player-content .play-button:hover::before {
+  opacity: 1;
+}
+
+.music-player-content .play-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 240, 255, 0.2),
+    rgba(153, 69, 255, 0.2)
+  );
+  filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.music-player-content .play-button:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced volume control styles */
+.volume-control {
+  position: relative;
+  overflow: visible;
+}
+
+.volume-control::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.3),
+    rgba(153, 69, 255, 0.3)
+  );
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.volume-control:hover::before {
+  opacity: 1;
+}
+
+.volume-slider {
+  position: relative;
+  overflow: hidden;
+}
+
+.volume-slider::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.2),
+    rgba(153, 69, 255, 0.2)
+  );
+  filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.volume-slider:hover::after {
+  opacity: 1;
 }
