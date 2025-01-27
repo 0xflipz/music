@@ -50,15 +50,11 @@ export default function HolographicVideo() {
           </div>
         </div>
 
-        {/* Countdown Timer */}
+        {/* Simple Hieroglyphic Timer */}
         <div className="flex items-center gap-2">
-          <motion.span
-            className="font-mono text-[10px] text-[#FF4400] tracking-wider"
-            animate={{ opacity: [0.8, 1, 0.8] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          >
-            {`${timeLeft.days}:${String(timeLeft.hours).padStart(2, '0')}:${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}.${String(timeLeft.milliseconds).padStart(3, '0')}`}
-          </motion.span>
+          <span className="font-mono text-[10px] text-[#FF4400] tracking-[0.5em]">
+            ⟊⟡⟰⟱⟲⟳⟴⟵⟶⟷
+          </span>
         </div>
       </div>
 

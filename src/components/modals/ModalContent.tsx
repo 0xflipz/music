@@ -133,23 +133,38 @@ export const ModalSection = ({ children, title, stats }: {
   title?: string;
   stats?: Array<{ value: string; label: string; color?: string; }>;
 }) => (
-  <div className="relative">
-    {/* Corner accents */}
-    <div className="absolute top-0 left-0 w-2 h-2 border-l-2 border-t-2 border-[#9945FF]/40" />
-    <div className="absolute top-0 right-0 w-2 h-2 border-r-2 border-t-2 border-[#9945FF]/40" />
-    <div className="absolute bottom-0 left-0 w-2 h-2 border-l-2 border-b-2 border-[#9945FF]/40" />
-    <div className="absolute bottom-0 right-0 w-2 h-2 border-r-2 border-b-2 border-[#9945FF]/40" />
-    
-    <div className="bg-black/40 border border-[#9945FF]/20 rounded-lg p-4 space-y-3 backdrop-blur-sm">
+  <div className="relative p-4 rounded-lg border border-[#00F0FF]/20 bg-black/40">
+    {/* Enhanced glow effect */}
+    <motion.div
+      className="absolute inset-0 rounded-lg pointer-events-none"
+      animate={{
+        boxShadow: [
+          "0 0 10px rgba(0, 240, 255, 0.1), inset 0 0 15px rgba(153, 69, 255, 0.1)",
+          "0 0 15px rgba(0, 240, 255, 0.2), inset 0 0 20px rgba(153, 69, 255, 0.2)",
+          "0 0 10px rgba(0, 240, 255, 0.1), inset 0 0 15px rgba(153, 69, 255, 0.1)",
+        ]
+      }}
+      transition={{ duration: 2, repeat: Infinity }}
+    />
+
+    {/* Content with enhanced visibility */}
+    <div className="relative z-10">
       {title && (
-        <div className="flex items-center gap-2 mb-3">
-          <motion.div
-            className="h-3 w-[2px] bg-[#00F0FF]"
-            animate={{ opacity: [1, 0.5, 1] }}
+        <h3 className="text-[#00F0FF] font-mono text-sm mb-3 flex items-center gap-2">
+          <motion.span
+            animate={{
+              opacity: [1, 0.7, 1],
+              textShadow: [
+                "0 0 8px rgba(0, 240, 255, 0.5)",
+                "0 0 12px rgba(0, 240, 255, 0.7)",
+                "0 0 8px rgba(0, 240, 255, 0.5)",
+              ]
+            }}
             transition={{ duration: 1.5, repeat: Infinity }}
-          />
-          <h3 className="text-[#00F0FF] font-mono text-sm tracking-wider">{title}</h3>
-        </div>
+          >
+            {title}
+          </motion.span>
+        </h3>
       )}
       
       {/* Add grid for stats if provided */}
