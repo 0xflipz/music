@@ -23,7 +23,7 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
       className="fixed inset-0 bg-black z-[100]"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      transition={{ duration: 0.1, ease: "linear" }}
     >
       {/* Solid black background */}
       <div className="absolute inset-0 bg-black z-[49]" />
@@ -65,46 +65,97 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
         }}
       />
 
-      {/* RGB split effect */}
+      {/* Floating Solana Logo with Photon Link */}
       <motion.div
-        className="absolute inset-0 bg-[#FF0000]/10 mix-blend-screen z-[52]"
+        className="fixed z-[52] w-[80px] h-[80px]"
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: [1, 0.7, 1],
+          left: [
+            '50%',
+            `${Math.random() * 70 + 15}%`, // Random horizontal position
+            '50%'
+          ],
+          top: [
+            '50%',
+            `${Math.random() * 70 + 15}%`, // Random vertical position
+            '50%'
+          ],
+          rotate: [0, 360],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{ 
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+          repeatType: "reverse"
+        }}
+        style={{
+          position: 'fixed',
+          transform: 'translate(-50%, -50%)',
+          boxShadow: '0 0 20px rgba(153, 69, 255, 0.3)',
+        }}
+      >
+        <a 
+          href="https://photon-sol.tinyastro.io/en/lp/HKuJrP5tYQLbEUdjKwjgnHs2957QKjR2iWhJKTtMa1xs?handle=134697779d2600e3dd417b"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full h-full relative hover:scale-110 transition-transform duration-300"
+        >
+          <Image
+            src="/solanalogo.png"
+            alt="Solana Logo"
+            fill
+            className="object-contain"
+            style={{
+              filter: "drop-shadow(0 0 10px rgba(153, 69, 255, 0.5))"
+            }}
+          />
+        </a>
+      </motion.div>
+
+      {/* RGB split effects - enhanced with negative blend */}
+      <motion.div
+        className="absolute inset-0 bg-[#FF0000]/30 mix-blend-difference z-[52]"
         animate={{
-          x: ['-2%', '2%', '-2%'],
-          opacity: [0, 0.5, 0]
+          x: ['-4%', '4%', '-4%'],
+          y: ['2%', '-2%', '2%'],
+          opacity: [0, 0.8, 0]
         }}
         transition={{
           duration: 0.2,
           repeat: Infinity,
-          repeatDelay: 1.2,
-          ease: "linear"
-        }}
-      />
-
-      {/* Additional glitch layers for more aggressive effect */}
-      <motion.div
-        className="absolute inset-0 bg-[#00F0FF]/20 mix-blend-screen z-[53]"
-        animate={{
-          opacity: [0, 0.8, 0],
-          x: ['-5%', '5%', '-5%']
-        }}
-        transition={{
-          duration: 0.2,
-          repeat: Infinity,
-          repeatDelay: 0.3,
+          repeatDelay: 0.8,
           ease: "linear"
         }}
       />
 
       <motion.div
-        className="absolute inset-0 bg-[#FF0000]/10 mix-blend-overlay z-[54]"
+        className="absolute inset-0 bg-[#00FF00]/30 mix-blend-exclusion z-[53]"
         animate={{
-          opacity: [0, 0.5, 0],
-          x: ['3%', '-3%', '3%']
+          x: ['4%', '-4%', '4%'],
+          y: ['-2%', '2%', '-2%'],
+          opacity: [0, 0.8, 0]
         }}
         transition={{
           duration: 0.15,
           repeat: Infinity,
-          repeatDelay: 0.25,
+          repeatDelay: 0.7,
+          ease: "linear"
+        }}
+      />
+
+      <motion.div
+        className="absolute inset-0 bg-[#0000FF]/30 mix-blend-difference z-[54]"
+        animate={{
+          x: ['-3%', '3%', '-3%'],
+          y: ['3%', '-3%', '3%'],
+          opacity: [0, 0.8, 0]
+        }}
+        transition={{
+          duration: 0.25,
+          repeat: Infinity,
+          repeatDelay: 0.6,
           ease: "linear"
         }}
       />
