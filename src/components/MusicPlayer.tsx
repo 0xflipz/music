@@ -116,6 +116,12 @@ export default function MusicPlayer() {
     );
   };
 
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="music-player-wrapper">
       <div className="music-player-content">
@@ -134,11 +140,11 @@ export default function MusicPlayer() {
           <div className="w-full space-y-1">
             <div 
               ref={progressBarRef}
-              className="h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer"
+              className="h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer progress-bar"
               onClick={handleProgressBarClick}
             >
               <motion.div 
-                className="h-full bg-white/50"
+                className="h-full bg-white/50 relative"
                 style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
                 animate={{
                   boxShadow: [
@@ -150,21 +156,15 @@ export default function MusicPlayer() {
                 transition={{ duration: 2, repeat: Infinity }}
               />
             </div>
-            <div className="flex justify-between text-[10px] font-mono">
-              <span className="text-white/40">
-                {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}
-              </span>
-              <span className="text-white/40">
-                {duration > 0 && (
-                  `-${Math.floor((duration - currentTime) / 60)}:${Math.floor((duration - currentTime) % 60).toString().padStart(2, '0')}`
-                )}
-              </span>
+            <div className="flex justify-between text-xs text-white/50">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
           </div>
         </div>
 
         {/* Right side - Volume Control */}
-        <div className="flex items-center justify-start gap-3 w-[120px] px-4">
+        <div className="flex items-center gap-3 w-[120px] px-4">
           <button 
             onClick={() => {
               const newVolume = volume === 0 ? 0.75 : 0;
@@ -177,7 +177,7 @@ export default function MusicPlayer() {
           </button>
           <div 
             ref={volumeBarRef}
-            className="w-20 h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer relative group"
+            className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer relative group"
             onClick={handleVolumeChange}
             onMouseMove={(e) => e.buttons === 1 && handleVolumeChange(e)}
           >
