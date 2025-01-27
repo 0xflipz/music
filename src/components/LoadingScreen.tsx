@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 interface LoadingScreenProps {
   setIsLoading: (value: boolean) => void;
@@ -10,6 +11,8 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
   const [showEnter, setShowEnter] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -17,6 +20,64 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Auto-play music when component mounts with retry logic
+  useEffect(() => {
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.volume = 0.5;
+          // Try to play immediately
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            setIsPlaying(true);
+          }
+        } catch (error) {
+          console.log("Initial autoplay failed, trying with user interaction");
+          // Add event listener for first user interaction
+          const handleFirstInteraction = async () => {
+            try {
+              await audioRef.current?.play();
+              setIsPlaying(true);
+              // Remove the event listeners after successful play
+              document.removeEventListener('click', handleFirstInteraction);
+              document.removeEventListener('touchstart', handleFirstInteraction);
+            } catch (error) {
+              console.log("Autoplay failed after interaction:", error);
+            }
+          };
+
+          // Add listeners for user interaction
+          document.addEventListener('click', handleFirstInteraction);
+          document.addEventListener('touchstart', handleFirstInteraction);
+        }
+      }
+    };
+
+    playAudio();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      // Clean up event listeners if they were added
+      document.removeEventListener('click', () => {});
+      document.removeEventListener('touchstart', () => {});
+    };
+  }, []);
+
+  const togglePlay = async () => {
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      await audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
   return (
     <motion.div 
@@ -259,6 +320,27 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Updated Audio Player - moved to top right */}
+      <div className="fixed top-8 right-8 z-[101] flex items-center gap-4">
+        <motion.button
+          onClick={togglePlay}
+          className="p-3 bg-transparent border border-white rounded-full text-white hover:bg-white/10 transition-colors"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isPlaying ? (
+            <SpeakerWaveIcon className="w-5 h-5" />
+          ) : (
+            <SpeakerXMarkIcon className="w-5 h-5" />
+          )}
+        </motion.button>
+        <audio 
+          ref={audioRef}
+          src="/loadingaudio.mp3"
+          loop
+        />
+      </div>
     </motion.div>
   );
 }
