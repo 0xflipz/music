@@ -34,38 +34,24 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
   }, [value, isAnimated]);
 
   return (
-    <Card className="bg-black/40 border-[#9945FF]/20">
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-mono text-[#9945FF] tracking-wider">{label}</span>
-          {trend && (
-            <div className="flex items-center gap-2">
-              <motion.span
-                className={cn(
-                  "px-1.5 py-0.5 text-[10px] rounded",
-                  "border border-[#9945FF]/30",
-                  trend > 0 
-                    ? "text-[#00F0FF] bg-[#00F0FF]/10" 
-                    : "text-[#FF4400] bg-[#FF4400]/10"
-                )}
-                animate={{
-                  opacity: [0.7, 1, 0.7],
-                  boxShadow: [
-                    "0 0 10px rgba(153, 69, 255, 0.2)",
-                    "0 0 15px rgba(0, 240, 255, 0.3)",
-                    "0 0 10px rgba(153, 69, 255, 0.2)"
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {trend > 0 ? "+" : ""}{trend}%
-              </motion.span>
-            </div>
-          )}
+    <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+      <div className="p-4">
+        {/* Header with Label and Trend */}
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[10px] text-white tracking-wider font-mono">{label}</span>
+          <span className={cn(
+            "px-1.5 py-0.5 text-[10px] rounded border",
+            trend >= 0 
+              ? "text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30" 
+              : "text-[#FF4400] bg-[#FF4400]/10 border-[#FF4400]/30"
+          )}>
+            {trend >= 0 ? '+' : ''}{trend}%
+          </span>
         </div>
 
+        {/* Value Display */}
         <motion.div 
-          className="text-xl font-mono text-[#00F0FF] tracking-wider"
+          className="text-2xl font-mono text-[#00F0FF] tracking-wider"
           animate={isAnimated ? {
             opacity: [0.9, 1, 0.9],
             textShadow: [
@@ -76,27 +62,26 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
           } : {}}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          {currentValue.split('.')[0]}
-          <span className="text-base opacity-90">.{currentValue.split('.')[1] || '000'}</span>
+          {currentValue}
         </motion.div>
-
-        {/* Bottom line animation */}
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[1px]"
-          style={{
-            background: 'linear-gradient(to right, #9945FF, #00F0FF)'
-          }}
-          animate={{
-            opacity: [0.3, 0.6, 0.3],
-            boxShadow: [
-              "0 0 10px rgba(153, 69, 255, 0.2)",
-              "0 0 15px rgba(0, 240, 255, 0.3)",
-              "0 0 10px rgba(153, 69, 255, 0.2)"
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
       </div>
+
+      {/* Background Glow Effect */}
+      <motion.div
+        className="absolute inset-0 -z-10 rounded-lg opacity-20"
+        style={{
+          background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </Card>
   );
 };
@@ -182,40 +167,67 @@ const NetworkGrid = ({ total, active }: { total: number; active: number }) => {
 // Add this component near the top of StatsContainer.tsx, after the TokenMetric component
 const SystemMetric = ({ label, value, maxValue = 100 }: { label: string; value: number; maxValue?: number }) => {
   return (
-    <Card className="bg-black/40 border-[#9945FF]/20 p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-mono text-[#9945FF] tracking-wider">{label}</span>
-        <span className="text-xs font-mono text-[#00F0FF]">{value}%</span>
+    <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+      <div className="p-4">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[10px] text-white tracking-wider font-mono">{label}</span>
+          <span className="px-1.5 py-0.5 text-[10px] rounded border text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30">
+            {value.toFixed(1)}%
+          </span>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+            style={{ width: `${(value / maxValue) * 100}%` }}
+            animate={{
+              opacity: [0.7, 1, 0.7],
+              boxShadow: [
+                "0 0 10px rgba(153, 69, 255, 0.3)",
+                "0 0 15px rgba(0, 240, 255, 0.5)",
+                "0 0 10px rgba(153, 69, 255, 0.3)"
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
       </div>
-      <div className="relative h-2 bg-black/60 rounded-full overflow-hidden">
-        <motion.div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
-          style={{ width: `${(value / maxValue) * 100}%` }}
-          animate={{
-            opacity: [0.7, 1, 0.7],
-            boxShadow: [
-              "0 0 10px rgba(153, 69, 255, 0.3)",
-              "0 0 20px rgba(0, 240, 255, 0.5)",
-              "0 0 10px rgba(153, 69, 255, 0.3)"
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      </div>
+
+      {/* Background Glow */}
+      <motion.div
+        className="absolute inset-0 -z-10 rounded-lg opacity-20"
+        style={{
+          background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </Card>
   );
 };
 
 // Update the SystemStats component
-const SystemStats = () => {
-  const [cpuLoad, setCpuLoad] = useState(34.5);
-  const [memory, setMemory] = useState(37.9);
+const SystemMetrics = () => {
+  const [metrics, setMetrics] = useState({
+    cpu: 39.2,
+    memory: 64.9
+  });
 
-  // Simulate fluctuating values
   useEffect(() => {
     const interval = setInterval(() => {
-      setCpuLoad(prev => Number((prev + (Math.random() - 0.5) * 2).toFixed(1)));
-      setMemory(prev => Number((prev + (Math.random() - 0.5) * 2).toFixed(1)));
+      setMetrics({
+        cpu: 35 + Math.random() * 10,
+        memory: 60 + Math.random() * 10
+      });
     }, 2000);
 
     return () => clearInterval(interval);
@@ -223,16 +235,19 @@ const SystemStats = () => {
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <Card className="bg-black/40 border-[#9945FF]/20">
-        <div className="p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-mono text-[#9945FF] tracking-wider">CPU_LOAD</span>
-            <span className="text-xs font-mono text-[#00F0FF]">{cpuLoad}%</span>
+      {/* CPU Load */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">CPU_LOAD</span>
+            <span className="text-[10px] text-[#00F0FF]">{metrics.cpu.toFixed(1)}%</span>
           </div>
+          
+          {/* Progress Bar */}
           <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
-              style={{ width: `${cpuLoad}%` }}
+              style={{ width: `${metrics.cpu}%` }}
               animate={{
                 opacity: [0.7, 1, 0.7],
                 boxShadow: [
@@ -245,56 +260,68 @@ const SystemStats = () => {
             />
           </div>
         </div>
-      </Card>
 
-      <Card className="bg-black/40 border-[#9945FF]/20">
-        <div className="p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-mono text-[#9945FF] tracking-wider">MEMORY</span>
-            <span className="text-xs font-mono text-[#00F0FF]">{memory}%</span>
-          </div>
-          <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
-              style={{ width: `${memory}%` }}
-              animate={{
-                opacity: [0.7, 1, 0.7],
-                boxShadow: [
-                  "0 0 10px rgba(153, 69, 255, 0.3)",
-                  "0 0 15px rgba(0, 240, 255, 0.5)",
-                  "0 0 10px rgba(153, 69, 255, 0.3)"
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-// Add initialization sequence
-const InitializationSequence = () => {
-  return (
-    <div className="terminal-container p-4 mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <motion.div 
-          className="w-2 h-2 rounded-full bg-[#0ff]"
-          animate={{ opacity: [1, 0.3, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <span className="terminal-text">INITIALIZING NEURAL AUDIO ENGINE</span>
-      </div>
-      <div className="progress-bar w-full h-3 rounded">
-        <motion.div 
-          className="progress-fill h-full rounded"
-          animate={{ 
-            width: ["0%", "100%"],
-            transition: { duration: 3, repeat: Infinity }
+        {/* Background Glow */}
+        <motion.div
+          className="absolute inset-0 -z-10 rounded-lg opacity-20"
+          style={{
+            background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.3, 0.2]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
         />
-      </div>
+      </Card>
+
+      {/* Memory Usage */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">MEMORY</span>
+            <span className="text-[10px] text-[#00F0FF]">{metrics.memory.toFixed(1)}%</span>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+              style={{ width: `${metrics.memory}%` }}
+              animate={{
+                opacity: [0.7, 1, 0.7],
+                boxShadow: [
+                  "0 0 10px rgba(153, 69, 255, 0.3)",
+                  "0 0 15px rgba(0, 240, 255, 0.5)",
+                  "0 0 10px rgba(153, 69, 255, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </div>
+
+        {/* Background Glow */}
+        <motion.div
+          className="absolute inset-0 -z-10 rounded-lg opacity-20"
+          style={{
+            background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.3, 0.2]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </Card>
     </div>
   );
 };
@@ -325,6 +352,39 @@ export default function StatsContainer() {
     holders: "1,247",
     volume: "$847.2K"
   }));
+
+  const [timeLeft, setTimeLeft] = useState({
+    days: 10,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0
+  });
+
+  useEffect(() => {
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 10);
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = endDate.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        clearInterval(timer);
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / (1000 * 60)) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+        milliseconds: Math.floor(difference % 1000)
+      });
+    }, 41);
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -362,32 +422,22 @@ export default function StatsContainer() {
               transition={{ duration: 2, repeat: Infinity }}
             />
             <span className="tracking-[0.3em] relative">
-              SYSTEM_STATUS.exe
               <motion.span 
-                className="absolute -top-1 right-0 text-[8px] text-white/70"
-                animate={{ opacity: [1, 0, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                className="text-lg text-[#FF4400] font-mono"
+                animate={{ opacity: [0.8, 1, 0.8] }}
+                transition={{ duration: 1, repeat: Infinity }}
               >
-                ▊
+                {`${timeLeft.days}:${String(timeLeft.hours).padStart(2, '0')}:${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}.${String(timeLeft.milliseconds).padStart(3, '0')}`}
               </motion.span>
             </span>
           </div>
         </div>
 
-        <div className="space-y-8">
-          <div className="grid grid-cols-2 gap-4">
-            <TokenMetric label="FLIPZ_PRICE" value={metrics.price} trend={2.5} />
-            <TokenMetric label="MARKET_CAP" value={metrics.marketCap} trend={-1.2} />
-            <TokenMetric label="HOLDERS" value={metrics.holders} trend={5.8} />
-            <TokenMetric label="24H_VOLUME" value={metrics.volume} trend={3.1} />
-          </div>
-
-          <SystemStats />
-          
+        <div className="space-y-4">
+          <TokenMetrics />
+          <SystemMetrics />
           <CookingHeat />
-
           <NeuralMetrics />
-          <InitializationSequence />
         </div>
       </div>
     </motion.div>
@@ -396,61 +446,88 @@ export default function StatsContainer() {
 
 // Add this CookingHeat component inside StatsContainer.tsx
 const CookingHeat = () => {
-  // Generate random values for demo
-  const getBPM = () => Math.floor(Math.random() * (145 - 135) + 135);
+  const getBPM = () => Math.floor(Math.random() * (140 - 135) + 135);
   const getPeak = () => Math.floor(Math.random() * (98 - 93) + 93);
   
   return (
-    <Card className="bg-black/40 border-[#9945FF]/20">
+    <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-mono text-[#00F0FF]">COOKING_HEAT</span>
+          <span className="text-[10px] text-white tracking-wider font-mono">COOKING_HEAT</span>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#9945FF]">BPM</span>
-              <span className="text-xs text-[#00F0FF]">{getBPM()}</span>
+              <span className="text-[10px] text-white tracking-wider">BPM</span>
+              <span className="text-[10px] text-[#00F0FF]">{getBPM()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#9945FF]">PEAK</span>
-              <span className="text-xs text-[#00F0FF]">{getPeak()}%</span>
+              <span className="text-[10px] text-white tracking-wider">PEAK</span>
+              <span className="text-[10px] text-[#00F0FF]">{getPeak()}%</span>
             </div>
-            <span className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
+            <div className="px-1.5 py-0.5 text-[10px] bg-[#9945FF]/20 rounded border border-[#9945FF]/30 text-[#00F0FF]">
               LIVE
-            </span>
+            </div>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-4 text-[10px] mb-4">
-          <div>
-            <div className="text-[#9945FF]">INTENSITY</div>
-            <div className="text-[#00F0FF]">86%</div>
-          </div>
-          <div>
-            <div className="text-[#9945FF]">FREQUENCY</div>
-            <div className="text-[#00F0FF]">18.3kHz</div>
-          </div>
-          <div>
-            <div className="text-[#9945FF]">AMPLITUDE</div>
-            <div className="text-[#00F0FF]">-3.2dB</div>
-          </div>
-          <div>
-            <div className="text-[#9945FF]">SATURATION</div>
-            <div className="text-[#00F0FF]">93%</div>
-          </div>
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {[
+            { label: "INTENSITY", value: "86%" },
+            { label: "FREQUENCY", value: "18.3kHz" },
+            { label: "AMPLITUDE", value: "-3.2dB" },
+            { label: "SATURATION", value: "93%" }
+          ].map((stat) => (
+            <div key={stat.label}>
+              <div className="text-[10px] text-white tracking-wider font-mono mb-1">{stat.label}</div>
+              <div className="text-[10px] text-[#00F0FF] tracking-wider">{stat.value}</div>
+            </div>
+          ))}
         </div>
 
         {/* Visualization */}
-        <div className="h-32 rounded-lg overflow-hidden bg-black/40 border border-[#9945FF]/20">
+        <div className="relative h-32 rounded-lg overflow-hidden bg-black/60 border border-[#9945FF]/20">
           <NetworkWave 
             total={128}
             columns={32}
             rows={24}
             className="cooking-heat"
           />
+          
+          {/* Overlay Gradient */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `
+                linear-gradient(
+                  180deg,
+                  transparent 0%,
+                  rgba(0, 240, 255, 0.1) 50%,
+                  rgba(153, 69, 255, 0.2) 100%
+                )
+              `,
+              mixBlendMode: 'overlay'
+            }}
+          />
         </div>
       </div>
+
+      {/* Background Glow */}
+      <motion.div
+        className="absolute inset-0 -z-10 rounded-lg opacity-20"
+        style={{
+          background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </Card>
   );
 };
@@ -458,15 +535,190 @@ const CookingHeat = () => {
 // Update the stats section in StatsContainer
 const NeuralMetrics = () => {
   return (
-    <Card className="bg-black/40 border-[#9945FF]/20">
+    <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
       <div className="p-4 space-y-4">
-        <LiveStatBar value={93.3} label="NEURAL_HARMONY" />
-        <LiveStatBar value={67.7} label="BEATS_ANALYZED" />
-        <LiveStatBar value={88.4} label="RHYTHM_SYNC" />
-        <LiveStatBar value={96.9} label="AI_FLOW" />
-        <LiveStatBar value={81.3} label="NEURAL_SYNC" />
-        <LiveStatBar value={91.7} label="SYSTEM_HEALTH" />
+        {[
+          { label: "NEURAL_HARMONY", value: 93.3 },
+          { label: "BEATS_ANALYZED", value: 67.7 },
+          { label: "RHYTHM_SYNC", value: 88.4 },
+          { label: "AI_FLOW", value: 96.9 },
+          { label: "NEURAL_SYNC", value: 81.3 },
+          { label: "SYSTEM_HEALTH", value: 91.7 }
+        ].map((metric) => (
+          <div key={metric.label} className="relative">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[10px] text-white tracking-wider font-mono">{metric.label}</span>
+              <span className="px-1.5 py-0.5 text-[10px] rounded border text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30">
+                {metric.value}%
+              </span>
+            </div>
+            <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden">
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-[#9945FF] to-[#00F0FF]"
+                style={{ width: `${metric.value}%` }}
+                animate={{
+                  opacity: [0.7, 1, 0.7],
+                  boxShadow: [
+                    "0 0 10px rgba(153, 69, 255, 0.3)",
+                    "0 0 15px rgba(0, 240, 255, 0.5)",
+                    "0 0 10px rgba(153, 69, 255, 0.3)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
+          </div>
+        ))}
       </div>
+
+      {/* Background Glow */}
+      <motion.div
+        className="absolute inset-0 -z-10 rounded-lg opacity-20"
+        style={{
+          background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </Card>
   );
-}; 
+};
+
+const TokenMetrics = () => {
+  const [metrics, setMetrics] = useState({
+    price: 1.247,
+    priceChange: 2.5,
+    marketCap: 12.4,
+    marketCapChange: 1.8,
+    holders: "1247",
+    holdersChange: 3.2,
+    volume: 847.2,
+    volumeChange: -0.7
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics(prev => ({
+        price: parseFloat(fluctuate(prev.price, 2)),
+        priceChange: parseFloat(fluctuate(prev.priceChange, 10)),
+        marketCap: parseFloat(fluctuate(prev.marketCap, 1)),
+        marketCapChange: parseFloat(fluctuate(prev.marketCapChange, 5)),
+        holders: Math.floor(1247 + Math.random() * 10).toString(),
+        holdersChange: parseFloat(fluctuate(prev.holdersChange, 3)),
+        volume: parseFloat(fluctuate(prev.volume, 3)),
+        volumeChange: parseFloat(fluctuate(prev.volumeChange, 8))
+      }));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {/* Price */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">FLIPZ_PRICE</span>
+            <span className={cn(
+              "px-1.5 py-0.5 text-[10px] rounded border",
+              metrics.priceChange >= 0 
+                ? "text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30" 
+                : "text-[#FF4400] bg-[#FF4400]/10 border-[#FF4400]/30"
+            )}>
+              {metrics.priceChange >= 0 ? '+' : ''}{metrics.priceChange.toFixed(1)}%
+            </span>
+          </div>
+          <div className="text-2xl font-mono text-[#00F0FF] tracking-wider">
+            ${metrics.price.toFixed(3)}
+          </div>
+        </div>
+        <TokenMetricGlow />
+      </Card>
+
+      {/* Market Cap */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">MARKET_CAP</span>
+            <span className={cn(
+              "px-1.5 py-0.5 text-[10px] rounded border",
+              metrics.marketCapChange >= 0 
+                ? "text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30" 
+                : "text-[#FF4400] bg-[#FF4400]/10 border-[#FF4400]/30"
+            )}>
+              {metrics.marketCapChange >= 0 ? '+' : ''}{metrics.marketCapChange.toFixed(1)}%
+            </span>
+          </div>
+          <div className="text-2xl font-mono text-[#00F0FF] tracking-wider">
+            ${metrics.marketCap.toFixed(1)}M
+          </div>
+        </div>
+        <TokenMetricGlow />
+      </Card>
+
+      {/* Holders */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">HOLDERS</span>
+            <span className="px-1.5 py-0.5 text-[10px] rounded border text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30">
+              +{metrics.holdersChange.toFixed(1)}%
+            </span>
+          </div>
+          <div className="text-2xl font-mono text-[#00F0FF] tracking-wider">
+            {metrics.holders}
+          </div>
+        </div>
+        <TokenMetricGlow />
+      </Card>
+
+      {/* Volume */}
+      <Card className="relative overflow-hidden bg-black/40 backdrop-blur-sm border border-[#9945FF]/40">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white tracking-wider font-mono">VOLUME</span>
+            <span className={cn(
+              "px-1.5 py-0.5 text-[10px] rounded border",
+              metrics.volumeChange >= 0 
+                ? "text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30" 
+                : "text-[#FF4400] bg-[#FF4400]/10 border-[#FF4400]/30"
+            )}>
+              {metrics.volumeChange >= 0 ? '+' : ''}{metrics.volumeChange.toFixed(1)}%
+            </span>
+          </div>
+          <div className="text-2xl font-mono text-[#00F0FF] tracking-wider">
+            ${metrics.volume.toFixed(1)}K
+          </div>
+        </div>
+        <TokenMetricGlow />
+      </Card>
+    </div>
+  );
+};
+
+// Helper component for the glow effect
+const TokenMetricGlow = () => (
+  <motion.div
+    className="absolute inset-0 -z-10 rounded-lg opacity-20"
+    style={{
+      background: `radial-gradient(circle, rgba(153, 69, 255, 0.4) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%)`
+    }}
+    animate={{
+      scale: [1, 1.2, 1],
+      opacity: [0.2, 0.3, 0.2]
+    }}
+    transition={{
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+  />
+); 
