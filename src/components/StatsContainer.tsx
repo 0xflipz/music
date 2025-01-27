@@ -39,7 +39,7 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
         {/* Header with Label and Trend */}
         <div className="flex justify-between items-center mb-2">
           <span className="text-[10px] text-white tracking-wider font-mono">{label}</span>
-          <span className={cn(
+          { trend && <span className={cn(
             "px-1.5 py-0.5 text-[10px] rounded border",
             trend >= 0 
               ? "text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30" 
@@ -47,6 +47,7 @@ const TokenMetric = ({ label, value, trend, isAnimated = true }: TokenMetricProp
           )}>
             {trend >= 0 ? '+' : ''}{trend}%
           </span>
+}
         </div>
 
         {/* Value Display */}

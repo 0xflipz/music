@@ -11,6 +11,7 @@ const Card = React.forwardRef<
     variant?: "default" | "neural" | "quantum";
   }
 >(({ className, glowAccent, variant = "default", ...props }, ref) => (
+  //@ts-ignore
   <motion.div
     ref={ref}
     initial={{ opacity: 0, y: 20 }}
