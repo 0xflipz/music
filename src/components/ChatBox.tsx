@@ -417,7 +417,7 @@ function ChatBox() {
   }, [input]);
 
   return (
-    <div className="component-container chat-box relative h-[550px] w-full bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg overflow-hidden flex flex-col shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+    <div className="component-container chat-box relative h-[550px] w-full bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg overflow-hidden flex flex-col">
       {/* Header with enhanced glow */}
       <div className="sticky top-0 z-10 bg-black/40 backdrop-blur-sm border-b border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
         <div className="flex items-center justify-between p-3">
@@ -434,38 +434,22 @@ function ChatBox() {
         </div>
       </div>
 
-      {/* Add pulsing glow effect container */}
-      <motion.div
-        className="absolute inset-0 -z-20 rounded-lg pointer-events-none"
-        animate={{
-          boxShadow: [
-            "0 0 20px rgba(255,255,255,0.1)",
-            "0 0 30px rgba(255,255,255,0.2)",
-            "0 0 20px rgba(255,255,255,0.1)"
-          ]
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
-      {/* Network Wave background */}
+      {/* Network Wave background with white color */}
       <div className="absolute inset-0 -z-10">
         <NetworkWave
           total={40}
           columns={8}
           rows={5}
-          className="w-full h-full opacity-20"
+          className="w-full h-full opacity-10"
+          color="rgba(255, 255, 255, 0.8)"
         />
       </div>
 
-      {/* Messages container takes remaining space */}
+      {/* Messages container with flex-1 */}
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#9945FF]/20 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
       >
         <AnimatePresence>
           {messages.map((message) => (
@@ -475,45 +459,26 @@ function ChatBox() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Footer is now sticky */}
-      <div className="sticky bottom-0 border-t border-[#9945FF]/20 p-4 bg-black/80 backdrop-blur-md">
-        <div className="relative">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleSendMessage}
-            placeholder="Chat with FLIPZ AI..."
-            className="w-full bg-black/20 text-white placeholder-white/30 px-4 py-2 rounded border border-[#9945FF]/20 focus:outline-none focus:border-[#9945FF]/40"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1 text-xs bg-[#9945FF]/20 hover:bg-[#9945FF]/30 text-white rounded border border-[#9945FF]/30 transition-colors"
-          >
-            Send
-          </button>
-        </div>
-
-        {/* Beat pulse visualization */}
-        <motion.div className="absolute bottom-0 left-0 right-0 h-8 flex items-center justify-center gap-1 overflow-hidden bg-gradient-to-t from-black/40 to-transparent">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="w-0.5 bg-gradient-to-t from-[#9945FF] to-[#00F0FF]"
-              animate={{
-                height: isAnalyzing 
-                  ? [10, 20 + (Math.random() * 5), 10] 
-                  : 4,
-              }}
-              transition={{
-                duration: 0.5,
-                repeat: Infinity,
-                delay: i * 0.1,
-                ease: "easeInOut"
-              }}
+      {/* Footer with sticky positioning and full width */}
+      <div className="sticky bottom-0 z-10 border-t border-white/20 bg-black/80 backdrop-blur-md">
+        <div className="relative p-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleSendMessage}
+              placeholder="Chat with FLIPZ AI..."
+              className="flex-1 bg-black/20 text-white placeholder-white/30 px-4 py-2 rounded border border-white/20 focus:outline-none focus:border-white/40"
             />
-          ))}
-        </motion.div>
+            <button
+              onClick={handleSendMessage}
+              className="px-4 py-2 text-xs bg-white/10 hover:bg-white/20 text-white rounded border border-white/30 transition-colors whitespace-nowrap"
+            >
+              Send
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
