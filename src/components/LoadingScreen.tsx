@@ -292,16 +292,6 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
             initial={{ opacity: 0 }}
             animate={{ 
               opacity: [1, 0.7, 1],
-              left: [
-                '50%',
-                `${Math.random() * 70 + 15}%`, // Keep button 15-85% from left edge
-                '50%'
-              ],
-              top: [
-                '50%',
-                `${Math.random() * 70 + 15}%`, // Keep button 15-85% from top edge
-                '50%'
-              ],
               textShadow: [
                 '0 0 10px rgba(255, 0, 0, 0.7)',
                 '0 0 20px rgba(255, 0, 0, 0.5)',
@@ -319,7 +309,9 @@ export default function LoadingScreen({ setIsLoading }: LoadingScreenProps) {
               position: 'fixed',
               transform: 'translate(-50%, -50%)',
               boxShadow: '0 0 20px rgba(255, 0, 0, 0.3)',
-              textShadow: '0 0 10px rgba(255, 0, 0, 0.5)'
+              textShadow: '0 0 10px rgba(255, 0, 0, 0.5)',
+              left: `${Math.random() * 70 + 15}%`, // Random horizontal position
+              top: `${Math.random() * 70 + 15}%`  // Random vertical position
             }}
             onClick={() => setIsLoading(false)}
           >
