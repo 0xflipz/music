@@ -5,32 +5,32 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/utils/utils";
 import Modal from "./ui/Modal";
-import { ModalHeader, ModalSection, StatusIndicator } from "./modals/ModalContent";
+import { ModalHeader, ModalSection, StatusIndicator, TypewriterText } from "./modals/ModalContent";
 
 const tabs = [
   { 
     id: 'gang', 
     label: 'GANG', 
     modalTitle: 'GANG INTERFACE v1.0.2',
-    description: 'Access the exclusive FLIPZ community network and governance system.'
+    description: 'Access the exclusive FLIPZ community network and governance system. Join the GANG to participate in decision-making and earn rewards.'
   },
   { 
     id: 'tokenomics', 
     label: 'TOKENOMICS', 
     modalTitle: 'TOKENOMICS ANALYZER v2.1.4',
-    description: 'Real-time analysis of $FLIPZ token metrics and market performance.'
+    description: 'Real-time analysis of $FLIPZ token metrics and market performance. Explore detailed insights into market cap, trading volume, and price trends.'
   },
   { 
     id: 'mao', 
     label: 'M.A.O', 
     modalTitle: 'M.A.O SYSTEM v3.0.1',
-    description: 'Music Asset Optimization - AI-powered music creation and enhancement.'
+    description: 'Music Asset Optimization - AI-powered music creation and enhancement. COMING SOON: Revolutionize your music production with cutting-edge AI tools.'
   },
   { 
     id: 'submit', 
     label: 'SUBMIT YOUR MUSIC', 
     modalTitle: 'MUSIC SUBMISSION PROTOCOL v1.1.5',
-    description: 'Submit your tracks to the FLIPZ network for AI enhancement and distribution.'
+    description: 'Submit your tracks to the FLIPZ network for AI enhancement and distribution. Get your music heard by a global audience and leverage AI for superior sound quality.'
   },
 ];
 
@@ -47,6 +47,81 @@ export default function TabNav() {
   };
 
   const renderModalContent = (tab: typeof tabs[0]) => {
+    if (tab.id === 'mao') {
+      return (
+        <div className="flex flex-col items-center justify-center h-full">
+          <h2 className="text-2xl font-bold text-[#00F0FF]">COMING SOON</h2>
+          <div className="mt-4 text-sm text-white/80">
+            <TypewriterText text="The Music Asset Optimization (M.A.O) system is under development. Stay tuned for revolutionary AI-powered music tools. Experience the future of music production with our cutting-edge technology." />
+          </div>
+          <div className="mt-4 text-xs text-white/60">
+            - $FLIPZ
+          </div>
+          <motion.div
+            className="mt-8 w-16 h-16 border-4 border-dashed border-[#00F0FF] rounded-full animate-spin"
+          />
+        </div>
+      );
+    }
+    
+    if (tab.id === 'submit') {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-6">
+          <h2 className="text-3xl font-bold text-[#00F0FF] mb-4">Submit Your Music</h2>
+          <p className="text-center text-white/80 mb-6">
+            Share your tracks with the FLIPZ community and let our AI enhance your music. 
+            Reach a global audience and experience superior sound quality.
+          </p>
+          <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit}>
+            <input
+              type="file"
+              accept="audio/*"
+              className="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#00F0FF]/10 file:text-[#00F0FF] hover:file:bg-[#00F0FF]/20"
+              onChange={handleFileChange}
+            />
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-[#00F0FF] text-white rounded hover:bg-[#00F0FF]/80 transition"
+            >
+              Upload
+            </button>
+          </form>
+          <p className="text-xs text-white/60 mt-4">
+            Supported formats: MP3, WAV, FLAC. Max size: 10MB.
+          </p>
+        </div>
+      );
+    }
+    
+    if (tab.id === 'tokenomics') {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-6">
+          <h2 className="text-3xl font-bold text-[#00F0FF] mb-4">Tokenomics</h2>
+          <p className="text-center text-white/80 mb-6">
+            Discover the distribution of the $FLIPZ token. Our tokenomics are designed to ensure a fair and transparent allocation.
+          </p>
+          <div className="w-full max-w-md space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-white/80">Public Distribution</span>
+              <span className="text-[#00F0FF] font-bold">90%</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-white/80">Team Allocation</span>
+              <span className="text-[#00F0FF] font-bold">10%</span>
+            </div>
+          </div>
+          <div className="mt-6 w-full max-w-md">
+            <div className="h-4 bg-[#00F0FF]/10 rounded-full overflow-hidden">
+              <div className="h-full bg-[#00F0FF] rounded-full" style={{ width: '90%' }}></div>
+            </div>
+            <div className="h-4 bg-[#9945FF]/10 rounded-full overflow-hidden mt-2">
+              <div className="h-full bg-[#9945FF] rounded-full" style={{ width: '10%' }}></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="space-y-6">
         <ModalHeader title={tab.modalTitle} />
@@ -111,6 +186,20 @@ export default function TabNav() {
         </div>
       </div>
     );
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log("Selected file:", file);
+      // Handle file selection
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Handle form submission
+    console.log("Form submitted");
   };
 
   return (

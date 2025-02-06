@@ -9,8 +9,12 @@ const LoadingAvatar = memo(() => {
     <motion.div 
       className="fixed right-[400px] bottom-0 z-[60] pointer-events-none"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      animate={{ opacity: [1, 0, 0, 0, 1] }}
+      transition={{ 
+        duration: 16,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
     >
       <div className="relative w-[600px] h-[600px]">
         {/* Enhanced Solana glow effect - more concentrated */}
