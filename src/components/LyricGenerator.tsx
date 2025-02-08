@@ -36,38 +36,76 @@ const HOOKS = [
   "Virtual worlds in my DNA (code)"
 ];
 
-const VERSE_STRUCTURES = {
+// First, let's define a proper structure type
+interface VerseStructure {
+  sections: Array<{
+    name: string;
+    lines: number;
+  }>;
+  flow: string;
+  rhymeScheme: string;
+  tempo: string;
+  adLibFrequency: string;
+}
+
+// Update the VERSE_STRUCTURES object to match the new interface
+const VERSE_STRUCTURES: Record<string, VerseStructure> = {
   trap: {
+    sections: [
+      { name: 'VERSE 1', lines: 8 },
+      { name: 'HOOK', lines: 4 },
+      { name: 'VERSE 2', lines: 8 },
+      { name: 'HOOK', lines: 4 }
+    ],
     flow: "triplet",
-    lineCount: 16,
     rhymeScheme: "AABB",
     tempo: "fast",
     adLibFrequency: "high"
   },
   drill: {
+    sections: [
+      { name: 'INTRO', lines: 4 },
+      { name: 'VERSE', lines: 8 },
+      { name: 'HOOK', lines: 4 },
+      { name: 'OUTRO', lines: 4 }
+    ],
     flow: "sliding",
-    lineCount: 12,
     rhymeScheme: "ABAB",
     tempo: "aggressive",
     adLibFrequency: "medium"
   },
   boomBap: {
+    sections: [
+      { name: 'VERSE 1', lines: 8 },
+      { name: 'HOOK', lines: 4 },
+      { name: 'VERSE 2', lines: 8 },
+      { name: 'HOOK', lines: 4 }
+    ],
     flow: "steady",
-    lineCount: 16,
     rhymeScheme: "ABAB",
     tempo: "classic",
     adLibFrequency: "low"
   },
   synthwave: {
+    sections: [
+      { name: 'VERSE 1', lines: 8 },
+      { name: 'HOOK', lines: 4 },
+      { name: 'VERSE 2', lines: 8 },
+      { name: 'HOOK', lines: 4 }
+    ],
     flow: "melodic",
-    lineCount: 14,
     rhymeScheme: "AABBA",
     tempo: "atmospheric",
     adLibFrequency: "minimal"
   },
   cyberPunk: {
+    sections: [
+      { name: 'VERSE 1', lines: 8 },
+      { name: 'HOOK', lines: 4 },
+      { name: 'VERSE 2', lines: 8 },
+      { name: 'HOOK', lines: 4 }
+    ],
     flow: "glitch",
-    lineCount: 18,
     rhymeScheme: "AABAAB",
     tempo: "erratic",
     adLibFrequency: "high"
@@ -214,6 +252,152 @@ function LyricsModal({ lyrics, onClose }: LyricsModalProps) {
   );
 }
 
+// Add new theme-based vocabulary
+const THEME_MODIFIERS = {
+  web3: ['blockchain', 'crypto', 'defi', 'token', 'smart contract', 'wallet', 'nft', 'dao', 'metaverse'],
+  trap: ['drip', 'flex', 'stack', 'grind', 'hustle', 'vibe', 'gang', 'squad'],
+  future: ['cyber', 'neural', 'quantum', 'digital', 'virtual', 'synthetic', 'hologram', 'matrix'],
+  tech: ['algorithm', 'binary', 'protocol', 'system', 'network', 'code', 'data', 'signal']
+};
+
+// Add this helper function at the top of the file with other constants
+const capitalize = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+// Move these outside as they don't need component state
+const LINE_BREAK = '\n';
+const SECTION_BREAK = '\n\n';
+const BRIDGE_SEPARATOR = '* * *';
+
+// Add more dynamic vocabulary and patterns
+const LYRIC_PATTERNS = {
+  trap: [
+    "Pull up in the {vehicle} with that {item} ({adlib})",
+    "{action} through the {place} like a {character} ({adlib})",
+    "Got that {adjective} flow, can't {verb} me ({adlib})",
+    "{theme} life got me {feeling} up ({adlib})",
+    "Stack my {currency} till it {verb} up ({adlib})",
+    "In my {location} with that {item} lit ({adlib})",
+    "{verb} on these {noun} they can't comprehend ({adlib})",
+    "Every day we {action}, that's the {theme} way ({adlib})"
+  ],
+  cyberpunk: [
+    "Neural {item} running through my {bodyPart} ({adlib})",
+    "Digital {noun} in my {location} space ({adlib})",
+    "Cyber {action} got my {item} enhanced ({adlib})",
+    "Quantum {noun} in the {place} tonight ({adlib})",
+    "{verb} through the {location} with my {item} ({adlib})",
+    "Future {noun} got me feeling {adjective} ({adlib})",
+    "Tech {flow} in my {bodyPart}, can't stop now ({adlib})",
+    "{theme} dreams in the matrix of time ({adlib})"
+  ],
+  drill: [
+    "On the {location} with my {item} ({adlib})",
+    "They can't {verb} with my {noun} flow ({adlib})",
+    "{action} through the {place}, they know ({adlib})",
+    "Got that {adjective} style, watch it {verb} ({adlib})",
+    "{theme} life, we don't play around ({adlib})",
+    "In the {place} with my {item} down ({adlib})",
+    "Every {noun} got that {adjective} sound ({adlib})",
+    "{action} through the {location}, can't slow down ({adlib})"
+  ],
+  synthwave: [
+    "Neon {noun} in the {location} light ({adlib})",
+    "Retro {item} got my {bodyPart} right ({adlib})",
+    "Synthetic {flow} through the {place} tonight ({adlib})",
+    "Digital {action} in the {adjective} sky ({adlib})",
+    "Wave {verb} through my {noun} mind ({adlib})",
+    "{theme} vibes in the {location} shine ({adlib})",
+    "Future {noun} got that {adjective} design ({adlib})",
+    "{action} through the grid, we're {feeling} fine ({adlib})"
+  ],
+  boomBap: [
+    "Classic {noun} with that {adjective} flow ({adlib})",
+    "Old school {item} how we {action} though ({adlib})",
+    "In the {location} where the {noun} grow ({adlib})",
+    "{theme} life is all I know ({adlib})",
+    "Got that {adjective} style from long ago ({adlib})",
+    "{verb} through the {place} with the show ({adlib})",
+    "Every {noun} got that golden glow ({adlib})",
+    "{action} like the legends, that's the {flow} ({adlib})"
+  ]
+};
+
+// Add dynamic vocabulary for substitution
+const VOCABULARY = {
+  vehicle: ["Lambo", "Tesla", "Phantom", "spaceship", "cyber-whip", "quantum ride"],
+  item: ["stack", "chip", "drive", "code", "neural link", "crypto wallet", "smart contract"],
+  action: ["floating", "gliding", "hacking", "mining", "flipping", "staking", "trading"],
+  place: ["metaverse", "blockchain", "matrix", "cyberspace", "neural net", "digital realm"],
+  character: ["phantom", "hacker", "trader", "miner", "cyber ghost", "digital demon"],
+  adjective: ["encrypted", "quantum", "digital", "cyber", "neural", "virtual", "augmented"],
+  feeling: ["leveled", "powered", "charged", "encrypted", "programmed", "synchronized"],
+  currency: ["ETH", "SOL", "BTC", "FLIPZ", "tokens", "credits", "coins"],
+  location: ["server", "network", "mainframe", "blockchain", "protocol", "platform"],
+  bodyPart: ["mind", "brain", "system", "cortex", "network", "interface"],
+  flow: ["algorithm", "protocol", "program", "sequence", "function", "pattern"],
+  noun: ["data", "codes", "blocks", "tokens", "bytes", "scripts", "protocols"],
+  verb: ["hack", "mine", "flip", "stack", "code", "sync", "trade", "build"]
+};
+
+// Helper functions for complexity variations
+const getMetaphor = () => {
+  const metaphors = [
+    "like binary in the matrix",
+    "flowing through digital veins",
+    "encrypted in the mainframe",
+    "coded in the neural net",
+    "running through quantum gates",
+    "pulsing through cyber networks",
+    "dancing in digital rain",
+    "echoing through virtual space"
+  ];
+  return metaphors[Math.floor(Math.random() * metaphors.length)];
+};
+
+const getEmphasis = () => {
+  const emphasis = [
+    "whispered", 
+    "echoed", 
+    "distorted", 
+    "glitched", 
+    "automated",
+    "synthesized",
+    "encrypted",
+    "quantized"
+  ];
+  return emphasis[Math.floor(Math.random() * emphasis.length)];
+};
+
+const getCommentary = () => {
+  const comments = [
+    "system overload",
+    "buffer overflow",
+    "stack trace",
+    "debug mode",
+    "runtime error",
+    "neural sync",
+    "quantum state",
+    "digital echo"
+  ];
+  return comments[Math.floor(Math.random() * comments.length)];
+};
+
+const getVocalEffect = () => {
+  const effects = [
+    "vocoder",
+    "autotune",
+    "reverb",
+    "delay",
+    "bitcrush",
+    "glitch",
+    "phase",
+    "quantum"
+  ];
+  return effects[Math.floor(Math.random() * effects.length)];
+};
+
 export default function LyricGenerator() {
   const [prompt, setPrompt] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -241,57 +425,128 @@ export default function LyricGenerator() {
     setHook(randomHook);
   }, []);
 
+  // Move these functions inside the component
+  const generateThematicLine = (theme: string, userTheme: string, complexity: number): string => {
+    const genre = selectedGenre.toLowerCase();
+    const patterns = LYRIC_PATTERNS[genre as keyof typeof LYRIC_PATTERNS] || LYRIC_PATTERNS.trap;
+    const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+    
+    // Replace placeholders with vocabulary
+    const line = pattern.replace(/{(\w+)}/g, (match, key) => {
+      const options = VOCABULARY[key as keyof typeof VOCABULARY] || [];
+      const themeWords = userTheme.split(' ').filter(word => word.length > 2);
+      
+      // Sometimes use theme-specific words
+      if (Math.random() < 0.3 && themeWords.length > 0) {
+        return themeWords[Math.floor(Math.random() * themeWords.length)];
+      }
+      
+      return options[Math.floor(Math.random() * options.length)];
+    });
+
+    // Add complexity variations
+    if (complexity > 70) {
+      return addComplexityVariations(line);
+    }
+    
+    return line;
+  };
+
+  const addComplexityVariations = (line: string): string => {
+    const variations = [
+      (l: string) => `${l} [${getMetaphor()}]`,
+      (l: string) => `*${getEmphasis()}* ${l}`,
+      (l: string) => `${l} // ${getCommentary()}`,
+      (l: string) => `[${getVocalEffect()}] ${l}`,
+    ];
+
+    const variation = variations[Math.floor(Math.random() * variations.length)];
+    return variation(line);
+  };
+
+  const formatLyricSection = (name: string, lines: string[], adLibs: boolean = false) => {
+    const formattedLines = lines.map(line => {
+      const adLib = adLibs ? ` ${AD_LIBS[Math.floor(Math.random() * AD_LIBS.length)]}` : '';
+      return `${line}${adLib}`;
+    });
+    
+    return `[${name}]${LINE_BREAK}${formattedLines.join(LINE_BREAK)}${SECTION_BREAK}`;
+  };
+
+  const generateBridge = (theme: string, flow: string) => {
+    const bridgeLines = [
+      `${BRIDGE_SEPARATOR}${LINE_BREAK}`,
+      `[BRIDGE]${LINE_BREAK}`,
+      `In the ${flow} flow, we're taking it higher (yeah)${LINE_BREAK}`,
+      `${capitalize(theme)} vibes, we're lighting the fire (what)${LINE_BREAK}`,
+      `${BRIDGE_SEPARATOR}${LINE_BREAK}`
+    ].join('');
+    
+    return bridgeLines;
+  };
+
+  const generateThematicLines = (theme: string, count: number, complexity: number): string[] => {
+    const lines: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const themeWord = THEME_MODIFIERS[selectedTheme as keyof typeof THEME_MODIFIERS]?.[
+        Math.floor(Math.random() * THEME_MODIFIERS[selectedTheme as keyof typeof THEME_MODIFIERS]?.length)
+      ] || theme;
+      lines.push(generateThematicLine(themeWord, theme, complexity));
+    }
+    return lines;
+  };
+
+  // Update the generateLyrics function
   const generateLyrics = async () => {
     setStatus('generating');
     setGenerating(true);
-    generateHook();
     
-    // Update music stats
-    setBpm(Math.floor(Math.random() * 40) + 120);
-    setKey(['Am', 'Cm', 'Gm', 'Fm'][Math.floor(Math.random() * 4)]);
-    setMood(['Energetic', 'Dark', 'Melodic', 'Aggressive'][Math.floor(Math.random() * 4)]);
-    
-    // Helper functions for generation
-    const getAdLib = () => AD_LIBS[Math.floor(Math.random() * AD_LIBS.length)];
-    const getThemeWord = (theme: keyof typeof THEMES) => 
-      THEMES[theme][Math.floor(Math.random() * THEMES[theme].length)];
-
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const generatedLyrics = `[Verse 1]
-${getThemeWord(selectedTheme as "flex" | "web3" | "cyberpunk" | "future" | "tech")} in my veins, I'm feeling blessed ${useAdLibs ? `(${getAdLib()})` : ''}
-Digital dreams while they're catching rest ${useAdLibs ? `(${getAdLib()})` : ''}
-${getThemeWord('tech')} flow, yeah I'm in my zone ${useAdLibs ? `(${getAdLib()})` : ''}
-Virtual reality is where I roam
-
-[Hook]
-${hook}
-${hook.split('(')[0]} // Repeat hook without ad-lib
-
-[Verse 2]
-${getThemeWord(selectedTheme as "flex" | "web3" | "cyberpunk" | "future" | "tech")} life got me levitating high ${useAdLibs ? `(${getAdLib()})` : ''}
-While they sleeping, watch my tokens multiply ${useAdLibs ? `(${getAdLib()})` : ''}
-${getThemeWord('flex')}, yeah we doing fine ${useAdLibs ? `(${getAdLib()})` : ''}
-Every bar I drop becomes a power line
-
-[Bridge]
-They don't know (what!)
-How we flow (yeah!)
-Getting paid in crypto (facts!)
-Watch it grow (up!)
-
-[Outro]
-${hook}`;
-
-      setLyrics(generatedLyrics);
+      const userTheme = prompt.toLowerCase();
+      const structure = VERSE_STRUCTURES[selectedGenre.toLowerCase() as keyof typeof VERSE_STRUCTURES] || VERSE_STRUCTURES.trap;
+      
+      let finalLyrics = '';
+      
+      // Add intro if present
+      if (structure.sections.find(s => s.name === 'INTRO')) {
+        const introLines = generateThematicLines(userTheme, 4, complexity);
+        finalLyrics += formatLyricSection('INTRO', introLines);
+      }
+      
+      // Generate verses and hooks with proper spacing
+      structure.sections.forEach((section, index) => {
+        const lines = generateThematicLines(userTheme, section.lines, complexity);
+        
+        // Add extra spacing before hooks
+        if (section.name === 'HOOK' && index > 0) {
+          finalLyrics += LINE_BREAK;
+        }
+        
+        finalLyrics += formatLyricSection(
+          section.name, 
+          lines, 
+          useAdLibs && structure.adLibFrequency === 'high'
+        );
+        
+        // Add bridge after first hook
+        if (section.name === 'HOOK' && index === 1) {
+          finalLyrics += generateBridge(userTheme, structure.flow);
+        }
+      });
+      
+      // Add outro if present
+      if (structure.sections.find(s => s.name === 'OUTRO')) {
+        const outroLines = generateThematicLines(userTheme, 4, complexity);
+        finalLyrics += formatLyricSection('OUTRO', outroLines);
+      }
+      
+      setLyrics(finalLyrics);
       setShowModal(true);
-      setStatus('ready');
-    } catch (err) {
-      setError('Generation failed. Please try again.');
+      setStatus('idle');
+      setGenerating(false);
+    } catch (error) {
+      console.error('Error generating lyrics:', error);
       setStatus('error');
-    } finally {
       setGenerating(false);
     }
   };
@@ -385,10 +640,10 @@ ${hook}`;
           <div className="flex gap-2 mb-2">
             <select
               value={selectedTheme}
-              onChange={(e) => setSelectedTheme(e.target.value as keyof typeof THEMES)}
+              onChange={(e) => setSelectedTheme(e.target.value as keyof typeof THEME_MODIFIERS)}
               className="flex-1 bg-black/40 border border-[#9945FF]/20 rounded px-2 py-1.5 text-xs text-[#00F0FF] focus:outline-none"
             >
-              {Object.keys(THEMES).map((theme) => (
+              {Object.keys(THEME_MODIFIERS).map((theme) => (
                 <option key={theme} value={theme}>{theme}</option>
               ))}
             </select>

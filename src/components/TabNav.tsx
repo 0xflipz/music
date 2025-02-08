@@ -6,6 +6,7 @@ import Image from "next/image";
 import { cn } from "@/utils/utils";
 import Modal from "./ui/Modal";
 import { ModalHeader, ModalSection, StatusIndicator, TypewriterText } from "./modals/ModalContent";
+import { FaTwitter, FaSpotify, FaYoutube, FaInstagram, FaSoundcloud } from 'react-icons/fa';
 
 const tabs = [
   { 
@@ -13,12 +14,6 @@ const tabs = [
     label: 'GANG', 
     modalTitle: 'GANG INTERFACE v1.0.2',
     description: 'Access the exclusive FLIPZ community network and governance system. Join the GANG to participate in decision-making and earn rewards.'
-  },
-  { 
-    id: 'tokenomics', 
-    label: 'TOKENOMICS', 
-    modalTitle: 'TOKENOMICS ANALYZER v2.1.4',
-    description: 'Real-time analysis of $FLIPZ token metrics and market performance. Explore detailed insights into market cap, trading volume, and price trends.'
   },
   { 
     id: 'mao', 
@@ -89,35 +84,6 @@ export default function TabNav() {
           <p className="text-xs text-white/60 mt-4">
             Supported formats: MP3, WAV, FLAC. Max size: 10MB.
           </p>
-        </div>
-      );
-    }
-    
-    if (tab.id === 'tokenomics') {
-      return (
-        <div className="flex flex-col items-center justify-center h-full p-6">
-          <h2 className="text-3xl font-bold text-[#00F0FF] mb-4">Tokenomics</h2>
-          <p className="text-center text-white/80 mb-6">
-            Discover the distribution of the $FLIPZ token. Our tokenomics are designed to ensure a fair and transparent allocation.
-          </p>
-          <div className="w-full max-w-md space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-white/80">Public Distribution</span>
-              <span className="text-[#00F0FF] font-bold">90%</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-white/80">Team Allocation</span>
-              <span className="text-[#00F0FF] font-bold">10%</span>
-            </div>
-          </div>
-          <div className="mt-6 w-full max-w-md">
-            <div className="h-4 bg-[#00F0FF]/10 rounded-full overflow-hidden">
-              <div className="h-full bg-[#00F0FF] rounded-full" style={{ width: '90%' }}></div>
-            </div>
-            <div className="h-4 bg-[#9945FF]/10 rounded-full overflow-hidden mt-2">
-              <div className="h-full bg-[#9945FF] rounded-full" style={{ width: '10%' }}></div>
-            </div>
-          </div>
         </div>
       );
     }
@@ -215,72 +181,90 @@ export default function TabNav() {
             priority
           />
         </div>
-        <div className="flex gap-3 ml-4">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => handleTabClick(tab)}
-              onMouseEnter={() => setHoveredTab(tab.id)}
-              onMouseLeave={() => setHoveredTab(null)}
-              className={cn(
-                "relative px-6 py-2.5",
-                "font-mono text-sm tracking-wider",
-                "border border-[#9945FF]/40 backdrop-blur-sm",
-                "transition-all duration-300 ease-out",
-                "hover:border-[#00F0FF]/80",
-                "shadow-[0_0_10px_rgba(255,255,255,0.1)]",
-                "hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]",
-                activeTab === tab.id ? "bg-black/40" : "bg-black/20"
-              )}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+        <div className="flex items-center flex-1 gap-3 ml-4 mr-[420px]">
+          <div className="flex gap-3">
+            {tabs.map((tab) => (
+              <motion.button
+                key={tab.id}
+                onClick={() => handleTabClick(tab)}
+                onMouseEnter={() => setHoveredTab(tab.id)}
+                onMouseLeave={() => setHoveredTab(null)}
+                className={cn(
+                  "relative px-6 py-2.5",
+                  "font-mono text-sm tracking-wider",
+                  "border border-[#9945FF]/40 backdrop-blur-sm",
+                  "transition-all duration-300 ease-out",
+                  "hover:border-[#00F0FF]/80",
+                  "shadow-[0_0_10px_rgba(255,255,255,0.1)]",
+                  "hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]",
+                  activeTab === tab.id ? "bg-black/40" : "bg-black/20"
+                )}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className={cn(
+                  "relative z-20",
+                  "transition-all duration-300",
+                  activeTab === tab.id ? "text-[#00F0FF]" : "text-white/90"
+                )}>
+                  {tab.label}
+                </span>
+                
+                {/* Base gradient */}
+                <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#9945FF]/10 via-[#00F0FF]/5 to-[#9945FF]/10" />
+                
+                {/* Hover gradient */}
+                <div className={cn(
+                  "absolute inset-0 z-[2] transition-all duration-300",
+                  "bg-gradient-to-r from-[#9945FF]/20 via-[#00F0FF]/10 to-[#9945FF]/20",
+                  hoveredTab === tab.id ? "opacity-100" : "opacity-0"
+                )} />
+              </motion.button>
+            ))}
+          </div>
+          
+          <div className="flex items-center gap-4 ml-6">
+            <a 
+              href="https://www.X.com/0xflipz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#00F0FF] transition-colors cursor-pointer"
             >
-              <span className={cn(
-                "relative z-20",
-                "transition-all duration-300",
-                activeTab === tab.id ? "text-[#00F0FF]" : "text-white/90"
-              )}>
-                {tab.label}
-              </span>
-              
-              {/* Base gradient */}
-              <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#9945FF]/10 via-[#00F0FF]/5 to-[#9945FF]/10" />
-              
-              {/* Hover gradient */}
-              <div className={cn(
-                "absolute inset-0 z-[2] transition-all duration-300",
-                "bg-gradient-to-r from-[#9945FF]/20 via-[#00F0FF]/10 to-[#9945FF]/20",
-                hoveredTab === tab.id ? "opacity-100" : "opacity-0"
-              )} />
-              
-              {activeTab === tab.id && (
-                <>
-                  {/* Active tab glow */}
-                  <motion.div
-                    layoutId="activeTabBg"
-                    className="absolute inset-0 z-[3]"
-                    style={{
-                      boxShadow: "0 0 15px rgba(153, 69, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.15)",
-                      background: "linear-gradient(180deg, rgba(153, 69, 255, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%)"
-                    }}
-                    transition={{ type: "spring", duration: 0.5 }}
-                  />
-                  
-                  {/* Active indicator dot */}
-                  <motion.div
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-[4]"
-                    animate={{
-                      opacity: [1, 0.5, 1],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_12px_rgba(0,240,255,0.9),0_0_20px_rgba(255,255,255,0.5)]" />
-                  </motion.div>
-                </>
-              )}
-            </motion.button>
-          ))}
+              <FaTwitter size={16} />
+            </a>
+            <a 
+              href="https://open.spotify.com/artist/04ESo9EXPMu2EDv9CVkbUL?si=qJkJ7ZTOSpK-7iau2tz1jA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#00F0FF] transition-colors cursor-pointer"
+            >
+              <FaSpotify size={16} />
+            </a>
+            <a 
+              href="https://www.youtube.com/@0xflipz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#00F0FF] transition-colors cursor-pointer"
+            >
+              <FaYoutube size={16} />
+            </a>
+            <a 
+              href="https://www.instagram.com/0xflipz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#00F0FF] transition-colors cursor-pointer"
+            >
+              <FaInstagram size={16} />
+            </a>
+            <a 
+              href="https://www.soundcloud.com/0xflipz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#00F0FF] transition-colors cursor-pointer"
+            >
+              <FaSoundcloud size={16} />
+            </a>
+          </div>
         </div>
       </div>
 
