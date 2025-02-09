@@ -412,6 +412,12 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
     setSwipeOffset(0);
   };
 
+  // Add a handler for the button click
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    onClose(); // Call onClose to toggle the container
+  };
+
   return (
     <>
       <motion.div
@@ -455,10 +461,10 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         </div>
       </motion.div>
 
-      {/* Floating button - only shows on mobile when closed */}
+      {/* Updated floating button */}
       {isMobile && !isOpen && (
         <motion.button
-          onClick={onClose}
+          onClick={handleButtonClick}  // Updated onClick handler
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
@@ -467,7 +473,8 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
             "px-2 py-3 bg-black/40 backdrop-blur-sm",
             "border-l border-t border-b border-[#9945FF]/40",
             "rounded-l-lg",
-            "hover:bg-black/60 transition-colors"
+            "hover:bg-black/60 transition-colors",
+            "active:bg-black/80" // Add active state for better feedback
           )}
         >
           <div className="flex items-center gap-2">

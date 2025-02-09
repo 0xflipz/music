@@ -36,6 +36,10 @@ export default function Home() {
     setMounted(true);
   }, []);
 
+  const handleStatsToggle = () => {
+    setIsStatsOpen(prev => !prev);
+  };
+
   if (!mounted) return null;
 
   return (
@@ -74,13 +78,13 @@ export default function Home() {
                 <div className="hidden md:block">
                   <StatsContainer 
                     isOpen={isStatsOpen}
-                    onClose={() => setIsStatsOpen(false)} 
+                    onClose={handleStatsToggle}
                   />
                 </div>
                 <div className="md:hidden">
                   <StatsContainer 
                     isOpen={isStatsOpen}
-                    onClose={() => setIsStatsOpen(false)} 
+                    onClose={handleStatsToggle}
                   />
                 </div>
               </div>
