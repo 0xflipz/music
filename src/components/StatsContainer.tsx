@@ -355,38 +355,48 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Add touch detection
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
   useEffect(() => {
-    const checkMobile = () => {
+    // Check for touch device and mobile
+    const checkDevice = () => {
+      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
       setIsMobile(window.innerWidth < 768);
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
   const handlers = useSwipeable({
     onSwiping: (event) => {
-      if (!isMobile) return;
+      if (!isTouchDevice) return;
       
-      // Allow swiping in both directions
+      // Handle Safari touch events specifically
       if (event.dir === 'Right' || event.dir === 'Left') {
-        // For right swipe: positive deltaX (0 to 320)
-        // For left swipe: negative deltaX (-320 to 0)
-        const newOffset = isOpen ? event.deltaX : event.deltaX + 320;
-        setSwipeOffset(Math.min(Math.max(newOffset, 0), 320));
+        event.preventDefault?.(); // Prevent Safari overscroll
+        
+        // Calculate offset with Safari touch consideration
+        const newOffset = isOpen 
+          ? Math.min(Math.max(0, event.deltaX), 320)
+          : Math.min(Math.max(0, event.deltaX + 320), 320);
+        
+        setSwipeOffset(newOffset);
       }
     },
     onSwipeEnd: (event) => {
-      if (!isMobile) return;
+      if (!isTouchDevice) return;
       
       const threshold = 100;
+      const velocity = Math.abs(event.velocity);
       
-      if (isOpen && event.deltaX > threshold) {
-        // Swiped right while open - close it
+      // Consider both distance and velocity for better touch feel
+      if (isOpen && (event.deltaX > threshold || (event.deltaX > 50 && velocity > 0.5))) {
         onClose();
-      } else if (!isOpen && event.deltaX < -threshold) {
-        // Swiped left while closed - open it
-        onClose(); // Toggle state
+      } else if (!isOpen && (event.deltaX < -threshold || (event.deltaX < -50 && velocity > 0.5))) {
+        onClose();
       }
       
       setSwipeOffset(0);
@@ -406,11 +416,18 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
           "bg-black/20 backdrop-blur-lg border-l border-white/20",
           "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
           "md:h-auto md:w-full md:border-none",
-          !isOpen && "md:translate-x-0"
+          !isOpen && "md:translate-x-0",
+          // Add Safari-specific touch handling
+          isTouchDevice && "touch-pan-y touch-pan-x"
         )}
+        style={{
+          // Prevent Safari rubber-banding
+          overscrollBehavior: 'none',
+          WebkitOverflowScrolling: 'touch'
+        }}
         initial={{ x: '100%' }}
         animate={{ 
-          x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
+          x: isTouchDevice ? swipeOffset : (isOpen ? 0 : '100%')
         }}
         transition={{ 
           duration: swipeOffset ? 0 : 0.3,
