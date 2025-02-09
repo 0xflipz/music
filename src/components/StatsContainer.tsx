@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "./ui/card";
 import { cn } from "@/utils/utils";
 import NetworkWave from "./NetworkWave";
+import { useSwipeable } from 'react-swipeable';
 
 // Utility function to generate random fluctuations
 const fluctuate = (base: number, percentage: number = 5) => {
@@ -345,101 +346,74 @@ const generateRandomValue = (min: number, max: number, decimals = 0) => {
   return Number(value.toFixed(decimals));
 };
 
-// Main component optimization
-export default function StatsContainer() {
-  const [metrics, setMetrics] = useState(() => ({
-    price: "$1.247",
-    marketCap: "$12.4M",
-    holders: "1,247",
-    volume: "$847.2K"
-  }));
+interface StatsContainerProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const [timeLeft, setTimeLeft] = useState({
-    days: 10,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    milliseconds: 0
+export default function StatsContainer({ isOpen, onClose }: StatsContainerProps) {
+  const [swipeOffset, setSwipeOffset] = React.useState(0);
+
+  const handlers = useSwipeable({
+    onSwiping: (event) => {
+      // Only handle swipes on mobile
+      if (window.innerWidth >= 768) return;
+      
+      if (event.dir === 'Right') {
+        const element = document.getElementById('stats-container');
+        if (element) {
+          element.style.transform = `translateX(${event.deltaX}px)`;
+        }
+      }
+    },
+    onSwipeEnd: (event) => {
+      // Only handle swipes on mobile
+      if (window.innerWidth >= 768) return;
+
+      const element = document.getElementById('stats-container');
+      if (element) {
+        element.style.transform = '';
+        if (event.deltaX > 100) {
+          onClose();
+        }
+      }
+    },
+    trackMouse: false,
+    preventDefaultTouchmoveEvent: true,
+    trackTouch: true,
   });
 
-  useEffect(() => {
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 10);
-
-    const timer = setInterval(() => {
-      const now = new Date();
-      const difference = endDate.getTime() - now.getTime();
-
-      if (difference <= 0) {
-        clearInterval(timer);
-        return;
-      }
-
-      setTimeLeft({
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / (1000 * 60)) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-        milliseconds: Math.floor(difference % 1000)
-      });
-    }, 41);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics(prev => ({
-        price: fluctuate(1.247, 2),
-        marketCap: fluctuate(12.4, 1),
-        holders: Math.floor(1247 + Math.random() * 10).toString(),
-        volume: fluctuate(847.2, 3)
-      }));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Memoized value generators
-  const getBPM = useCallback(() => generateRandomValue(138, 145), []);
-  const getPeak = useCallback(() => generateRandomValue(95, 99), []);
-  
   return (
     <motion.div
-      className="fixed top-0 right-0 w-[400px] h-screen z-50"
-      initial={{ transform: 'translateX(100%)' }}
-      animate={{ transform: 'translateX(0)' }}
+      id="stats-container"
+      className={cn(
+        // Base styles
+        "bg-black/20 backdrop-blur-lg border-l border-white/20",
+        // Mobile styles
+        "md:relative fixed top-0 right-0 h-screen w-[320px] z-50",
+        // Desktop styles
+        "md:h-auto md:w-full md:border-none",
+        // Visibility
+        !isOpen && "translate-x-full md:translate-x-0"
+      )}
+      initial={false}
+      animate={{ 
+        x: isOpen ? 0 : '100%'
+      }}
       transition={{ duration: 0.3 }}
+      {...(window.innerWidth < 768 ? handlers : {})}
     >
-      <div className="h-full overflow-y-auto scrollbar-hide backdrop-blur-lg bg-black/20 p-4 border-l border-white/20">
-        <div className="sticky top-0 z-10 bg-black/40 -mx-4 px-4 pt-2 pb-2 mb-4">
-          <div className="text-white font-mono text-sm border-b border-white/20 pb-2 relative">
-            <motion.span
-              className="absolute -left-2 top-0 h-full w-1 bg-white/50"
-              animate={{
-                height: ["0%", "100%", "0%"],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="tracking-[0.3em] relative">
-              <motion.span 
-                className="text-lg text-[#FF4400] font-mono"
-                animate={{ opacity: [0.8, 1, 0.8] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                {`${timeLeft.days}:${String(timeLeft.hours).padStart(2, '0')}:${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}.${String(timeLeft.milliseconds).padStart(3, '0')}`}
-              </motion.span>
-            </span>
-          </div>
-        </div>
+      {/* Mobile swipe indicator */}
+      <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
+        ← Swipe right to close
+      </div>
 
-        <div className="space-y-2">
-          <TokenMetrics />
-          <SystemMetrics />
-          <CookingHeat />
-          <NeuralMetrics />
-        </div>
+      {/* Your existing content */}
+      <div className="space-y-2 p-4">
+        <TokenMetrics />
+        <SystemMetrics />
+        <CookingHeat />
+        <NeuralMetrics />
       </div>
     </motion.div>
   );

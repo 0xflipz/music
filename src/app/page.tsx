@@ -7,6 +7,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import LoadingAvatar from "@/components/LoadingAvatar";
 import TabNav from "@/components/TabNav";
 import Rain from '@/components/Rain';
+import StatsContainer from "@/components/StatsContainer";
 
 // Lazy load components with proper loading states
 const MusicPlayer = dynamic(() => import('@/components/MusicPlayer'), {
@@ -26,14 +27,10 @@ const HolographicVideo = dynamic(() => import('@/components/HolographicVideo'), 
   loading: () => <div className="h-[238px] bg-black/20" />
 });
 
-const StatsContainer = dynamic(() => import('@/components/StatsContainer'), {
-  ssr: false,
-  loading: () => <div className="w-[400px] h-screen bg-black/20" />
-});
-
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isStatsOpen, setIsStatsOpen] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -48,7 +45,6 @@ export default function Home() {
           <LoadingScreen key="loading" setIsLoading={setIsLoading} />
         ) : (
           <main className="relative min-h-screen bg-black" key="main">
-            {/* Add Rain component with adjusted z-index */}
             <Rain />
             
             {/* Header with Navigation */}
@@ -61,7 +57,7 @@ export default function Home() {
             <LoadingAvatar />
             
             <div className="max-w-[1800px] mx-auto px-8 pt-24">
-              <div className="grid grid-cols-[1fr_320px] gap-16">
+              <div className="grid md:grid-cols-[1fr_320px] grid-cols-1 gap-16">
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="w-full">
@@ -75,7 +71,18 @@ export default function Home() {
                     <ChatBox />
                   </div>
                 </div>
-                <StatsContainer />
+                <div className="hidden md:block">
+                  <StatsContainer 
+                    isOpen={isStatsOpen}
+                    onClose={() => setIsStatsOpen(false)} 
+                  />
+                </div>
+                <div className="md:hidden">
+                  <StatsContainer 
+                    isOpen={isStatsOpen}
+                    onClose={() => setIsStatsOpen(false)} 
+                  />
+                </div>
               </div>
             </div>
             
