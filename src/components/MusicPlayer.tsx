@@ -51,31 +51,32 @@ export default function MusicPlayer() {
   }, []);
 
   useEffect(() => {
+    // Store ref in variable at start of effect
     const audio = audioRef.current;
-    if (!audio) return;
-
-    // Store the volume in a ref for the cleanup function
     const currentVolume = volume;
-    audio.volume = currentVolume;
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => setIsPlaying(true))
-        .catch((error) => {
-          console.log("Initial autoplay failed:", error);
-          setIsPlaying(false);
-        });
+    if (audio) {
+      audio.volume = currentVolume;
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((error) => {
+            console.log("Initial autoplay failed:", error);
+            setIsPlaying(false);
+          });
+      }
     }
 
-    // Use the stored audio reference in cleanup
+    // Use stored ref in cleanup
     return () => {
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
       }
     };
-  }, [volume]); // Add volume to dependency array
+  }, [volume]); // Include volume in dependencies
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
