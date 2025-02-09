@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { AnimatePresence } from 'framer-motion';
 import LoadingScreen from "@/components/LoadingScreen";
@@ -30,7 +30,7 @@ const HolographicVideo = dynamic(() => import('@/components/HolographicVideo'), 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isStatsOpen, setIsStatsOpen] = useState(true);
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -39,9 +39,9 @@ export default function Home() {
     setIsStatsOpen(!isMobile); // Open by default on desktop, closed on mobile
   }, []);
 
-  const handleStatsToggle = () => {
+  const handleStatsToggle = useCallback(() => {
     setIsStatsOpen(prev => !prev);
-  };
+  }, []);
 
   if (!mounted) return null;
 
