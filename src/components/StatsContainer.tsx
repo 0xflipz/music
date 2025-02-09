@@ -399,37 +399,73 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
   });
 
   return (
-    <motion.div
-      id="stats-container"
-      className={cn(
-        "bg-black/20 backdrop-blur-lg border-l border-white/20",
-        "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
-        "md:h-auto md:w-full md:border-none",
-        !isOpen && "md:translate-x-0"
-      )}
-      initial={{ x: '100%' }}
-      animate={{ 
-        x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
-      }}
-      transition={{ 
-        duration: swipeOffset ? 0 : 0.3,
-        ease: "easeOut"
-      }}
-      {...handlers}
-    >
-      {isMobile && (
-        <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
-          {isOpen ? '← Swipe right to close' : 'Swipe left to open →'}
-        </div>
-      )}
+    <>
+      <motion.div
+        id="stats-container"
+        className={cn(
+          "bg-black/20 backdrop-blur-lg border-l border-white/20",
+          "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
+          "md:h-auto md:w-full md:border-none",
+          !isOpen && "md:translate-x-0"
+        )}
+        initial={{ x: '100%' }}
+        animate={{ 
+          x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
+        }}
+        transition={{ 
+          duration: swipeOffset ? 0 : 0.3,
+          ease: "easeOut"
+        }}
+        {...handlers}
+      >
+        {isMobile && (
+          <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
+            {isOpen ? '← Swipe right to close' : 'Swipe left to open →'}
+          </div>
+        )}
 
-      <div className="space-y-2 p-4">
-        <TokenMetrics />
-        <SystemMetrics />
-        <CookingHeat />
-        <NeuralMetrics />
-      </div>
-    </motion.div>
+        <div className="space-y-2 p-4">
+          <TokenMetrics />
+          <SystemMetrics />
+          <CookingHeat />
+          <NeuralMetrics />
+        </div>
+      </motion.div>
+
+      {/* Floating button to reopen stats - only shows on mobile when closed */}
+      {isMobile && !isOpen && (
+        <motion.button
+          onClick={onClose}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          className={cn(
+            "fixed top-24 right-0 z-50 md:hidden",
+            "px-2 py-3 bg-black/40 backdrop-blur-sm",
+            "border-l border-t border-b border-[#9945FF]/40",
+            "rounded-l-lg",
+            "hover:bg-black/60 transition-colors"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-[#00F0FF] text-sm font-mono">
+              Stats
+            </span>
+            <motion.span
+              animate={{ x: [-3, 3, -3] }}
+              transition={{ 
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="text-[#00F0FF]"
+            >
+              ←
+            </motion.span>
+          </div>
+        </motion.button>
+      )}
+    </>
   );
 }
 
