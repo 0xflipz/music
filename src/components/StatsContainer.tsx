@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { useEffect, useState, useCallback, memo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "./ui/card";
 import { cn } from "@/utils/utils";
@@ -354,80 +354,83 @@ interface StatsContainerProps {
 export default function StatsContainer({ isOpen, onClose }: StatsContainerProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-
-  // Add touch detection
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check for touch device and mobile
-    const checkDevice = () => {
-      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Prevent Safari bouncing
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const preventDefault = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    container.addEventListener('touchmove', preventDefault, { passive: false });
+    return () => {
+      container.removeEventListener('touchmove', preventDefault);
+    };
   }, []);
 
   const handlers = useSwipeable({
     onSwiping: (event) => {
-      if (!isTouchDevice) return;
+      if (!isMobile) return;
       
-      // Handle Safari touch events specifically
       if (event.dir === 'Right' || event.dir === 'Left') {
-        event.preventDefault?.(); // Prevent Safari overscroll
+        // Normalize touch offset for Safari
+        const offset = isOpen 
+          ? event.deltaX 
+          : Math.min(event.deltaX + 320, 320);
         
-        // Calculate offset with Safari touch consideration
-        const newOffset = isOpen 
-          ? Math.min(Math.max(0, event.deltaX), 320)
-          : Math.min(Math.max(0, event.deltaX + 320), 320);
-        
-        setSwipeOffset(newOffset);
+        setSwipeOffset(Math.max(0, offset));
       }
     },
     onSwipeEnd: (event) => {
-      if (!isTouchDevice) return;
-      
-      const threshold = 100;
-      const velocity = Math.abs(event.velocity);
-      
-      // Consider both distance and velocity for better touch feel
-      if (isOpen && (event.deltaX > threshold || (event.deltaX > 50 && velocity > 0.5))) {
+      if (!isMobile) return;
+
+      // Simplified threshold logic for better Safari compatibility
+      if (isOpen && event.deltaX > 50) {
         onClose();
-      } else if (!isOpen && (event.deltaX < -threshold || (event.deltaX < -50 && velocity > 0.5))) {
+      } else if (!isOpen && event.deltaX < -50) {
         onClose();
       }
-      
       setSwipeOffset(0);
     },
     trackMouse: false,
     preventDefaultTouchmoveEvent: true,
     trackTouch: true,
-    delta: 10,
-    swipeDuration: 500,
+    delta: 5, // Lower delta for better touch response
+    swipeDuration: 250, // Shorter duration for more responsive feel
   });
 
   return (
     <>
       <motion.div
+        ref={containerRef}
         id="stats-container"
         className={cn(
           "bg-black/20 backdrop-blur-lg border-l border-white/20",
           "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
           "md:h-auto md:w-full md:border-none",
           !isOpen && "md:translate-x-0",
-          // Add Safari-specific touch handling
-          isTouchDevice && "touch-pan-y touch-pan-x"
+          "touch-none" // Prevent unwanted touch behaviors
         )}
         style={{
-          // Prevent Safari rubber-banding
+          WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'none',
-          WebkitOverflowScrolling: 'touch'
+          touchAction: 'pan-y pinch-zoom'
         }}
         initial={{ x: '100%' }}
         animate={{ 
-          x: isTouchDevice ? swipeOffset : (isOpen ? 0 : '100%')
+          x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
         }}
         transition={{ 
           duration: swipeOffset ? 0 : 0.3,
