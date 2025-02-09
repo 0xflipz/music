@@ -354,62 +354,63 @@ interface StatsContainerProps {
 export default function StatsContainer({ isOpen, onClose }: StatsContainerProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Check for mobile and set up touch handling
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const isMobileDevice = 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
     };
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Prevent Safari bouncing
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  // Handle touch events manually for better control
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
 
-    const preventDefault = (e: TouchEvent) => {
-      e.preventDefault();
-    };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile) return;
 
-    container.addEventListener('touchmove', preventDefault, { passive: false });
-    return () => {
-      container.removeEventListener('touchmove', preventDefault);
-    };
-  }, []);
+    const currentTouch = e.touches[0].clientX;
+    const diff = touchStart - currentTouch;
 
-  const handlers = useSwipeable({
-    onSwiping: (event) => {
-      if (!isMobile) return;
-      
-      if (event.dir === 'Right' || event.dir === 'Left') {
-        // Normalize touch offset for Safari
-        const offset = isOpen 
-          ? event.deltaX 
-          : Math.min(event.deltaX + 320, 320);
-        
-        setSwipeOffset(Math.max(0, offset));
+    if (isOpen) {
+      // When open, only allow right swipe (positive diff)
+      if (diff < 0) {
+        setSwipeOffset(Math.abs(diff));
       }
-    },
-    onSwipeEnd: (event) => {
-      if (!isMobile) return;
-
-      // Simplified threshold logic for better Safari compatibility
-      if (isOpen && event.deltaX > 50) {
-        onClose();
-      } else if (!isOpen && event.deltaX < -50) {
-        onClose();
+    } else {
+      // When closed, only allow left swipe (negative diff)
+      if (diff > 0) {
+        setSwipeOffset(320 - diff);
       }
-      setSwipeOffset(0);
-    },
-    trackMouse: false,
-    preventDefaultTouchmoveEvent: true,
-    trackTouch: true,
-    delta: 5, // Lower delta for better touch response
-    swipeDuration: 250, // Shorter duration for more responsive feel
-  });
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+
+    const currentTouch = e.changedTouches[0].clientX;
+    const diff = touchStart - currentTouch;
+    const threshold = 100;
+
+    if (isOpen && diff < -threshold) {
+      // Swiped right enough while open - close it
+      onClose();
+    } else if (!isOpen && diff > threshold) {
+      // Swiped left enough while closed - open it
+      onClose();
+    }
+    setSwipeOffset(0);
+  };
 
   return (
     <>
@@ -426,17 +427,19 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         style={{
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'none',
-          touchAction: 'pan-y pinch-zoom'
+          touchAction: 'none'
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         initial={{ x: '100%' }}
         animate={{ 
-          x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
+          x: isOpen ? (swipeOffset ? swipeOffset : 0) : '100%'
         }}
         transition={{ 
           duration: swipeOffset ? 0 : 0.3,
           ease: "easeOut"
         }}
-        {...handlers}
       >
         {isMobile && (
           <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
@@ -444,7 +447,7 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
           </div>
         )}
 
-        <div className="space-y-2 p-4">
+        <div className="space-y-2 p-4 overflow-y-auto">
           <TokenMetrics />
           <SystemMetrics />
           <CookingHeat />
@@ -452,7 +455,7 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         </div>
       </motion.div>
 
-      {/* Floating button to reopen stats - only shows on mobile when closed */}
+      {/* Floating button - only shows on mobile when closed */}
       {isMobile && !isOpen && (
         <motion.button
           onClick={onClose}
