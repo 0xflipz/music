@@ -352,63 +352,77 @@ interface StatsContainerProps {
 }
 
 export default function StatsContainer({ isOpen, onClose }: StatsContainerProps) {
-  const [swipeOffset, setSwipeOffset] = React.useState(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handlers = useSwipeable({
     onSwiping: (event) => {
-      // Only handle swipes on mobile
-      if (window.innerWidth >= 768) return;
+      if (!isMobile) return;
       
-      if (event.dir === 'Right') {
-        const element = document.getElementById('stats-container');
-        if (element) {
-          element.style.transform = `translateX(${event.deltaX}px)`;
-        }
+      // Allow swiping in both directions
+      if (event.dir === 'Right' || event.dir === 'Left') {
+        // For right swipe: positive deltaX (0 to 320)
+        // For left swipe: negative deltaX (-320 to 0)
+        const newOffset = isOpen ? event.deltaX : event.deltaX + 320;
+        setSwipeOffset(Math.min(Math.max(newOffset, 0), 320));
       }
     },
     onSwipeEnd: (event) => {
-      // Only handle swipes on mobile
-      if (window.innerWidth >= 768) return;
-
-      const element = document.getElementById('stats-container');
-      if (element) {
-        element.style.transform = '';
-        if (event.deltaX > 100) {
-          onClose();
-        }
+      if (!isMobile) return;
+      
+      const threshold = 100;
+      
+      if (isOpen && event.deltaX > threshold) {
+        // Swiped right while open - close it
+        onClose();
+      } else if (!isOpen && event.deltaX < -threshold) {
+        // Swiped left while closed - open it
+        onClose(); // Toggle state
       }
+      
+      setSwipeOffset(0);
     },
     trackMouse: false,
     preventDefaultTouchmoveEvent: true,
     trackTouch: true,
+    delta: 10,
+    swipeDuration: 500,
   });
 
   return (
     <motion.div
       id="stats-container"
       className={cn(
-        // Base styles
         "bg-black/20 backdrop-blur-lg border-l border-white/20",
-        // Mobile styles
-        "md:relative fixed top-0 right-0 h-screen w-[320px] z-50",
-        // Desktop styles
+        "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
         "md:h-auto md:w-full md:border-none",
-        // Visibility
-        !isOpen && "translate-x-full md:translate-x-0"
+        !isOpen && "md:translate-x-0"
       )}
-      initial={false}
+      initial={{ x: '100%' }}
       animate={{ 
-        x: isOpen ? 0 : '100%'
+        x: isMobile ? swipeOffset : (isOpen ? 0 : '100%')
       }}
-      transition={{ duration: 0.3 }}
-      {...(window.innerWidth < 768 ? handlers : {})}
+      transition={{ 
+        duration: swipeOffset ? 0 : 0.3,
+        ease: "easeOut"
+      }}
+      {...handlers}
     >
-      {/* Mobile swipe indicator */}
-      <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
-        ← Swipe right to close
-      </div>
+      {isMobile && (
+        <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
+          {isOpen ? '← Swipe right to close' : 'Swipe left to open →'}
+        </div>
+      )}
 
-      {/* Your existing content */}
       <div className="space-y-2 p-4">
         <TokenMetrics />
         <SystemMetrics />
