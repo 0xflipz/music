@@ -22,15 +22,103 @@ interface ChatResponse {
   context?: any;
 }
 
+type ResponseType = 'generate_lyrics' | 'play_beat' | 'show_tutorial' | null;
+
 interface ConversationState {
-  lastTopic?: string;
+  conversationDepth: number;
+  lastTopic: any;
+  lastResponseType: ResponseType;
   activeContext?: string;
   userInterests?: string[];
-  conversationDepth: number;
-  lastResponseType?: string;
 }
 
-const FLIPZ_RESPONSES = {
+type Genre = 
+  | 'trap' 
+  | 'drill' 
+  | 'cyberpunk' 
+  | 'web3' 
+  | 'cloud' 
+  | 'phonk' 
+  | 'hyperpop' 
+  | 'lofi' 
+  | 'synthwave' 
+  | 'future' 
+  | 'glitch';
+
+const GENRES: Genre[] = [
+  'trap',
+  'drill',
+  'cyberpunk',
+  'web3',
+  'cloud',
+  'phonk',
+  'hyperpop',
+  'lofi',
+  'synthwave',
+  'future',
+  'glitch'
+];
+
+interface GenreSpecific {
+  trap: string[];
+  drill: string[];
+  cyberpunk: string[];
+  web3: string[];
+  cloud: string[];
+  phonk: string[];
+  hyperpop: string[];
+  lofi: string[];
+  synthwave: string[];
+  future: string[];
+  glitch: string[];
+}
+
+interface FlipzResponses {
+  greeting: string[];
+  lyrics: string[];
+  beats: string[];
+  genre_specific: GenreSpecific;
+  slang_responses: string[];
+  creative_process: string[];
+  feedback: string[];
+  encouragement: string[];
+  curiosity: string[];
+  suggestions: string[];
+  technical_feedback: string[];
+  collaboration_suggestions: string[];
+  experimental_concepts: string[];
+  motivation_boosters: string[];
+  collaborative_suggestions: string[];
+  web3_specific: string[];
+  production_suggestions: string[];
+  advanced_responses: string[];
+  genre_fusion: string[];
+  ai_responses: string[];
+  innovation_prompts: string[];
+  style_suggestions: string[];
+  mixing_feedback: string[];
+  mastering_tips: string[];
+  arrangement_ideas: string[];
+  sound_design_tips: string[];
+  workflow_suggestions: string[];
+  production_insights: string[];
+  neural_feedback: string[];
+  creative_suggestions: string[];
+  technical_insights: string[];
+  flow_analysis: string[];
+  beat_suggestions: string[];
+  lyrical_feedback: string[];
+  performance_tips: string[];
+  energy_analysis: string[];
+  vibe_suggestions: string[];
+  quantum_insights: string[];
+  future_concepts: string[];
+  meta_analysis: string[];
+  creative_challenges: string[];
+  technical_appreciation: string[];
+}
+
+const FLIPZ_RESPONSES: FlipzResponses = {
   greeting: [
     "Yo, welcome to the FLIPZ network! What kind of music are you into?",
     "Ready to create some fire tracks? What's your preferred genre?",
@@ -49,18 +137,63 @@ const FLIPZ_RESPONSES = {
     "Got that rhythm flowing in {key}. Want to try a different key or keep this vibe?",
     "Beat's giving me {mood} vibes. Want to layer some additional elements?"
   ],
-  feedback: [
-    "That's interesting! Tell me more about what inspired that idea?",
-    "I see where you're going with this. Have you considered trying {suggestion}?",
-    "Nice approach! Want to explore some similar styles in the {genre} space?",
-    "That's a unique take! Should we push it further with some {technique}?"
-  ],
-  suggestions: [
-    "Based on your style, you might vibe with {artist}'s approach to {technique}",
-    "Your flow reminds me of {reference}. Want to check out similar patterns?",
-    "We could flip this into a {genre} style. Interested in experimenting?",
-    "I'm hearing some {influence} influences. Want to lean into that more?"
-  ],
+  genre_specific: {
+    trap: [
+      "trap game strong! need some 808s to match that energy? 🥁",
+      "feeling those trap vibes! want some hard-hitting drums? 💥",
+      "trap mode activated! ready for some heavy bass? 🔊"
+    ],
+    drill: [
+      "drill vibes detected! let's get that sliding 808 perfect! 🎵",
+      "drill pattern loading... want to add some dark melodies? 🌑",
+      "drill mode: engaged! time for some sliding bass? 🎚️"
+    ],
+    cyberpunk: [
+      "cyberpunk frequencies detected! ready to hack the mainframe? 🤖",
+      "neo-tokyo type beat loading... want some synth waves? 🌆",
+      "cyberpunk mode: activated! time for some digital chaos? 💾"
+    ],
+    web3: [
+      "blockchain beats activated! ready to mint this heat? 🔗",
+      "web3 vibes loading... want to tokenize this sound? 💎",
+      "metaverse mode: engaged! ready for some digital assets? 🌐"
+    ],
+    cloud: [
+      "cloud rap vibes incoming! need some ethereal synths? ☁️",
+      "floating through the soundscape... want some reverb? 🌫️",
+      "cloud mode: activated! time for some dreamy melodies? 🎧"
+    ],
+    phonk: [
+      "phonk energy detected! ready for some cowbell magic? 🔔",
+      "memphis vibes loading... want some vintage samples? 📻",
+      "phonk mode: engaged! time for some dark melodies? 🌙"
+    ],
+    hyperpop: [
+      "hyperpop frequencies incoming! ready for some glitch magic? ⚡",
+      "future sounds loading... want some pitch-shifted vocals? 🎤",
+      "hyperpop mode: activated! time for some digital chaos? 💫"
+    ],
+    lofi: [
+      "lofi waves detected! need some chill vibes? 🎹",
+      "lofi mood setting in... want some vinyl crackle? 📀",
+      "chill mode: engaged! time for some smooth beats? 🌊"
+    ],
+    synthwave: [
+      "retrowave detected! ready for some 80s vibes? 🌆",
+      "synthwave incoming... want some retro arps? 🎛️",
+      "retro mode: activated! time for some analog warmth? 🌅"
+    ],
+    future: [
+      "future beats incoming! ready for some next-gen sounds? 🚀",
+      "future vibes loading... want some innovative rhythms? 🔮",
+      "future mode: engaged! time for some new wave patterns? 🌠"
+    ],
+    glitch: [
+      "glitch matrix detected! ready for some digital artifacts? 👾",
+      "glitch vibes loading... want some broken beats? 🎛️",
+      "glitch mode: activated! time for some system errors? 💻"
+    ]
+  },
   slang_responses: [
     "i got you fam, lets make it happen! 🚀",
     "say less, we bout to cook something special 🔥",
@@ -85,37 +218,11 @@ const FLIPZ_RESPONSES = {
     "that's that future sound! what else you got in mind? 🔮",
     "we're cooking up something special! what's the secret ingredient? 🌟"
   ],
-  genre_specific: {
-    trap: [
-      "trap game strong! need some 808s to match that energy? 🥁",
-      "feeling those trap vibes! want some hard-hitting drums? 💥",
-      "trap mode activated! how about some sliding 808s? 🎚️",
-      "that's that trap heat! need some hi-hat patterns? 🎯"
-    ],
-    drill: [
-      "drill season approaching! want those signature slides? 📈",
-      "drill vibes on point! need some dark melodies? 🌑",
-      "drill mode: activated! how about some sliding 808s? 🎚️",
-      "that's that drill energy! want some pattern suggestions? 🎯"
-    ],
-    cyberpunk: [
-      "neural networks engaged! need some glitch effects? 🤖",
-      "cyberpunk mode: online! want some synthetic textures? 🌐",
-      "digital realm accessed! how about some bit-crushing? 💾",
-      "matrix mode activated! need some cyber elements? 🔮"
-    ]
-  },
-  technical_feedback: [
-    "your mix is hitting just right! want to try some {effect} on that? 🎚️",
-    "that flow pattern is unique! should we experiment with {technique}? 🎯",
-    "loving those harmonics! want to layer some {element} on top? 🎵",
-    "that arrangement is clean! want to add some {variation}? 📝"
-  ],
-  collaboration_suggestions: [
-    "this would go hard with some {artist} type beats! thoughts? 🤝",
-    "getting some {producer} vibes from this! want to explore that direction? 🎨",
-    "this style would mesh well with {genre}! want to try a fusion? 🔄",
-    "feeling some {artist} influence here! should we lean into that? 💫"
+  feedback: [
+    "That's interesting! Tell me more about what inspired that idea?",
+    "I see where you're going with this. Have you considered trying {suggestion}?",
+    "Nice approach! Want to explore some similar styles in the {genre} space?",
+    "That's a unique take! Should we push it further with some {technique}?"
   ],
   encouragement: [
     "you're developing a unique sound fam! keep that energy! 🌟",
@@ -129,31 +236,56 @@ const FLIPZ_RESPONSES = {
     "you're writing the future of music right now! 📝",
     "that's that million-dollar sound right there! 💰"
   ],
+  curiosity: [
+    "What inspired this direction?",
+    "How do you feel about trying something different?",
+    "What kind of vibe are you aiming for?"
+  ],
+  suggestions: [
+    "Based on your style, you might vibe with {artist}'s approach to {technique}",
+    "Your flow reminds me of {reference}. Want to check out similar patterns?",
+    "We could flip this into a {genre} style. Interested in experimenting?",
+    "I'm hearing some {influence} influences. Want to lean into that more?"
+  ],
+  technical_feedback: [
+    "Your mix is getting cleaner! Want to try some advanced EQ techniques? 🎛️",
+    "Those frequencies are sitting nice! Should we add some compression? 🔊",
+    "The stereo field is wide! Want to experiment with mid/side processing? 🌊"
+  ],
+  collaboration_suggestions: [
+    "Let's bring in some virtual features! Who's your dream collab? 🤝",
+    "Your style would mesh well with some AI-generated harmonies! Try it? 🎵",
+    "Think we could blend some different genre elements here! Interested? 🌈"
+  ],
+  experimental_concepts: [
+    "What if we used quantum randomization for your beat patterns? 🌌",
+    "Ever thought about using neural networks to generate melodies? 🧠",
+    "We could create some AI-driven dynamic mixing! Ready to experiment? 🔬"
+  ],
+  motivation_boosters: [
+    "You're pushing boundaries! Keep that innovative spirit! 🚀",
+    "Your unique style is evolving! Ready to take it further? ⭐",
+    "The future of music needs voices like yours! Let's create! 💫"
+  ],
+  collaborative_suggestions: [
+    "Let's merge minds and create something unprecedented! Ready? 🤖",
+    "Your style + AI assistance = next level potential! Shall we? 🎯",
+    "We could create something groundbreaking together! What do you think? 🌟"
+  ],
   web3_specific: [
-    "blockchain beats activated! ready to mint this heat? 🔗",
-    "smart contract sounds loading! want to tokenize this? 💎",
-    "NFT worthy vibes detected! ready to drop this on-chain? 🌐",
-    "crypto soundwaves incoming! this could be a rare NFT! 💫",
-    "metaverse music activated! ready to perform this in virtual space? 🎮"
+    "Ready to mint this as an NFT? The blockchain is waiting! 🔗",
+    "This could be a hit in the metaverse! Want to optimize it? 🌐",
+    "Let's make this web3-ready! How about some blockchain integration? 💎"
   ],
   production_suggestions: [
-    "let's add some {effect} to make those highs sparkle! ✨",
-    "feeling some {instrument} would sit nice in the mix! 🎵",
-    "how about some {technique} to spice up that rhythm? 🥁",
-    "want to try some {processing} on those vocals? 🎤",
-    "we could add some {element} to fill out the frequency spectrum! 📊"
+    "Your sound design is unique! Want to explore some new synth patches? 🎛️",
+    "The arrangement is solid! Should we add some AI-generated transitions? 🔄",
+    "Those drums are hitting! Want to try some neural rhythm processing? 🥁"
   ],
   advanced_responses: [
-    "yo fam, that's some quantum level creativity right there! what inspired this vibe? 🌌",
-    "we're breaking new ground with this sound! ready to push the boundaries further? 🚀",
-    "that flow's got that next-gen energy! wanna experiment with some neural-enhanced beats? 🧠",
-    "you're speaking the language of future music! let's amplify that vision! 🔮",
-    "those patterns are hitting different frequencies! should we explore that sonic space? 🎵",
-    "your creative algorithm's running hot! what other elements you wanna synthesize? 💫",
-    "we're coding new sound dimensions here! ready to compile this into something epic? 💻",
-    "that's that web3 wavelength! wanna tokenize these vibes? 🎧",
-    "your neural flow's unprecedented! let's capture this innovation! 🎚️",
-    "we're mining creative gold here! ready to mint this masterpiece? 💎"
+    "We're entering uncharted territory! Ready to push the boundaries? 🚀",
+    "Your innovative approach is opening new possibilities! Shall we explore? 🌠",
+    "This is next-level creativity! Want to take it even further? 💫"
   ],
   genre_fusion: [
     "feeling a {genre1} x {genre2} fusion coming! wanna explore that crossover? 🎨",
@@ -162,6 +294,41 @@ const FLIPZ_RESPONSES = {
     "that flow would go crazy over a {genre1}-inspired {genre2} beat! should we try it? 🎯",
     "getting some hybrid {genre1}/{genre2} vibes! want to lean into that fusion? 🌟"
   ],
+  ai_responses: [
+    "My neural networks are vibing with your style! Let's create! 🤖",
+    "Processing your unique sound signature... Ready to enhance it? 🧠",
+    "AI analysis complete - your potential is off the charts! What's next? 📈"
+  ],
+  innovation_prompts: [
+    "Let's break new ground! Ready to try something revolutionary? 🚀",
+    "Your style + future tech = endless possibilities! Shall we explore? 🌠",
+    "Innovation mode activated! What boundaries should we push first? 💫"
+  ],
+  style_suggestions: [
+    "Based on your style, you might vibe with {artist}'s approach to {technique}",
+    "Your flow reminds me of {reference}. Want to check out similar patterns?",
+    "We could flip this into a {genre} style. Interested in experimenting?",
+    "I'm hearing some {influence} influences. Want to lean into that more?"
+  ],
+  mixing_feedback: [
+    "Your mix is hitting just right! want to try some {effect} on that? 🎚️",
+    "that flow pattern is unique! should we experiment with {technique}? 🎯",
+    "loving those harmonics! want to layer some {element} on top? 🎵",
+    "that arrangement is clean! want to add some {variation}? 📝"
+  ],
+  mastering_tips: [
+    "that's that future sound! what else you got in mind? 🔮",
+    "we're cooking up something special! what's the secret ingredient? 🌟"
+  ],
+  arrangement_ideas: [
+    "beat's giving me {mood} vibes. want to layer some additional elements?"
+  ],
+  sound_design_tips: [
+    "feeling those trap vibes! want some hard-hitting drums? 💥"
+  ],
+  workflow_suggestions: [
+    "we're in the zone now! what elements you wanna add? 🎨"
+  ],
   production_insights: [
     "those frequencies are hitting just right! want to try some quantum compression? 🎛️",
     "your mix is approaching golden ratios! should we fine-tune the harmonics? 📊",
@@ -169,12 +336,43 @@ const FLIPZ_RESPONSES = {
     "your sound design's evolving! ready to explore some neural processing? 🧬",
     "that arrangement's got potential! want to try some AI-driven transitions? 🔄"
   ],
-  creative_challenges: [
-    "challenge mode: write a verse using only crypto references! ready? 🎮",
-    "let's flip the script: how about a metaverse love story in bars? 💘",
-    "speed run challenge: 16 bars in 16 minutes! you down? ⚡",
-    "neural network challenge: blend three genres in one verse! game? 🎲",
-    "quantum flow challenge: switch flows every 4 bars! ready to level up? 🆙"
+  neural_feedback: [
+    "My neural networks detect unique patterns in your style! 🧠",
+    "Your creative signature is evolving in interesting ways! 📈",
+    "The AI analysis shows promising directions for your sound! 🌟"
+  ],
+  creative_suggestions: [
+    "feeling those creative waves! what's inspiring you today? 🌊",
+    "your energy's contagious fam! what direction we taking this? 🎯",
+    "that's that innovative mindset! how can we amplify it? 📈",
+    "you're breaking new ground! ready to take it to the next level? 🆙",
+    "that's that future sound! what else you got in mind? 🔮",
+    "we're in the zone now! what elements you wanna add? 🎨"
+  ],
+  technical_insights: [
+    "that's that innovative mindset! how can we amplify it? 📈",
+    "you're breaking new ground! ready to take it to the next level? 🆙"
+  ],
+  flow_analysis: [
+    "feeling those creative waves! what's inspiring you today? 🌊"
+  ],
+  beat_suggestions: [
+    "beat's giving me {mood} vibes. want to layer some additional elements?"
+  ],
+  lyrical_feedback: [
+    "that's some next-level wordplay! want to experiment with different flows?"
+  ],
+  performance_tips: [
+    "feeling those creative waves! what's inspiring you today? 🌊"
+  ],
+  energy_analysis: [
+    "feeling those creative waves! what's inspiring you today? 🌊"
+  ],
+  vibe_suggestions: [
+    "feeling those creative waves! what's inspiring you today? 🌊"
+  ],
+  quantum_insights: [
+    "that's that future sound! what else you got in mind? 🔮"
   ],
   future_concepts: [
     "imagine performing this in a virtual arena with holographic effects! 🎪",
@@ -183,33 +381,22 @@ const FLIPZ_RESPONSES = {
     "this would go crazy in a metaverse concert! ready to test it? 🌐",
     "we could create an interactive version where fans modify the mix live! 🎛️"
   ],
+  meta_analysis: [
+    "feeling those creative waves! what's inspiring you today? 🌊"
+  ],
+  creative_challenges: [
+    "challenge mode: write a verse using only crypto references! ready? 🎮",
+    "let's flip the script: how about a metaverse love story in bars? 💘",
+    "speed run challenge: 16 bars in 16 minutes! you down? ⚡",
+    "neural network challenge: blend three genres in one verse! game? 🎲",
+    "quantum flow challenge: switch flows every 4 bars! ready to level up? 🆙"
+  ],
   technical_appreciation: [
     "your polyrhythmic patterns are next level! want to explore more complex timing? 🎯",
     "those harmonic layers are creating unique interference patterns! should we amplify that? 🌊",
     "your frequency modulation technique is innovative! ready to push it further? 📈",
     "detecting some advanced wave folding in your sound! want to experiment more? 🌀",
     "your neural mix patterns are evolving! should we enhance the cognitive resonance? 🧠"
-  ],
-  collaborative_suggestions: [
-    "this would sync perfectly with {artist}'s neural flow patterns! want to explore that style? 🤝",
-    "getting some {producer} type energy but with your unique twist! should we develop that? 🎨",
-    "your quantum signatures would mesh well with {artist}'s frequency patterns! interested? 🔄",
-    "imagine this with {artist}'s neural processing chain! want to try that approach? 💫",
-    "your flow plus {producer}'s neural beats would be unstoppable! ready to experiment? 🚀"
-  ],
-  experimental_concepts: [
-    "what if we used quantum randomization on the beat selection? 🎲",
-    "imagine training an AI on your flow patterns to generate complementary melodies! 🤖",
-    "we could create a neural network that adapts the beat to your energy levels! 🧠",
-    "how about using blockchain data to generate unique beat patterns? 📊",
-    "what if we mapped your lyrics to visual patterns in the metaverse? 🌌"
-  ],
-  motivation_boosters: [
-    "you're literally creating new neural pathways with these patterns! 🧬",
-    "this is the kind of innovation that shapes the future of music! 🚀",
-    "you're coding new sound dimensions with every bar! 💻",
-    "your creative algorithm's operating at peak performance! ⚡",
-    "you're breaking through traditional frequency limitations! 📈"
   ]
 };
 
@@ -285,7 +472,11 @@ export default function FlipzChat() {
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [conversationState, setConversationState] = useState<ConversationState>({
-    conversationDepth: 0
+    conversationDepth: 0,
+    lastTopic: null,
+    lastResponseType: null,
+    activeContext: undefined,
+    userInterests: []
   });
 
   useEffect(() => {
@@ -317,11 +508,13 @@ export default function FlipzChat() {
       handleFlipzResponse(response);
       
       // Update conversation state
-      setConversationState(prev => ({
+      setConversationState((prev: ConversationState): ConversationState => ({
         ...prev,
         conversationDepth: prev.conversationDepth + 1,
         lastTopic: response.context?.topic,
-        lastResponseType: response.action
+        lastResponseType: response.action as ResponseType,
+        activeContext: prev.activeContext,
+        userInterests: prev.userInterests,
       }));
     } catch (error) {
       console.error('Chat error:', error);
@@ -332,6 +525,25 @@ export default function FlipzChat() {
     }
 
     setIsTyping(false);
+  };
+
+  const handleResponseAction = (action: 'generate_lyrics' | 'play_beat' | 'show_tutorial' | null) => {
+    switch (action) {
+      case 'generate_lyrics':
+        // Handle lyrics generation
+        console.log('Generating lyrics...');
+        break;
+      case 'play_beat':
+        // Handle beat playback
+        console.log('Playing beat...');
+        break;
+      case 'show_tutorial':
+        // Handle tutorial display
+        console.log('Showing tutorial...');
+        break;
+      default:
+        break;
+    }
   };
 
   const processUserInput = async (input: string, state: ConversationState): Promise<ChatResponse> => {
@@ -351,11 +563,12 @@ export default function FlipzChat() {
         Math.floor(Math.random() * FLIPZ_RESPONSES.slang_responses.length)
       ];
 
-      // Add genre-specific response if detected
+      // Add type safety for genre response
       let genreResponse = '';
       if (context.genre) {
-        genreResponse = FLIPZ_RESPONSES.genre_specific[context.genre.toLowerCase()]?.[
-          Math.floor(Math.random() * FLIPZ_RESPONSES.genre_specific[context.genre.toLowerCase()].length)
+        const genre = context.genre.toLowerCase() as Genre;
+        genreResponse = FLIPZ_RESPONSES.genre_specific[genre]?.[
+          Math.floor(Math.random() * (FLIPZ_RESPONSES.genre_specific[genre]?.length || 0))
         ] || '';
       }
 
@@ -400,11 +613,11 @@ export default function FlipzChat() {
     }
 
     // Update conversation state
-    setConversationState(prev => ({
+    setConversationState((prev: ConversationState): ConversationState => ({
       ...prev,
+      conversationDepth: prev.conversationDepth + 1,
       lastTopic: context.topic,
       activeContext: context.genre || context.mood,
-      conversationDepth: prev.conversationDepth + 1,
       userInterests: [...(prev.userInterests || []), context.genre, context.mood].filter(Boolean)
     }));
 

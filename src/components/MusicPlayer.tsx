@@ -51,47 +51,31 @@ export default function MusicPlayer() {
   }, []);
 
   useEffect(() => {
-    const initializeAudio = async () => {
-      if (!audioRef.current) return;
-      
-      try {
-        audioRef.current.volume = volume;
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-          setIsPlaying(true);
-        }
-      } catch (error) {
-        console.log("Initial autoplay failed:", error);
-        setIsPlaying(false);
-        
-        // Add click-to-play fallback
-        const handleFirstInteraction = async () => {
-          try {
-            if (audioRef.current) {
-              await audioRef.current.play();
-              setIsPlaying(true);
-              document.removeEventListener('click', handleFirstInteraction);
-            }
-          } catch (err) {
-            console.log("Play on click failed:", err);
-          }
-        };
-        
-        document.addEventListener('click', handleFirstInteraction, { once: true });
-      }
-    };
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    initializeAudio();
+    // Store the volume in a ref for the cleanup function
+    const currentVolume = volume;
+    audio.volume = currentVolume;
 
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setIsPlaying(true))
+        .catch((error) => {
+          console.log("Initial autoplay failed:", error);
+          setIsPlaying(false);
+        });
+    }
+
+    // Use the stored audio reference in cleanup
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
       }
-      document.removeEventListener('click', () => {});
     };
-  }, []); // Empty dependency array so it only runs once on mount
+  }, [volume]); // Add volume to dependency array
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
@@ -164,6 +148,23 @@ export default function MusicPlayer() {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  useEffect(() => {
+    // Store ref in a variable at the start of the effect
+    const currentAudioRef = audioRef.current;
+    
+    if (currentAudioRef) {
+      // Use the stored ref variable
+      currentAudioRef.volume = volume;
+    }
+
+    // Use the stored ref in cleanup
+    return () => {
+      if (currentAudioRef) {
+        currentAudioRef.pause();
+      }
+    };
+  }, [volume]); // Add volume to dependency array
 
   return (
     <div className="music-player-wrapper">
