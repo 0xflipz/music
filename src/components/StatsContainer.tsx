@@ -357,12 +357,12 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
   const [touchStart, setTouchStart] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Check for mobile and set up touch handling
+  // Production-safe mobile detection
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const checkMobile = () => {
-      const isMobileDevice = 
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        window.innerWidth < 768;
+      const isMobileDevice = window.innerWidth < 768;
       setIsMobile(isMobileDevice);
     };
 
@@ -371,24 +371,24 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Handle touch events manually for better control
+  // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
     setTouchStart(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isMobile) return;
+    e.preventDefault();
 
     const currentTouch = e.touches[0].clientX;
     const diff = touchStart - currentTouch;
 
     if (isOpen) {
-      // When open, only allow right swipe (positive diff)
       if (diff < 0) {
         setSwipeOffset(Math.abs(diff));
       }
     } else {
-      // When closed, only allow left swipe (negative diff)
       if (diff > 0) {
         setSwipeOffset(320 - diff);
       }
@@ -403,42 +403,40 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
     const threshold = 100;
 
     if (isOpen && diff < -threshold) {
-      // Swiped right enough while open - close it
       onClose();
     } else if (!isOpen && diff > threshold) {
-      // Swiped left enough while closed - open it
       onClose();
     }
     setSwipeOffset(0);
   };
 
-  // Add a handler for the button click
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    onClose(); // Call onClose to toggle the container
+  // Button click handler
+  const handleButtonClick = () => {
+    if (!isMobile) return;
+    onClose();
   };
 
   return (
-    <>
+    <AnimatePresence>
       <motion.div
         ref={containerRef}
         id="stats-container"
         className={cn(
           "bg-black/20 backdrop-blur-lg border-l border-white/20",
-          "fixed md:relative top-0 right-0 h-screen w-[320px] z-50",
+          "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
           "md:h-auto md:w-full md:border-none",
           !isOpen && "md:translate-x-0",
-          "touch-none" // Prevent unwanted touch behaviors
+          "touch-none select-none"
         )}
         style={{
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'none',
-          touchAction: 'none'
+          touchAction: 'none',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        initial={{ x: '100%' }}
+        initial={false}
         animate={{ 
           x: isOpen ? (swipeOffset ? swipeOffset : 0) : '100%'
         }}
@@ -461,20 +459,20 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         </div>
       </motion.div>
 
-      {/* Updated floating button */}
       {isMobile && !isOpen && (
         <motion.button
-          onClick={handleButtonClick}  // Updated onClick handler
+          onClick={handleButtonClick}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
           className={cn(
-            "fixed top-24 right-0 z-50 md:hidden",
+            "fixed top-24 right-0 z-[101]",
             "px-2 py-3 bg-black/40 backdrop-blur-sm",
             "border-l border-t border-b border-[#9945FF]/40",
             "rounded-l-lg",
             "hover:bg-black/60 transition-colors",
-            "active:bg-black/80" // Add active state for better feedback
+            "active:bg-black/80",
+            "md:hidden"
           )}
         >
           <div className="flex items-center gap-2">
@@ -495,7 +493,7 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
           </div>
         </motion.button>
       )}
-    </>
+    </AnimatePresence>
   );
 }
 

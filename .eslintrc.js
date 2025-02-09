@@ -14,6 +14,7 @@ module.exports = {
       ignoreStrings: true,
       ignoreTemplateLiterals: true,
     }],
+    '@next/next/no-img-element': 'off',
   },
   // Remove useEslintrc and extensions options as they're not valid
   parserOptions: {
