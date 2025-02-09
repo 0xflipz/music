@@ -30,12 +30,13 @@ const HolographicVideo = dynamic(() => import('@/components/HolographicVideo'), 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isStatsOpen, setIsStatsOpen] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     // Set initial state based on device
-    setIsStatsOpen(window.innerWidth >= 768);
+    const isMobile = window.innerWidth < 768;
+    setIsStatsOpen(!isMobile); // Open by default on desktop, closed on mobile
   }, []);
 
   const handleStatsToggle = () => {

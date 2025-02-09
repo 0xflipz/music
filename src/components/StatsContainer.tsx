@@ -355,31 +355,30 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Production-safe mobile detection
+  // Handle mounting and mobile detection
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const checkMobile = () => {
-      const isMobileDevice = window.innerWidth < 768;
-      setIsMobile(isMobileDevice);
+    setMounted(true);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
     };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Touch handlers
+  // Don't render anything until mounted
+  if (!mounted) return null;
+
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isMobile) return;
     setTouchStart(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isMobile) return;
-    e.preventDefault();
 
     const currentTouch = e.touches[0].clientX;
     const diff = touchStart - currentTouch;
@@ -410,14 +409,8 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
     setSwipeOffset(0);
   };
 
-  // Button click handler
-  const handleButtonClick = () => {
-    if (!isMobile) return;
-    onClose();
-  };
-
   return (
-    <AnimatePresence>
+    <>
       <motion.div
         ref={containerRef}
         id="stats-container"
@@ -436,7 +429,7 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        initial={false}
+        initial={{ x: '100%' }}
         animate={{ 
           x: isOpen ? (swipeOffset ? swipeOffset : 0) : '100%'
         }}
@@ -459,41 +452,39 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
         </div>
       </motion.div>
 
-      {isMobile && !isOpen && (
-        <motion.button
-          onClick={handleButtonClick}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 20 }}
-          className={cn(
-            "fixed top-24 right-0 z-[101]",
-            "px-2 py-3 bg-black/40 backdrop-blur-sm",
-            "border-l border-t border-b border-[#9945FF]/40",
-            "rounded-l-lg",
-            "hover:bg-black/60 transition-colors",
-            "active:bg-black/80",
-            "md:hidden"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-[#00F0FF] text-sm font-mono">
-              Stats
-            </span>
-            <motion.span
-              animate={{ x: [-3, 3, -3] }}
-              transition={{ 
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="text-[#00F0FF]"
-            >
-              ←
-            </motion.span>
-          </div>
-        </motion.button>
-      )}
-    </AnimatePresence>
+      {/* Mobile Stats Button - Always render but hide with CSS */}
+      <motion.button
+        onClick={onClose}
+        className={cn(
+          "fixed top-24 right-0 z-[101]",
+          "px-2 py-3 bg-black/40 backdrop-blur-sm",
+          "border-l border-t border-b border-[#9945FF]/40",
+          "rounded-l-lg",
+          "hover:bg-black/60 transition-colors",
+          "active:bg-black/80",
+          "md:hidden", // Hide on desktop
+          !isMobile && "hidden", // Hide when not mobile
+          isOpen && "hidden", // Hide when stats is open
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[#00F0FF] text-sm font-mono">
+            Stats
+          </span>
+          <motion.span
+            animate={{ x: [-3, 3, -3] }}
+            transition={{ 
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="text-[#00F0FF]"
+          >
+            ←
+          </motion.span>
+        </div>
+      </motion.button>
+    </>
   );
 }
 
