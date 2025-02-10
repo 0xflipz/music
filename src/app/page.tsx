@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { AnimatePresence } from 'framer-motion';
+import { useSwipeable } from 'react-swipeable';
 import LoadingScreen from "@/components/LoadingScreen";
 import LoadingAvatar from "@/components/LoadingAvatar";
 import TabNav from "@/components/TabNav";
 import Rain from '@/components/Rain';
 import StatsContainer from "@/components/StatsContainer";
+import MobileWarning from '@/components/MobileWarning';
 
 // Lazy load components with proper loading states
 const MusicPlayer = dynamic(() => import('@/components/MusicPlayer'), {
@@ -27,10 +29,16 @@ const HolographicVideo = dynamic(() => import('@/components/HolographicVideo'), 
   loading: () => <div className="h-[238px] bg-black/20" />
 });
 
+const FlipzChat = dynamic(() => import('@/components/FlipzChat'), {
+  ssr: false,
+  loading: () => <div className="h-[400px] bg-black/20" />
+});
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -43,6 +51,58 @@ export default function Home() {
     setIsStatsOpen(prev => !prev);
   }, []);
 
+  // Configure swipe handlers
+  const swipeHandlers = useSwipeable({
+    onSwiping: (e) => {
+      if (window.innerWidth <= 768) {
+        // Make scrolling more responsive
+        const sensitivity = 1.5; // Adjust this value to change swipe sensitivity
+        const newPosition = window.scrollY - (e.deltaY * sensitivity);
+        window.scrollTo({
+          top: newPosition,
+          behavior: 'auto' // Changed to 'auto' for more responsive feel
+        });
+      }
+    },
+    onSwipedUp: (e) => {
+      if (window.innerWidth <= 768) {
+        // Scroll to next container
+        const containerHeight = window.innerHeight * 0.8; // 80% of viewport height
+        const newPosition = window.scrollY + containerHeight;
+        window.scrollTo({
+          top: newPosition,
+          behavior: 'smooth'
+        });
+      }
+    },
+    onSwipedDown: (e) => {
+      if (window.innerWidth <= 768) {
+        // Scroll to previous container
+        const containerHeight = window.innerHeight * 0.8;
+        const newPosition = Math.max(0, window.scrollY - containerHeight);
+        window.scrollTo({
+          top: newPosition,
+          behavior: 'smooth'
+        });
+      }
+    },
+    delta: 10, // Minimum swipe distance
+    preventDefaultTouchmoveEvent: false, // Allow default touch events
+    trackMouse: false,
+    trackTouch: true,
+    rotationAngle: 0,
+    swipeDuration: Infinity, // No timeout for swipes
+  });
+
+  // Update scroll position on regular scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.pageYOffset);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   if (!mounted) return null;
 
   return (
@@ -51,7 +111,12 @@ export default function Home() {
         {isLoading ? (
           <LoadingScreen key="loading" setIsLoading={setIsLoading} />
         ) : (
-          <main className="relative min-h-screen bg-black" key="main">
+          <main 
+            className="relative min-h-screen bg-black touch-pan-y" 
+            key="main"
+            {...swipeHandlers}
+          >
+            <MobileWarning />
             <Rain />
             
             {/* Header with Navigation */}
@@ -70,7 +135,7 @@ export default function Home() {
                     <div className="w-full">
                       <LyricGenerator />
                     </div>
-                    <div className="w-full">
+                    <div className="w-full hidden md:block">
                       <HolographicVideo />
                     </div>
                   </div>
