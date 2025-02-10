@@ -1,7 +1,3 @@
-import { createGlobalStyle } from 'styled-components';
-import { devices } from '../utils/breakpoints';
-
-export const GlobalStyles = createGlobalStyle`
   /* Base styles (mobile-first) */
   .section {
     padding: 20px;
