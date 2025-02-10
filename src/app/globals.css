@@ -1810,3 +1810,26 @@ body {
 .volume-slider:hover::after {
   opacity: 1;
 }
+
+/* Base styles (mobile-first) */
+.section {
+  padding: 20px;
+  font-size: 16px;
+  width: 100%;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+  .section {
+    padding: 30px;
+    font-size: 18px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .section {
+    padding: 40px;
+    font-size: 20px;
+  }
+}
