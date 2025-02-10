@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { AnimatePresence } from 'framer-motion';
-import { useSwipeable } from 'react-swipeable';
 import LoadingScreen from "@/components/LoadingScreen";
 import LoadingAvatar from "@/components/LoadingAvatar";
 import TabNav from "@/components/TabNav";
@@ -51,49 +50,6 @@ export default function Home() {
     setIsStatsOpen(prev => !prev);
   }, []);
 
-  // Configure swipe handlers
-  const swipeHandlers = useSwipeable({
-    onSwiping: (e) => {
-      if (window.innerWidth <= 768) {
-        // Make scrolling more responsive
-        const sensitivity = 1.5; // Adjust this value to change swipe sensitivity
-        const newPosition = window.scrollY - (e.deltaY * sensitivity);
-        window.scrollTo({
-          top: newPosition,
-          behavior: 'auto' // Changed to 'auto' for more responsive feel
-        });
-      }
-    },
-    onSwipedUp: (e) => {
-      if (window.innerWidth <= 768) {
-        // Scroll to next container
-        const containerHeight = window.innerHeight * 0.8; // 80% of viewport height
-        const newPosition = window.scrollY + containerHeight;
-        window.scrollTo({
-          top: newPosition,
-          behavior: 'smooth'
-        });
-      }
-    },
-    onSwipedDown: (e) => {
-      if (window.innerWidth <= 768) {
-        // Scroll to previous container
-        const containerHeight = window.innerHeight * 0.8;
-        const newPosition = Math.max(0, window.scrollY - containerHeight);
-        window.scrollTo({
-          top: newPosition,
-          behavior: 'smooth'
-        });
-      }
-    },
-    delta: 10, // Minimum swipe distance
-    preventDefaultTouchmoveEvent: false, // Allow default touch events
-    trackMouse: false,
-    trackTouch: true,
-    rotationAngle: 0,
-    swipeDuration: Infinity, // No timeout for swipes
-  });
-
   // Update scroll position on regular scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -111,11 +67,7 @@ export default function Home() {
         {isLoading ? (
           <LoadingScreen key="loading" setIsLoading={setIsLoading} />
         ) : (
-          <main 
-            className="relative min-h-screen bg-black touch-pan-y" 
-            key="main"
-            {...swipeHandlers}
-          >
+          <main className="relative min-h-screen bg-black touch-pan-y" key="main">
             <MobileWarning />
             <Rain />
             
