@@ -731,13 +731,10 @@ export default function LyricGenerator() {
               className={cn(
                 "relative px-4 py-1.5 text-xs rounded border transition-all duration-200",
                 {
-                  // Ready state - green glow effect
                   "bg-[#00FF94]/20 border-[#00FF94]/30 text-[#00FF94] hover:bg-[#00FF94]/30 hover:shadow-[0_0_15px_rgba(0,255,148,0.3)]": 
                     status === 'ready',
-                  // Generating state - purple pulse
                   "bg-[#9945FF]/30 border-[#9945FF]/40 text-[#00F0FF] animate-pulse":
                     status === 'generating',
-                  // Idle state - disabled look
                   "bg-[#9945FF]/20 border-[#9945FF]/30 text-white/50 cursor-not-allowed":
                     status === 'idle',
                 }
