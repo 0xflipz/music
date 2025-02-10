@@ -66,7 +66,7 @@ export default function Home() {
             <div className="max-w-[1800px] mx-auto px-8 pt-24">
               <div className="grid md:grid-cols-[1fr_320px] grid-cols-1 gap-16">
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="w-full">
                       <LyricGenerator />
                     </div>
@@ -84,7 +84,7 @@ export default function Home() {
                     onClose={() => setIsStatsOpen(!isStatsOpen)}
                   />
                 </div>
-                <div className="md:hidden fixed inset-0 z-[100] pointer-events-none">
+                <div className="md:hidden fixed inset-0 z-[60] pointer-events-none">
                   <StatsContainer 
                     isOpen={isStatsOpen}
                     onClose={() => setIsStatsOpen(!isStatsOpen)}
