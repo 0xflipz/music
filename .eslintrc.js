@@ -5,14 +5,7 @@ module.exports = {
     'react/jsx-key': 'error',
     'react/no-unescaped-entities': 'off',
     '@next/next/no-img-element': 'off',
-    'max-len': ['warn', { 
-      code: 120,
-      ignoreUrls: true,
-      ignoreStrings: true,
-      ignoreTemplateLiterals: true,
-      ignoreComments: true,
-      ignoreRegExpLiterals: true
-    }],
+    'max-len': 'off',
   },
   parserOptions: {
     project: './tsconfig.json',
