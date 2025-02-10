@@ -352,159 +352,42 @@ interface StatsContainerProps {
 }
 
 export default function StatsContainer({ isOpen, onClose }: StatsContainerProps) {
-  const [swipeOffset, setSwipeOffset] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
-    const checkMobile = () => {
-      const isMobileView = window.innerWidth < 768;
-      setIsMobile(isMobileView);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    // Add passive touch listeners for better performance
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('touchstart', (e) => {
-        setTouchStart((e as TouchEvent).touches[0].clientX);
-      }, { passive: true });
-    }
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-      if (container) {
-        container.removeEventListener('touchstart', () => {});
-      }
-    };
   }, []);
 
   // Only render client-side
   if (!isClient) return null;
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMobile) return;
-
-    const currentTouch = e.touches[0].clientX;
-    const diff = touchStart - currentTouch;
-
-    // Prevent default only when swiping the container
-    if (e.currentTarget === containerRef.current) {
-      e.preventDefault();
-    }
-
-    if (isOpen) {
-      if (diff < 0) {
-        setSwipeOffset(Math.abs(diff));
-      }
-    } else {
-      if (diff > 0) {
-        setSwipeOffset(320 - diff);
-      }
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isMobile) return;
-
-    const currentTouch = e.changedTouches[0].clientX;
-    const diff = touchStart - currentTouch;
-    const threshold = 100;
-
-    if (isOpen && diff < -threshold) {
-      onClose();
-    } else if (!isOpen && diff > threshold) {
-      onClose();
-    }
-    setSwipeOffset(0);
-  };
-
   return (
-    <>
-      <motion.div
-        ref={containerRef}
-        id="stats-container"
-        className={cn(
-          "bg-black/20 backdrop-blur-lg border-l border-white/20",
-          "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
-          "md:h-auto md:w-full md:border-none",
-          !isOpen && "md:translate-x-0",
-          "touch-none select-none"
-        )}
-        style={{
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehavior: 'none',
-          touchAction: 'none',
-        }}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        initial={false}
-        animate={{ 
-          x: isOpen ? (swipeOffset ? swipeOffset : 0) : '100%'
-        }}
-        transition={{ 
-          duration: swipeOffset ? 0 : 0.3,
-          ease: "easeOut"
-        }}
-      >
-        {isMobile && (
-          <div className="md:hidden text-xs text-white/50 font-mono mb-2 pl-2">
-            {isOpen ? '← Swipe right to close' : 'Swipe left to open →'}
-          </div>
-        )}
-
-        <div className="space-y-2 p-4 overflow-y-auto">
-          <TokenMetrics />
-          <SystemMetrics />
-          <CookingHeat />
-          <NeuralMetrics />
-        </div>
-      </motion.div>
-
-      {/* Stats Button */}
-      {isMobile && (
-        <motion.button
-          onClick={onClose}
-          initial={false}
-          animate={{ 
-            opacity: isOpen ? 0 : 1,
-            x: isOpen ? 20 : 0
-          }}
-          className={cn(
-            "fixed top-24 right-0 z-[101]",
-            "px-2 py-3 bg-black/40 backdrop-blur-sm",
-            "border-l border-t border-b border-[#9945FF]/40",
-            "rounded-l-lg",
-            "hover:bg-black/60 transition-colors",
-            "active:bg-black/80",
-            "md:hidden",
-            isOpen && "pointer-events-none"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-[#00F0FF] text-sm font-mono">
-              Stats
-            </span>
-            <motion.span
-              animate={{ x: [-3, 3, -3] }}
-              transition={{ 
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="text-[#00F0FF]"
-            >
-              ←
-            </motion.span>
-          </div>
-        </motion.button>
+    <motion.div
+      ref={containerRef}
+      id="stats-container"
+      className={cn(
+        "bg-black/20 backdrop-blur-lg border-l border-white/20",
+        "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
+        "md:h-auto md:w-full md:border-none",
+        !isOpen && "md:translate-x-0",
       )}
-    </>
+      initial={false}
+      animate={{ 
+        x: isOpen ? 0 : '100%'
+      }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeOut"
+      }}
+    >
+      <div className="space-y-2 p-4 overflow-y-auto">
+        <TokenMetrics />
+        <SystemMetrics />
+        <CookingHeat />
+        <NeuralMetrics />
+      </div>
+    </motion.div>
   );
 }
 
