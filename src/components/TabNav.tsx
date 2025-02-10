@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/utils/utils";
 import Modal from "./ui/Modal";
 import { ModalHeader, ModalSection, StatusIndicator, TypewriterText } from "./modals/ModalContent";
 import { FaTwitter, FaSpotify, FaYoutube, FaInstagram, FaSoundcloud } from 'react-icons/fa';
+import { IoMenu } from "react-icons/io5";
 
 const tabs = [
   { 
@@ -30,7 +31,8 @@ const tabs = [
 ];
 
 export default function TabNav() {
-  const [activeTab, setActiveTab] = React.useState('gang');
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('gang');
   const [hoveredTab, setHoveredTab] = React.useState<string | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState<typeof tabs[0] | null>(null);
@@ -170,7 +172,51 @@ export default function TabNav() {
 
   return (
     <>
-      <div className="flex items-center h-[45px]">
+      {/* Mobile Dropdown */}
+      <div className="md:hidden flex items-center justify-between w-full">
+        <span className="text-[#00F0FF] font-medium tracking-wider">FLIPZ</span>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 text-white/70 hover:text-white"
+        >
+          <IoMenu size={24} />
+        </button>
+
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-full right-0 mt-2 w-48 rounded-lg bg-black/95 border border-white/20 shadow-lg z-50"
+            >
+              <div className="py-2">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      handleTabClick(tab);
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      "block w-full px-4 py-2 text-sm text-left",
+                      activeTab === tab.id 
+                        ? "text-[#00F0FF] bg-white/5" 
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Original Desktop Layout */}
+      <div className="hidden md:flex items-center h-[45px]">
         <div className="flex-shrink-0 w-[180px]">
           <Image
             src="/logo.png"

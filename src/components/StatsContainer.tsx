@@ -6,6 +6,8 @@ import { Card } from "./ui/card";
 import { cn } from "@/utils/utils";
 import NetworkWave from "./NetworkWave";
 import { useSwipeable } from 'react-swipeable';
+import { IoStatsChart } from "react-icons/io5";
+import { IoMdClose } from "react-icons/io";
 
 // Utility function to generate random fluctuations
 const fluctuate = (base: number, percentage: number = 5) => {
@@ -363,31 +365,60 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
   if (!isClient) return null;
 
   return (
-    <motion.div
-      ref={containerRef}
-      id="stats-container"
-      className={cn(
-        "bg-black/20 backdrop-blur-lg border-l border-white/20",
-        "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
-        "md:h-auto md:w-full md:border-none",
-        !isOpen && "md:translate-x-0",
-      )}
-      initial={false}
-      animate={{ 
-        x: isOpen ? 0 : '100%'
-      }}
-      transition={{ 
-        duration: 0.3,
-        ease: "easeOut"
-      }}
-    >
-      <div className="space-y-2 p-4 overflow-y-auto">
-        <TokenMetrics />
-        <SystemMetrics />
-        <CookingHeat />
-        <NeuralMetrics />
-      </div>
-    </motion.div>
+    <>
+      {/* Mobile Stats Button - Only visible on mobile */}
+      <button
+        onClick={() => onClose()}
+        className={cn(
+          "fixed bottom-4 right-4 z-[101] p-3 rounded-full",
+          "bg-black/40 backdrop-blur-lg border border-white/20",
+          "text-[#00F0FF] hover:text-white transition-colors",
+          "md:hidden", // Hide on desktop
+          isOpen && "hidden" // Hide when stats are open
+        )}
+      >
+        <IoStatsChart size={24} />
+      </button>
+
+      <motion.div
+        ref={containerRef}
+        id="stats-container"
+        className={cn(
+          "bg-black/20 backdrop-blur-lg border-l border-white/20",
+          "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
+          "md:h-auto md:w-full md:border-none",
+          !isOpen && "md:translate-x-0",
+        )}
+        initial={false}
+        animate={{ 
+          x: isOpen ? 0 : '100%'
+        }}
+        transition={{ 
+          duration: 0.3,
+          ease: "easeOut"
+        }}
+      >
+        {/* Mobile Close Button - Only visible on mobile */}
+        <button
+          onClick={() => onClose()}
+          className={cn(
+            "absolute top-4 right-4 p-2 rounded-full",
+            "bg-black/40 backdrop-blur-lg border border-white/20",
+            "text-white/70 hover:text-white transition-colors",
+            "md:hidden" // Hide on desktop
+          )}
+        >
+          <IoMdClose size={20} />
+        </button>
+
+        <div className="space-y-2 p-4 overflow-y-auto h-full pt-14 md:pt-4">
+          <TokenMetrics />
+          <SystemMetrics />
+          <CookingHeat />
+          <NeuralMetrics />
+        </div>
+      </motion.div>
+    </>
   );
 }
 
