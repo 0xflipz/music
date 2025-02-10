@@ -80,14 +80,14 @@ export default function Home() {
                 </div>
                 <div className="hidden md:block">
                   <StatsContainer 
-                    isOpen={isStatsOpen}
-                    onClose={() => setIsStatsOpen(!isStatsOpen)}
+                    isOpen={true}
+                    onClose={() => {}}
                   />
                 </div>
                 <div className="md:hidden fixed inset-0 z-[60] pointer-events-none">
                   <StatsContainer 
                     isOpen={isStatsOpen}
-                    onClose={() => setIsStatsOpen(!isStatsOpen)}
+                    onClose={handleStatsToggle}
                   />
                 </div>
               </div>

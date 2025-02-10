@@ -361,20 +361,21 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
     setIsClient(true);
   }, []);
 
-  // Only render client-side
   if (!isClient) return null;
 
   return (
     <>
-      {/* Mobile Stats Button - Only visible on mobile */}
+      {/* Mobile Open Button - Only visible when closed */}
       <button
-        onClick={() => onClose()}
+        onClick={onClose}
         className={cn(
           "fixed bottom-4 right-4 z-[101] p-3 rounded-full",
-          "bg-black/40 backdrop-blur-lg border border-white/20",
+          "bg-black/40 backdrop-blur-lg border border-[#9945FF]/40",
           "text-[#00F0FF] hover:text-white transition-colors",
-          "md:hidden", // Hide on desktop
-          isOpen && "hidden" // Hide when stats are open
+          "hidden", // Hidden by default
+          "md:hidden", // Always hidden on desktop
+          !isOpen && "block", // Only show on mobile when closed
+          "pointer-events-auto" // Make sure button is clickable
         )}
       >
         <IoStatsChart size={24} />
@@ -382,12 +383,12 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
 
       <motion.div
         ref={containerRef}
-        id="stats-container"
         className={cn(
-          "bg-black/20 backdrop-blur-lg border-l border-white/20",
+          "bg-black/20 backdrop-blur-lg border-l border-[#9945FF]/40",
           "fixed md:relative top-0 right-0 h-screen w-[320px] z-[100]",
           "md:h-auto md:w-full md:border-none",
           !isOpen && "md:translate-x-0",
+          "pointer-events-auto" // Enable pointer events
         )}
         initial={false}
         animate={{ 
@@ -398,12 +399,12 @@ export default function StatsContainer({ isOpen, onClose }: StatsContainerProps)
           ease: "easeOut"
         }}
       >
-        {/* Mobile Close Button - Only visible on mobile */}
+        {/* Mobile Close Button - Only visible when open */}
         <button
-          onClick={() => onClose()}
+          onClick={onClose}
           className={cn(
             "absolute top-4 right-4 p-2 rounded-full",
-            "bg-black/40 backdrop-blur-lg border border-white/20",
+            "bg-black/40 backdrop-blur-lg border border-[#9945FF]/40",
             "text-white/70 hover:text-white transition-colors",
             "md:hidden" // Hide on desktop
           )}
