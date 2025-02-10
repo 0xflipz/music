@@ -1,16 +1,22 @@
-import { Html, Head } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html lang="en">
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          <link 
+            href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" 
+            rel="stylesheet"
+          />
         </Head>
-        {/* ... rest of your document code ... */}
+        <body>
+          <Main />
+          <NextScript />
+        </body>
       </Html>
-    );
+    )
   }
 }
 
-export default MyDocument; 
+export default MyDocument 

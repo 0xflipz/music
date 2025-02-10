@@ -1,11 +1,6 @@
-import React from "react";
-import { Metadata } from 'next'
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'FLIPZ',
   description: 'FLIPZ - Music Production & AI',
 };
@@ -17,7 +12,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" 
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        {children}
+      </body>
     </html>
   );
 } 

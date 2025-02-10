@@ -7,6 +7,9 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    appDir: true,
+  },
 }
 
 module.exports = nextConfig 
